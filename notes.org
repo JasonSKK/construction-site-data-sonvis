@@ -1,0 +1,61 @@
+#+TITLE: Construction sight sonification
+
+* Questions
+Nedis -- Below 100Hz, not sure how these freq were processed since freq range 100hz-10khz
+
+* Brainstorming
+** emotional effect of the sonification -- driven by what factors?
+*The most important aspect about this sonification should be its ability to transmit information in a simple and comprehensive form.  In other words to be meaningful for the user*
+
+I think that the emotional effect of the sonification can play a major role in the overall experience.  That's why we might want to stick with objective data with regards to the effect that the sounds -sonification- will have on the user's perception of the incoming information.  A very straight forward example is pitch.
+
+As I understand it from the information stated within the paper, an exploration in terms of sound design is essential.  More specifically what kind of impact -emotional mostly- (psychoacoustics) should each physical event in the data that will be interpreted through sound will have.
+
+ E.g. a logical approach would be to map low freq bands to low pitches -- frequencies.  However, I believe, ( through empirical knowledge but we can def find research paper to confirm it), that low freq are somehow more pleasant rather than unpleasant.  Conversely, a 1000Hz sine wave is very annoying → a saw wave even more.  So the question would be whether we map freq bands to the actual (or linearly mapped for convenience (max 10kHz (5kHz actual info))) or should we explore more certain psychoacoustic effects or features.
+
+ On the other hand, we can still use timbre features, nonetheless, the window for a large variety from non-pleasant sound to pleasant ones would be rather smaller?? I guess ... in comparison with the effects of pitch. We could discuss this at some point.
+ On top of that timbre is a more abstract, as well as, subjective in terms of personal taste (I like the pulse wave for e.g.).
+ So the overall sonification might produce different impressions or conclusions about the actual info.
+Question is:  Emotional effect of a pitch might be more reliable than timbre characteristics?
+
+/IDEA: maybe we could carry out something like a primary research experiment first about what sound are considered as pleasant and non-pleasant.  But maybe this will take valuable time.  However, I believe that there will be definitely something already./
+
+Amplitude on the other hand is quite straight forward.  Amplitude could be mapped to intensity of the physical events within the frequency bands.  When, there is a lot of sound content withing one freq band of course this band should be louder.  I can not think about something more straight forward.
+
+Dust2.ar for dust particles I believe that it is an effective approach. ==> but I think ppl in the first experiment (Niklas) did not understood it -- not sure
+
+Facts:
++ tonal sounds decrease wakefulness (that can be mapped to non-activity in our research during night e.g.) and that sound level is related to *annoyance*
++ *Valence* "σθένος" "smth like the overall intensity" is primarily determined by the perceived loudness and activation by the perceived sharpness of the sound
+  + activation (how active versus passive the experience is) is related (acc to first experiment) to perceived sharpness of the sound. => this can mimic the feeling of being in a noisy environment
+    + sharpness is related to high frequency content
+
+C-c-C-x-C-v
+#+NAME: fig:figure name
+#+CAPTION:  activation increases with increasing sharpness.
+#+ATTR_ORG: :width 200
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 200
+[[file:./graphValenceActivSc.png]]
+
+Finally, [2] suggests that we can measure annoyance, by measures of valence and activation. It has been shown that these two measures are highly correlated with annoyance ratings [12, 5].
+
++ (perceived) loudness, and thus also its correlate sound pressure level, is the main feature of environmental sounds that determines *annoyance*
+  + so
+
+
+[1] Västfjäll, D. (2012). Emotional reactions to sounds without meaning. Psychology, 3(8), 606. https://file.scirp.org/pdf/PSYCH20120800010_49088129.pdf
+[2] B. BERGLUND, P. HASSMÉN, A. PREIS, ANNOYANCE AND SPECTRAL CONTRAST ARE CUES FOR SIMILARITY AND PREFERENCE OF SOUNDS, Journal of Sound and Vibration, Volume 250, Issue 1, 2002, Pages 53-64, ISSN 0022-460X,
+https://reader.elsevier.com/reader/sd/pii/S0022460X01938891?token=9042704AC91F1BF0E9070D5279EA5FA7B5E29F9F0C6B49F6B31E5B8C457AF05851BB6AB0D8A853605170C545ADDFE5C3&originRegion=eu-west-1&originCreation=20220307145306
+
+** localisation
+ Stereo panning: Not sure if should somehow map sensor location information to the sonification, since visualisation also supports this. Maybe stereo images confuses the user, than provides information? In addition, I observed empirically that "normal" people do not really care about stereo. My gf for example, was introduced into the stereo sound only when I told her.  We were listening a special 60s rec that drums on the left bass right vocals middle -hard panned-.  Before my comments she was not able to localise sources within a recording.  And so, most of the "normal" people I think.
+That's why maybe we should find other sound parameters to map source location of the sensors.
+
+* Rasmus meeting notes
+DATA: small particles, big particles, loudness per freq-band, temperature, humidity, bumps.
+** bumps
+it is important to see if incoming traffic or out-coming traffic to the construction sight.
+
+* design
+particles
