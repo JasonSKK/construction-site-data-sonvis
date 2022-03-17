@@ -2,25 +2,18 @@
 import os
 import numpy as np
 import pandas as pd
-
+import time
+import datetime
 #pyosc
 #from pythonosc import osc_message_builder
 #from pythonosc import udp_client
-import time
-import datetime
 
 filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 
 # Load the .csv file
 df = pd.read_csv(filename)
 
-
-
-
-#timestamp_array = [date.year,date.month,date.day,date.hour,date.minute,date.second] # create array with data
-
-#matrix = [timestamp_array, ['year |month |day |hour |min |sec']]
-# func print matrix
+# func to print matrix with date data
 def print_Matrix(matx):
     print('\n');
     print('\n'.join([''.join(['{:5}'.format(item) for item in row])
@@ -32,9 +25,8 @@ def iter(i): # iteration function -- value update | i=count_argument
     datepos = df.iloc[i][0] # position for date
     pm_25pos = df.iloc[i][3] # position for pm_25 particles
     pm_10pos = df.iloc[i][4] # position for pm_10 particles
+    date = datetime.datetime.strptime(datepos, "%Y-%m-%d %H:%M:%S") # configure data format => store
 
-    date = datetime.datetime.strptime( # configure data format => store
-        datepos, "%Y-%m-%d %H:%M:%S")
     timestamp_array = [ # create array with time data
         date.year,
         date.month,
@@ -49,21 +41,17 @@ def iter(i): # iteration function -- value update | i=count_argument
     print(str(pm_10pos)+' pm_10pos ') # print pm 10 values AS STRING
     print_Matrix(matrix) # print time data in matrix form
 
-for i in range(70):
-    #iter(str(i))
-    #print(i)
-    iter(i)
+# locate row with GIVEN-X date
+datetime_selection = df[df.timestamp.between('2021-08-21 00:00:00', '2021-08-21 00:11:30', inclusive=True)]
+print(datetime_selection)
 
-
-    #print_Matrix()
+for i in range(len(datetime_selection)): # iteration loop
+    #iter(i)
+    print(datetime_selection.iloc[i])
     time.sleep(0.05)
 
-#print(" ")
-#print([timestamp_array])
-#print(['year, month, day, hour, minute, second'])
 
 
-#print(pm_25pos)
 
 
 #pyosc
