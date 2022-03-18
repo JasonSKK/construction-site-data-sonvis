@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import time
 import datetime
+from dateutil import parser
 #pyosc
 #from pythonosc import osc_message_builder
 #from pythonosc import udp_client
@@ -19,9 +20,12 @@ def print_Matrix(matx):
     print('\n'.join([''.join(['{:5}'.format(item) for item in row])
                      for row in matx]))
 
-# locate row with GIVEN-X date
-datetime_selection = df[df.timestamp.between('2021-08-21 00:00:00', '2021-08-21 00:11:30', inclusive=True)]
-print(datetime_selection)
+# locate row with GIVEN-X date and extract time period
+def t_period(start_date,end_date):
+    global datetime_selection # for access within run function
+    datetime_selection = df[  # create new dataframe from given time period
+        df.timestamp.between(
+            start_date,end_date,inclusive=True)] # include given dates
 
 # consider using this??
 # def iter(i): # iteration function -- value update | i=count_argument
@@ -31,7 +35,6 @@ print(datetime_selection)
 #     pm_25pos = datetime_selection.iloc[i][3] # position for pm_25 particles
 #     pm_10pos = datetime_selection.iloc[i][4] # position for pm_10 particles
 #     date = datetime.datetime.strptime(datepos, "%Y-%m-%d %H:%M:%S") # configure data format => store
-#
 #     timestamp_array = [ # create array with time data
 #         date.year,
 #         date.month,
@@ -47,11 +50,43 @@ print(datetime_selection)
 #     print_Matrix(matrix) # print time data in matrix form
 
 
-for i in range(len(datetime_selection)): # iteration loop
-    #iter(i)
-    print(datetime_selection.iloc[i])
-    time.sleep(0.05)
+def run(start_date=None,end_date=None,period=None):
+    if (start_date is None) and (end_date is None) and (period is None):
+        print("ERROR: run() missing 2 required positional arguments: 'start_date' and 'end_date' in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
+    else:
+        t_period(start_date,end_date)
+        for i in range(len(datetime_selection)): # iteration loop
+            # iter(i)
+            print(datetime_selection.iloc[i])
+            # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
+            # t_period(d_start,d_end,i)
+            # row = datetime_selection.iloc[i]
+            # print(row)
+            time.sleep(period)
+# e.g.
+# run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
 
+# fix this
+def ask():
+    st_date = parser.parse(
+        input(
+            "Enter start date | format %YYYY-%m-%d]: "))
+    print(st_date.year, st_date.month, st_date.day)
+
+    st_time = parser.parse(
+        input(
+            "Enter start time | format %HH:%MM:%SS]: "))
+    print(st_date.year, st_date.month, st_date.day, st_time.hour, st_time.minute, st_time.second)
+
+    end_date = parser.parse(
+        input(
+            "Enter end date | format %YYYY-%m-%d]: "))
+    print(end_date.year, end_date.month, end_date.day)
+
+    end_time = parser.parse(
+        input(
+            "Enter end time | format %HH:%MM:%SS]: "))
+    print(end_date.year, end_date.month, end_date.day, end_time.hour, end_time.minute, end_time.second)
 
 
 
