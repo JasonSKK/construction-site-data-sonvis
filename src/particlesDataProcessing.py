@@ -14,11 +14,13 @@ filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 # Load the .csv file
 df = pd.read_csv(filename)
 
+
 # func to print matrix with date data
 def print_Matrix(matx):
     print('\n');
     print('\n'.join([''.join(['{:5}'.format(item) for item in row])
                      for row in matx]))
+
 
 # locate row with GIVEN-X date and extract time period
 def t_period(start_date,end_date):
@@ -65,6 +67,7 @@ def run(start_date=None,end_date=None,period=None):
             time.sleep(period)
 # e.g.
 # run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
+
 
 # fix this
 def ask():
