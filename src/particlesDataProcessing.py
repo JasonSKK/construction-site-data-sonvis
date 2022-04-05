@@ -5,9 +5,14 @@ import pandas as pd
 import time
 import datetime
 from dateutil import parser
-#pyosc
-#from pythonosc import osc_message_builder
-#from pythonosc import udp_client
+# pyosc
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
+
+# pyosc
+client = udp_client.SimpleUDPClient("10.253.228.207", 57120)
+# IP Address changes ...
+
 
 filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 
@@ -59,6 +64,7 @@ def run(start_date=None,end_date=None,period=None):
         t_period(start_date,end_date)
         for i in range(len(datetime_selection)): # iteration loop
             # iter(i)
+            client.send_message("/pysc", datetime_selection.iloc[i])
             print(datetime_selection.iloc[i])
             # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
             # t_period(d_start,d_end,i)
