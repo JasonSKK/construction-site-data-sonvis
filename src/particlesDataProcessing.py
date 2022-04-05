@@ -69,30 +69,30 @@ def run(start_date=None,end_date=None,period=None):
 # run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
 
 
-# fix this
-def ask():
-    st_date = parser.parse(
-        input(
-            "Enter start date | format %YYYY-%m-%d]: "))
-    print(st_date.year, st_date.month, st_date.day)
+# fix this -- asks first question and then stops
+#def ask():
+#    st_date = parser.parse(
+#        input(
+#            "Enter start date | format %YYYY,%m,%d]: "))
+#    print(st_date.year, st_date.month, st_date.day)
+#
+#    st_time = parser.parse(
+#        input(
+#            "Enter start time | format %HH:%MM:%SS]: "))
+#    print(st_date.year, st_date.month, st_date.day, st_time.hour, st_time.minute, st_time.second)
+#
+#    end_date = parser.parse(
+#        input(
+#            "Enter end date | format %YYYY,%m,%d]: "))
+#    print(end_date.year, end_date.month, end_date.day)
+#
+#    end_time = parser.parse(
+#        input(
+#            "Enter end time | format %HH:%MM:%SS]: "))
+#    print(end_date.year, end_date.month, end_date.day, end_time.hour, end_time.minute, end_time.second)
 
-    st_time = parser.parse(
-        input(
-            "Enter start time | format %HH:%MM:%SS]: "))
-    print(st_date.year, st_date.month, st_date.day, st_time.hour, st_time.minute, st_time.second)
 
-    end_date = parser.parse(
-        input(
-            "Enter end date | format %YYYY-%m-%d]: "))
-    print(end_date.year, end_date.month, end_date.day)
-
-    end_time = parser.parse(
-        input(
-            "Enter end time | format %HH:%MM:%SS]: "))
-    print(end_date.year, end_date.month, end_date.day, end_time.hour, end_time.minute, end_time.second)
-
-
-
+print("on-run functions loaded")
 
 #pyosc
 #client = udp_client.SimpleUDPClient("10.253.233.184", 57120)
