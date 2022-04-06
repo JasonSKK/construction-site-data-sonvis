@@ -1,3 +1,6 @@
+# Svoronos Kanavas Iason -- Particle HTML interface patch
+# LiU Apr. 2022 -- construction site sonification
+
 from __future__ import print_function
 from datetime import timedelta
 from bokeh.models import CustomJS, DateRangeSlider
@@ -5,20 +8,11 @@ from ipywidgets.embed import embed_minimal_html
 import datetime as dt
 import panel as pn
 import param # for FormatDateRangeSlider
+import subprocess # to run SC
 
 exec(open("particlesDataProcessing.py").read()) # load functional script
 
 pn.extension()
-
-
-# slider
-#date_range_slider = pn.widgets.DateRangeSlider(
-#    name='Date Range Slider',
-#    start=dt.datetime(2017, 1, 1, 0, 0), end=dt.datetime(2019, 1, 1, 0, 0),
-#    value=(dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2018, 1, 10, 0, 0)),
-    #format="%Y%m%d"
-#)
-
 
 class FormatDateRangeSlider(pn.widgets.DateRangeSlider):
     format = param.String(r"%m%Y")
@@ -40,7 +34,7 @@ class FormatDateRangeSlider(pn.widgets.DateRangeSlider):
         return msg
 
 
-# slider
+# create slider
 date_range_slider = FormatDateRangeSlider(
     name='Date Range Slider',
     width=666,
@@ -53,17 +47,18 @@ date_range_slider = FormatDateRangeSlider(
 # dataset ends: 2021-08-31 23:59:30
 
 
-# button
+# create button
 button = pn.widgets.Button(name='Start', button_type='primary')
 text = pn.widgets.TextInput(value='00:00:00-00:02:00')
 
 
+# on button event
 def do(event):
-    startdt = date_range_slider.value[0].date()
-    enddt = date_range_slider.value[1].date()
-    time_split = text.value.split("-")
-    sttime = time_split[0]
-    endtime = time_split[1]
+    startdt = date_range_slider.value[0].date() # get start date from range slider
+    enddt = date_range_slider.value[1].date() # get end date
+    time_split = text.value.split("-") # split time into two objects (%H,%M)
+    sttime = time_split[0] # get start time
+    endtime = time_split[1] # get end time
     print('\n',
           'Start Date '+str(startdt), # print start date
           '\n',
@@ -73,22 +68,27 @@ def do(event):
           '\n',
           'End Time '+str(endtime), # print start time
           )
-    timedate_formating = [
+    timedate_formating = [ # combine date and time into datetime formating
         str(startdt)+' '+str(sttime),
         str(enddt)+' '+str(endtime),
     ]
-    print(timedate_formating)
-    # format: run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
-    run( # run function defined in particlesDataProcessing
-        timedate_formating[0],
-        timedate_formating[1],
+    print(timedate_formating) # print everything as datetime formating
+    # format: run(
+        #'2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 ) # original command syntax
+    run( # run function defined in particlesDataProcessing with given datetime from slider
+        timedate_formating[0], # start datetime
+        timedate_formating[1], # end datetime
         0.02 # iteration frequency
     )
 
 
 button.on_click(do) # on click post selected data & evaluate run function
 
-
+# run sonification patch
+sclang = subprocess.Popen(
+    'sclang particleSonification.scd', shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT)
 
 # run > python slider.py
-pn.serve(pn.Row(button, text, date_range_slider))
+pn.serve(pn.Row(button, text, date_range_slider)) # render everything

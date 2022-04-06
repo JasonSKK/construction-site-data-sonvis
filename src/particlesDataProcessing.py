@@ -1,24 +1,40 @@
-#data iteration
+# Data iteration
 import os
 import numpy as np
 import pandas as pd
 import time
 import datetime
 from dateutil import parser
-# pyosc
+# Python osc
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
+# run shell commands
+import subprocess
+import re # split with multiple delimiters
+import netifaces as ni # get IP address
 
-# pyosc
-client = udp_client.SimpleUDPClient("10.253.228.207", 57120)
-# IP Address changes ...
 
+# get IP address
+def getip():
+    global ip
+    ip = subprocess.Popen(
+        'ipconfig getifaddr en0', shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT)
+    ip, _ = ip.communicate()
+    ip = ip.decode('utf-8')
+    ip = ip.strip()
+    print(ip)
+
+
+# Python osc
+getip() # run getip function
+client = udp_client.SimpleUDPClient(ip, 57120)
 
 filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 
 # Load the .csv file
 df = pd.read_csv(filename)
-
 
 # func to print matrix with date data
 def print_Matrix(matx):
