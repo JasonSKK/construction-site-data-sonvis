@@ -50,7 +50,7 @@ date_range_slider = FormatDateRangeSlider(
 
 
 # create start button
-button = pn.widgets.Button(name='Start', button_type='primary',width=200)
+start_button = pn.widgets.Button(name='Start', button_type='primary',width=200)
 text = pn.widgets.TextInput(value='00:00:00-00:02:00',width=200)
 kill_button = pn.widgets.Button(name='killall', button_type='primary',width=200)
 
@@ -99,14 +99,14 @@ def killall(event): # killall button fuction
     print ("Stopped")
 
 
-button.on_click(do) # on click post selected data & evaluate rxun function
+start_button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
 
 # run sonification patch
-sclang = subprocess.Popen(
-    'sclang particleSonification.scd', shell=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT)
+#sclang = subprocess.Popen(
+#    'sclang particleSonification.scd', shell=True,
+#    stdout=subprocess.PIPE,
+#    stderr=subprocess.STDOUT)
 
 # run > python slider.py
 #pn.serve(pn.Row(button, text, date_range_slider)) # render everything
@@ -115,7 +115,7 @@ sclang = subprocess.Popen(
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
 
 gspec[0:3, 2] = pn.Column(
-    button,
+    start_button,
     kill_button,
     text,
     date_range_slider,

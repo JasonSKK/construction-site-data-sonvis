@@ -100,19 +100,28 @@ OSCdef(\incoming,
 		// write incoming values to variables
 		temperature = msg[2];
 		humidity = msg[3];
-		pm_10 = msg[4];
-		pm_25 = msg[5];
+		pm_25 = msg[4];
+		pm_10 = msg[5];
+		
 
 		// --- START --- linear mapping
-		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,100,1000);
-		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,100,1000);
-		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,100,1000);
-		pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,100,1000);
+		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,0.0,1.0);
+		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,0.0,1.0);
+		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,1.0,10.0);
+		//pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0);
+		pm_25Map = pm_25.linexp(d.pm_25min,d.pm_25max,1e-2,1.0);
 		// ---- END ---- linear mapping 
-		
+		//(50+(pm_25Map*400)).postln;
+		//x.set(\freq,pm_25Map*1000*50);
 		play{
 			SinOsc.ar(
-				pm_25Map)* Env.perc(0.01,0.05).kr(doneAction:2)}
+				(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}
 		
 	}, '/pysc' // osc address 
 );
+
+
+
+//x = play{|freq=500|
+///Pulse.ar(
+//		freq)}//* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}
