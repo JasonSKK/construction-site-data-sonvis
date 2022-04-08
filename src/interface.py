@@ -10,6 +10,7 @@ import panel as pn
 import param  # for FormatDateRangeSlider
 import subprocess  # to run SC
 import sys  # stop evaluation: killall function
+import threading  # stop iteration cycle when kill button pressed
 
 exec(open("particlesDataProcessing.py").read()) # load functional script
 
@@ -77,21 +78,28 @@ def do(event):
     print(timedate_formating) # print everything as datetime formating
     # format: run(
         #'2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 ) # original command syntax
-    run( # run function defined in particlesDataProcessing with given datetime from slider
+    #run( # run function defined in particlesDataProcessing with given datetime from slider
+    #    timedate_formating[0], # start datetime
+    #    timedate_formating[1], # end datetime
+    #    0.02 # iteration frequency
+    #)
+    global break_cycle
+    break_cycle = False
+    threading.Thread(target=run, args=(
         timedate_formating[0], # start datetime
         timedate_formating[1], # end datetime
         0.02 # iteration frequency
-    )
+    )).start()
 
 
 def killall(event): # killall button fuction
-    command = sys.exit("Error message")
-# subprocess.Popen(
-#     'killall python3 && sclang', shell=True,
-#     stdout=subprocess.PIPE,
-#     stderr=subprocess.STDOUT)
-#
-button.on_click(do) # on click post selected data & evaluate run function
+    #command = sys.exit("Error message") # actually kill python sesh
+    global break_cycle #added global
+    break_cycle = True # Change break_cicle to False
+    print ("Stopped")
+
+
+button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
 
 # run sonification patch
@@ -113,5 +121,5 @@ gspec[0:3, 2] = pn.Column(
     date_range_slider,
 )
 
-pn.serve(gspec)
+pn.serve(gspec)  # render created grid
 #pn.serve()) # render everything

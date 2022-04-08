@@ -8,13 +8,11 @@ import time
 import datetime
 from dateutil import parser
 # Python osc
-from pythonosc import osc_message_builder
 from pythonosc import udp_client
 # run shell commands
 import subprocess
-import re # split with multiple delimiters
-import netifaces as ni # get IP address
 
+break_cycle = False  # break cycle on kill button
 
 # get IP address
 def getip():
@@ -82,10 +80,13 @@ def run(start_date=None,end_date=None,period=None):
         print("ERROR: run() missing 2 required positional arguments: 'start_date' and 'end_date' in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
     else:
         t_period(start_date,end_date)
+
         for i in range(len(datetime_selection)): # iteration loop
-            # iter(i)
-            client.send_message("/pysc", datetime_selection.iloc[i])
-            print(datetime_selection.iloc[i])
+            if break_cycle is True:
+                break;
+            else:
+                client.send_message("/pysc", datetime_selection.iloc[i])
+                print(datetime_selection.iloc[i])
             # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
             # t_period(d_start,d_end,i)
             # row = datetime_selection.iloc[i]
@@ -116,7 +117,6 @@ def run(start_date=None,end_date=None,period=None):
 #        input(
 #            "Enter end time | format %HH:%MM:%SS]: "))
 #    print(end_date.year, end_date.month, end_date.day, end_time.hour, end_time.minute, end_time.second)
-
 
 print("on-run functions loaded")
 
