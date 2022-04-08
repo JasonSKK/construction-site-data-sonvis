@@ -1,4 +1,6 @@
-# Data iteration
+# Svoronos Kanavas Iason -- data iteration functions patch
+# LiU Apr. 2022 -- construction site sonification
+
 import os
 import numpy as np
 import pandas as pd
@@ -31,10 +33,12 @@ def getip():
 getip() # run getip function
 client = udp_client.SimpleUDPClient(ip, 57120)
 
-filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 
+exec(open("outliers_exp.py").read()) # load functional script
+
+#filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 # Load the .csv file
-df = pd.read_csv(filename)
+#df = pd.read_csv(filename)
 
 # func to print matrix with date data
 def print_Matrix(matx):

@@ -7,8 +7,9 @@ from bokeh.models import CustomJS, DateRangeSlider
 from ipywidgets.embed import embed_minimal_html
 import datetime as dt
 import panel as pn
-import param # for FormatDateRangeSlider
-import subprocess # to run SC
+import param  # for FormatDateRangeSlider
+import subprocess  # to run SC
+import sys  # stop evaluation: killall function
 
 exec(open("particlesDataProcessing.py").read()) # load functional script
 
@@ -47,12 +48,13 @@ date_range_slider = FormatDateRangeSlider(
 # dataset ends: 2021-08-31 23:59:30
 
 
-# create button
-button = pn.widgets.Button(name='Start', button_type='primary')
-text = pn.widgets.TextInput(value='00:00:00-00:02:00')
+# create start button
+button = pn.widgets.Button(name='Start', button_type='primary',width=200)
+text = pn.widgets.TextInput(value='00:00:00-00:02:00',width=200)
+kill_button = pn.widgets.Button(name='killall', button_type='primary',width=200)
 
 
-# on button event
+# on start button event
 def do(event):
     startdt = date_range_slider.value[0].date() # get start date from range slider
     enddt = date_range_slider.value[1].date() # get end date
@@ -82,7 +84,15 @@ def do(event):
     )
 
 
+def killall(event): # killall button fuction
+    command = sys.exit("Error message")
+# subprocess.Popen(
+#     'killall python3 && sclang', shell=True,
+#     stdout=subprocess.PIPE,
+#     stderr=subprocess.STDOUT)
+#
 button.on_click(do) # on click post selected data & evaluate run function
+kill_button.on_click(killall)
 
 # run sonification patch
 sclang = subprocess.Popen(
@@ -91,4 +101,17 @@ sclang = subprocess.Popen(
     stderr=subprocess.STDOUT)
 
 # run > python slider.py
-pn.serve(pn.Row(button, text, date_range_slider)) # render everything
+#pn.serve(pn.Row(button, text, date_range_slider)) # render everything
+
+# create grid
+gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
+
+gspec[0:3, 2] = pn.Column(
+    button,
+    kill_button,
+    text,
+    date_range_slider,
+)
+
+pn.serve(gspec)
+#pn.serve()) # render everything

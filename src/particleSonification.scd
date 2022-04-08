@@ -1,5 +1,6 @@
 // Svoronos Kanavas Iason -- Particle Sonification patch
 // LiU Apr. 2022 -- construction site sonification
+
 d=(); // create dictionary for min max values
 
 // configure network address for visualisation
@@ -13,10 +14,11 @@ d=(); // create dictionary for min max values
 	| file, col |
 	var com;
 	com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+	(~path+/+file).postln;
 	// command: python ./minmax.py filename.csv "columnname"
 	com = com[3].replace(" ",",").split(","); // replace blank with comma and split it into 2 items as list
 	com = com.asString.interpret; // convert it into a string and interpret | output: array
-	//com.postln;
+	// com.postln;
 };
 
 // run function and store output
@@ -30,13 +32,21 @@ d=(); // create dictionary for min max values
 	fork{ // run script get output write min max to variables
 		rawList_minmax = [
 			[\temp,
-				~minmax.value("sommargagata_dev_11_temp_pm_30s.csv","temperature")],
+				~minmax.value("df_out/particles_processed.csv",
+					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
+					"temperature")],
 			[\humidity,
-				~minmax.value("sommargagata_dev_11_temp_pm_30s.csv","humidity")],
-			[\pm_10,
-				~minmax.value("sommargagata_dev_11_temp_pm_30s.csv","pm_10")],
+				~minmax.value("df_out/particles_processed.csv",
+					//"sommargagata_dev_11_temp_pm_30s.csv"
+					"humidity")],
 			[\pm_25,
-				~minmax.value("sommargagata_dev_11_temp_pm_30s.csv","pm_25")
+				~minmax.value("df_out/particles_processed.csv",
+					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
+					"pm_25")],
+			[\pm_10,
+				~minmax.value("df_out/particles_processed.csv",
+					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
+					"pm_10")
 			];
 		];
 		1.wait;
@@ -59,7 +69,9 @@ d=(); // create dictionary for min max values
 		// pm_25min.postln;
 		// pm_25max.postln;
 		// rawList_minmax.postln;
-		for(0, rawList_minmax.size, {|i| rawList_minmax[i].postln;});
+		for( // post min max for each col 
+			0, rawList_minmax.size, {
+				|i| rawList_minmax[i].postln;}); 
 
 		// write to minmax dictionary 
 		d.temperatureMin=temperatureMin;

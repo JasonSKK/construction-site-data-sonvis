@@ -1,14 +1,19 @@
+# Svoronos Kanavas Iason -- calculate min max script
+# ---- runs in ./particleSonification.scd ----
+# LiU Apr. 2022 -- construction site sonification
+
 import sys
 import pandas as pd
 print(sys.argv[0]) # prints python_script.py
 print(sys.argv[1]) # prints data file
 print(sys.argv[2]) # prints column
 
-filename = sys.argv[1]#os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
+# filename: load the processed df from ./df_out/ directory
+filename = sys.argv[1]
 
 # Load the .csv file
 df = pd.read_csv(filename)
-col = sys.argv[2]
+col = sys.argv[2] # column is the last argument (3rd)
 
 def minmax():
     #temperature,humidity,pm_25,pm_10
