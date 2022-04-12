@@ -3,3 +3,8 @@
 * data processing
 In this section the initial data processing takes place.
 **
+
+
+moving average low pass filter  -- for data cleaning
+
+Meeting construction site sonification:

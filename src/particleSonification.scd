@@ -114,14 +114,9 @@ OSCdef(\incoming,
 		//(50+(pm_25Map*400)).postln;
 		//x.set(\freq,pm_25Map*1000*50);
 		play{
-			SinOsc.ar(
-				(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}
+		SinOsc.ar(
+			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}
 		
 	}, '/pysc' // osc address 
 );
 
-
-
-//x = play{|freq=500|
-///Pulse.ar(
-//		freq)}//* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}

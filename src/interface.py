@@ -103,10 +103,10 @@ start_button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
 
 # run sonification patch
-#sclang = subprocess.Popen(
-#    'sclang particleSonification.scd', shell=True,
-#    stdout=subprocess.PIPE,
-#    stderr=subprocess.STDOUT)
+sclang = subprocess.Popen(
+    'sclang particleSonification.scd', shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT)
 
 # run > python slider.py
 #pn.serve(pn.Row(button, text, date_range_slider)) # render everything
