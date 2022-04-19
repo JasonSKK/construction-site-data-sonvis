@@ -1,4 +1,4 @@
-% Created 2022-04-13 Wed 17:00
+% Created 2022-04-19 Tue 17:09
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -33,14 +33,14 @@ Niklas meeting
 Wed at 4 o'clock
 
 \section{Algorithm architecture}
-\label{sec:orgaa3e303}
+\label{sec:org57082d1}
 
 \section{Interface}
-\label{sec:org0bb0f45}
+\label{sec:orgf93de34}
 The interface consists of four visual elements.  The range slider and text input are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.  The 'start' button is used so that the datetime period is extracted and then sent to be sonified and visualised, while the killall button can stop every running procedure in relation to the sonification and visualisation process anytime.
 
 \subsection{Sub-processes}
-\label{sec:orgc54f63c}
+\label{sec:org621d31a}
 On launch, sclang is initialised and runs as a sub-process within the python session.  More specifically, the SuperCollider  patch for sonification is evaluated using the following command in Python.
 \begin{verbatim}
 # run sonification patch
@@ -79,7 +79,7 @@ ipconfig | grep IPv4 Address.
 
 
 \section{data processing}
-\label{sec:org5701d4c}
+\label{sec:org2e801a9}
 In this section the initial data processing takes place.
 **
 
@@ -88,5 +88,5 @@ moving average low pass filter  -- for data cleaning
 
 Meeting construction site sonification:
 \section{Sonification}
-\label{sec:org507888a}
+\label{sec:org68b0a55}
 \end{document}
