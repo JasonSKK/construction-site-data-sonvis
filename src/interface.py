@@ -11,10 +11,16 @@ import param  # for FormatDateRangeSlider
 import subprocess  # to run SC
 import sys  # stop evaluation: killall function
 import threading  # stop iteration cycle when kill button pressed
+#from pythonosc import udp_client
 
 exec(open("particlesDataProcessing.py").read()) # load functional script
 
+# Python osc
+#getip() # run getip function
+#client = udp_client.SimpleUDPClient(ip, 57120)
+
 pn.extension()
+
 
 class FormatDateRangeSlider(pn.widgets.DateRangeSlider):
     format = param.String(r"%m%Y")
@@ -57,6 +63,7 @@ kill_button = pn.widgets.Button(name='killall', button_type='primary',width=200)
 
 # on start button event
 def do(event):
+    client.send_message("/startEnd", 1)
     startdt = date_range_slider.value[0].date() # get start date from range slider
     enddt = date_range_slider.value[1].date() # get end date
     time_split = text.value.split("-") # split time into two objects (%H,%M)
@@ -94,6 +101,7 @@ def do(event):
 
 def killall(event): # killall button fuction
     #command = sys.exit("Error message") # actually kill python sesh
+    client.send_message("/startEnd", '0')
     global break_cycle #added global
     break_cycle = True # Change break_cicle to False
     print ("Stopped")

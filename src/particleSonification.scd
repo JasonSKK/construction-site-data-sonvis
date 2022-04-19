@@ -94,9 +94,10 @@ OSCdef(\incoming,
 		| msg, freq  | 
 		var temperature, humidity, pm_10, pm_25, // unmapped values
 		temperatureMap, humidityMap, pm_10Map, pm_25Map; // mapped values
+		
 		// post 
 		msg.postln;
-
+		
 		// write incoming values to variables
 		temperature = msg[2];
 		humidity = msg[3];
@@ -112,11 +113,38 @@ OSCdef(\incoming,
 		pm_25Map = pm_25.linexp(d.pm_25min,d.pm_25max,1e-2,1.0);
 		// ---- END ---- linear mapping 
 		//(50+(pm_25Map*400)).postln;
-		//x.set(\freq,pm_25Map*1000*50);
+
+		// x.set(\freq,pm_25Map*1000*50); // SinOscFB 
+		// single sinewave
 		play{
 		SinOsc.ar(
-			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)}
+			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)};
 		
 	}, '/pysc' // osc address 
 );
 
+/*
+OSCdef(\start_end_receiver,{
+	| msg |
+	var id;
+	msg[1].postln;
+	id = msg[1].asInteger;
+	switch (id,
+		0, { 
+			x.set(\gate, 0);
+		},
+		1, {
+			x.set(\gate, 1);
+		};
+	);
+},'/startEnd');
+
+fork{
+	2.wait;
+x = play{|freq=500,gate|
+	SinOscFB.ar(
+		freq*SinOscFB.ar((freq/2)+(freq/freq).log10, freq*0.001),freq*0.001
+	)*0.1*EnvGen.kr(Env.adsr(0.0,0.3,1.0),gate:gate)!2
+};
+}
+*/

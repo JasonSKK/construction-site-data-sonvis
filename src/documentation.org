@@ -1,4 +1,51 @@
-#TITLE: Process Documentation
+#+TITLE: Construction sites SonVis Algorithm documentation
+#+Author: Svoronos - Kanavas Iason
+
+Niklas meeting
+Wed at 4 o'clock
+
+* Algorithm architecture
+
+* Interface
+The interface consists of four visual elements.  The range slider and text input are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.  The 'start' button is used so that the datetime period is extracted and then sent to be sonified and visualised, while the killall button can stop every running procedure in relation to the sonification and visualisation process anytime.
+
+** Sub-processes
+On launch, sclang is initialised and runs as a sub-process within the python session.  More specifically, the SuperCollider  patch for sonification is evaluated using the following command in Python.
+#+BEGIN_SRC
+# run sonification patch
+sclang = subprocess.Popen(
+    'sclang particleSonification.scd', shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT)
+#+END_SRC
+Getting back now to the initialisation python script where a function obtains the IP address of the computer using a shell command and then stores it as a global variable.  After that, the OSC client configuration setup uses the variable's value (udp_client object).  The function is defined the following way as well as the OSC setup.  This process easily configures OSC intercommunication between python and SuperCollider therefore mistakes and hassle by hard-coding IP addresses or manual configurations are avoided.
+
+#+BEGIN_SRC
+# get IP address
+def getip():
+    global ip
+    ip = subprocess.Popen(
+        'ipconfig getifaddr en0', shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT)
+    ip, _ = ip.communicate()
+    ip = ip.decode('utf-8')
+    ip = ip.strip()
+    print(ip)
+
+# Python osc
+getip() # run getip function
+client = udp_client.SimpleUDPClient(ip, 57120)
+#+END_SRC
+*Note:* /this works *only for macOs*.  Therefore it has to be adjusted for linux or windows./
+
+\vspace{0.2cm}
+\noindent
+WIN hint:
+#+BEGIN_SRC
+ipconfig | grep IPv4 Address.
+#+END_SRC
+
 
 * data processing
 In this section the initial data processing takes place.
@@ -8,3 +55,4 @@ In this section the initial data processing takes place.
 moving average low pass filter  -- for data cleaning
 
 Meeting construction site sonification:
+* Sonification
