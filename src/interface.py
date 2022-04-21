@@ -95,7 +95,7 @@ def do(event):
     threading.Thread(target=run, args=(
         timedate_formating[0], # start datetime
         timedate_formating[1], # end datetime
-        0.02 # iteration frequency
+        0.14 # iteration frequency
     )).start()
 
 
@@ -111,10 +111,10 @@ start_button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
 
 # run sonification patch
-sclang = subprocess.Popen(
-    'sclang particleSonification.scd', shell=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT)
+#sclang = subprocess.Popen(
+#    'sclang particleSonification.scd', shell=True,
+#    stdout=subprocess.PIPE,
+#    stderr=subprocess.STDOUT)
 
 # run > python slider.py
 #pn.serve(pn.Row(button, text, date_range_slider)) # render everything

@@ -77,6 +77,7 @@ def replaceOutliers_Median(col,minimum_thres,maximum_thres):
         max = maximum_thres
         df.loc[df[i] < min,i] = np.nan # if value is < min_thresh_pm25: nan it
         df.loc[df[i] > max,i] = np.nan # if value is > max_thresh_pm25: nan it
+        df.loc[df[i] == 0,i] = 0.1 # if zero: replace it with 0.1 (smallest val)
 
         print( # print how many null values are in the specified column
             'sum of null replaced values',

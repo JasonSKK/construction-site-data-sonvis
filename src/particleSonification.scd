@@ -87,7 +87,7 @@ d=(); // create dictionary for min max values
 
 ~store_minmax.value();
 d;
-
+"/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath.load;
 // incoming osc msg
 OSCdef(\incoming,
 	{
@@ -108,21 +108,41 @@ OSCdef(\incoming,
 		// --- START --- linear mapping
 		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,0.0,1.0);
 		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,0.0,1.0);
-		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,1.0,10.0);
-		//pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0);
-		pm_25Map = pm_25.linexp(d.pm_25min,d.pm_25max,1e-2,1.0);
+		pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0);
+		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0);
+		// pm_25Map = pm_25.linexp(d.pm_25min,d.pm_25max,1e-2,1.0); 
 		// ---- END ---- linear mapping 
 		//(50+(pm_25Map*400)).postln;
-
+		//Synth("test",[\freq,pm_25Map.linlin(0.0,60.2,1.0,10.0)*500]);
 		// x.set(\freq,pm_25Map*1000*50); // SinOscFB 
 		// single sinewave
+		pm_10Map =pm_10Map.linexp(0.0,1.0,261.6255653006,7902.1328200779);
+		pm_10Map.postln;
+		pm_10Map = ~mapToScale.value(pm_10Map);
 		play{
+			Gendy4.ar(minfreq:pm_10Map, maxfreq:pm_10Map)!2*
+			//SinOsc.ar(pm_10Map)*
+		Env.perc(0.0,1.1,curve:-8).kr(doneAction:2)};
+		/*play{
 		SinOsc.ar(
-			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)};
+			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)};*/
 		
 	}, '/pysc' // osc address 
 );
 
+//Synth("test",[\freq,0.linlin(0.0,60.0,1.0,5.0)*500]);
+/*SynthDef(\test, {
+	| freq = 500 |
+	var sig, env;
+	env = Env.perc(0.001,1.5).kr(doneAction:2);//gate:Impulse.kr(freq));
+	sig = Gendy2.ar(minfreq:freq, maxfreq:freq);
+	sig = sig + OscN.ar(sig);
+	sig = BPF.ar(sig,freq,freq.linlin(500,1800,0.001,1.0));
+	sig = sig* env;
+
+	Out.ar(0, sig*0.04!2)
+}).play;
+*/
 /*
 OSCdef(\start_end_receiver,{
 	| msg |
