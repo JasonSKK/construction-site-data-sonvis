@@ -116,20 +116,45 @@ OSCdef(\incoming,
 		//Synth("test",[\freq,pm_25Map.linlin(0.0,60.2,1.0,10.0)*500]);
 		// x.set(\freq,pm_25Map*1000*50); // SinOscFB 
 		// single sinewave
-		pm_10Map =pm_10Map.linexp(0.0,1.0,261.6255653006,7902.1328200779);
+		pm_10Map =pm_10Map.linexp(0.0,1.0,130.8127826503,1975.5332050195);
 		pm_10Map.postln;
 		pm_10Map = ~mapToScale.value(pm_10Map);
-		play{
-			Gendy4.ar(minfreq:pm_10Map, maxfreq:pm_10Map)!2*
-			//SinOsc.ar(pm_10Map)*
-		Env.perc(0.0,1.1,curve:-8).kr(doneAction:2)};
+		if(pm_10Map >= 312,{~rel=4},{~rel=0.15}); // if exceeds normal level
+		if (pm_10Map!=~prevVal){ // play only if the mapped value is a different note
+			~prevVal=pm_10Map;
+
+			//if(~rel==0.15,{
+			x.set(\freq,pm_10Map);
+			~prevFreq=pm_10Map;
+		};
+		if(pm_10Map>312){play{Gendy4.ar(minfreq:pm_10Map,maxfreq:pm_10Map,mul:0.15) * Env.perc(0.04,~rel).kr(doneAction:2)!2};};
+				
+			//play{|pm_10Map=565,incNext=422|
+			//var env;
+			//env = Env([~prevFreq,pm_10Map],[0.1]).kr;
+			//SinOsc.ar(pm_10Map,mul:0.5) * Env.perc(0.04,~rel).kr(doneAction:2);
+			//};
+			
+				
+				//Saw.ar([env,env*0.98,env*1.02])!2*Env.perc(0.05,~rel,curve:-4).kr(gate:Dust.kr(pm_10Map.linlin(260,2000,1,50)),doneAction:2)*0.1
+	//SinOsc.ar(pm_10Map)!2*
+				
+			//play{
+			//Gendy4.ar(minfreq:pm_10Map, maxfreq:pm_10Map)!2*
+			//			SinOsc.ar(pm_10Map)!2*
+			//Env.perc(0.05,~rel,curve:-4).kr(doneAction:2)*0.1};
+		
 		/*play{
 		SinOsc.ar(
 			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)};*/
 		
 	}, '/pysc' // osc address 
 );
-
+~rel=0.4;
+~prevVal=261;
+~prevFreq=222;
+x=play{|freq|Mix.fill(10, {SinOsc.ar(Rand(0.8,1.2)*freq.lag(0.2))}!10)!2*0.01}
+//x=play{|freq=200|BPF.ar(LFNoise0.ar(500)*Env.adsr().kr(gate:1,doneAction:2),freq)!2};
 //Synth("test",[\freq,0.linlin(0.0,60.0,1.0,5.0)*500]);
 /*SynthDef(\test, {
 	| freq = 500 |

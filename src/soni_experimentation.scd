@@ -75,14 +75,14 @@ x = SynthDef(\test, {
 	//);
 	//freq = freq.linlin(500,5000,1,10);
 	//freq=freq.lag(0.2);
-	env = Env.perc(0.001,1.5).kr(doneAction:2);//gate:Impulse.kr(freq));
+	env = Env.perc(0.1,0.5).kr(doneAction:2);//gate:Impulse.kr(freq));
 	//sig = SinOsc.ar(500*CombN.ar(SinOscFB.ar(500,freq/10),0.2,0.1),freq/10) * env;
 	//sig = ;//VarSaw.ar(64+(freq.lag(0.2)*2)) * env;
-
-	sig = Gendy4.ar(minfreq:freq, maxfreq:freq);
+	sig=Mix.fill(10, {SinOsc.ar(Rand(0.9,1.1)*freq/4)}!10)!2*0.01;
+	//sig = Gendy4.ar(minfreq:freq, maxfreq:freq);
 	//sig = sig + CombN.ar(SinOscFB.ar(60,1,1),0.2,0.01);
 	//sig = Saw.ar(freq);
-	sig = sig * 10;
+	//sig = sig * 10;
 
 	
 	//sig = BPF.ar(sig,freq/10,freq.linlin(500,5000,0.01,1.0));
@@ -110,7 +110,7 @@ x = SynthDef(\test, {
 		//freq = rrand(500, 600);
 		frequency = rrand(0.0, 60.2);
 		//frequency =frequency.linlin(0.0,60.2,1.0,10.0)*500;
-		frequency =frequency.linlin(0.0,60.2,261.6255653006,7902.1328200779);
+		frequency =frequency.linlin(0.0,60.2,138.6255653006,1500.1328200779);
 		frequency = ~mapToScale.value(frequency);
 		
 		/*if (freq < 600){freq = 500; Synth("test",[\freq,freq])};
@@ -155,7 +155,7 @@ Signal.chebyFill(1000, [0.3, -0.8, 1.1]).plot;
 
 
 
-
+//
 
 
 //:

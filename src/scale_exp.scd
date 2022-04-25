@@ -1,13 +1,14 @@
 // consider -bc of ancient greek scale kationtes, to apply this in the sonification -- so more particles lower note instead of higher-
 
-~lydScale= Scale.lydian.ratios * 60.midicps * 1; // first octave of lydian scale | Do/C
+~lydScale= Scale.lydian.ratios * 36.midicps * 1; // first octave of lydian scale | Do/C
+
 // lydian scale expansion setup 
 {|i=1|
 for(1,4){ | array |
 	i = i*2; // next octave
 	// i.postln; // post ratios
 	~lydScale = ~lydScale.addAll(//~lydScale.size, // insert to the next (from last) pos
-		Scale.lydian.ratios * 60.midicps*i); // multiply ratios*next_octave_ratio=next_octave
+		Scale.lydian.ratios * 36.midicps*i); // multiply ratios*next_octave_ratio=next_octave
 }}.value();
 Post << ~lydScale; // post everything 
 // ~lydScale[0] // tests
@@ -19,7 +20,7 @@ Post << ~lydScale; // post everything
 	var corrFreqValue, tempList;
 	tempList = (~lydScale - incomingVal).abs;
 	corrFreqValue = ~lydScale[tempList.minIndex()];
-	[corrFreqValue].postln;
+	corrFreqValue.postln;
 };
 
 // ~mapToScale.value(500); // test
@@ -35,3 +36,6 @@ fork{
 	}}.value()
 */
 
+
+// smallest value // ~mapToScale.value(0.0) 
+// greater value // ~mapToScale.value(1000000000.0)

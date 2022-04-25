@@ -90,11 +90,20 @@ def replaceOutliers_Median(col,minimum_thres,maximum_thres):
             df.loc[ # locate value and replace
                 df.loc[:,i].isnull(),i]=df.loc[:,i].median()
 
+#def median_windows(col,n): # n is the number that the window will contain
+#    n = 200000  #chunk row size
+#    list_df = [df[i:i+n] for i in range(0,df.shape[0],n)]
+    #for i in [col]:
+    #    tempdf =
+
+
 # replace outliers pm_25 -- max thresh: changed with observed box plot value
 # max and min thresh from IQR was deleting too many values both pm_25 & pm_10
 replaceOutliers_Median('pm_25',min_thresh_pm_25,45)#max_thresh_pm_25)
 # replace outliers pm_10
 replaceOutliers_Median('pm_10',min_thresh_pm_10,65)#max_thresh_pm_10)
+
+
 
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)

@@ -1,0 +1,17 @@
+#+OPTIONS: toc:nil
+
+|----------------------------------------------|
+| Humidity wet reverb                          |
+|----------------------------------------------|
+| Temperature: mapped to the distortion factor |
+|----------------------------------------------|
+| Trucks: certain sound, when do they happen   |
+|----------------------------------------------|
+| particles that exceed a certain threshold,   |
+| form the melody, pitch, harmony              |
+|----------------------------------------------|
+| Soundscape Basis                             |
+| Filtered Noise / low freq sine wave synth    |
+| Mapped to the noise levels                   |
+| Linear mapping                               |
+|----------------------------------------------|

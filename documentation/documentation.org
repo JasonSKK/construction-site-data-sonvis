@@ -2,7 +2,9 @@
 #+Author: Svoronos - Kanavas Iason
 
 Niklas meeting
-Wed at 4 o'clock
+Tue at 11 o'clock
+
+Collaboration w: Communications and Transport Systems (KTS)
 
 * Algorithm architecture
 

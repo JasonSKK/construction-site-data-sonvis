@@ -95,7 +95,7 @@ def do(event):
     threading.Thread(target=run, args=(
         timedate_formating[0], # start datetime
         timedate_formating[1], # end datetime
-        0.14 # iteration frequency
+        0.07 # iteration frequency
     )).start()
 
 
