@@ -1,0 +1,6 @@
+#+TITLE: Note interesting time periods
+
++ *max peak for pm_25* (small particles)
+  + 02/08/2021 .. 02/08/2021 | 15:00:00-15:30:00
++ *max peak for pm10* (big particles)
+  +

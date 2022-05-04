@@ -63,7 +63,7 @@ kill_button = pn.widgets.Button(name='killall', button_type='primary',width=200)
 
 # on start button event
 def do(event):
-    client.send_message("/startEnd", 1)
+    client.send_message("/startEnd", 1) # send to SC start playing synth:gate 1
     startdt = date_range_slider.value[0].date() # get start date from range slider
     enddt = date_range_slider.value[1].date() # get end date
     time_split = text.value.split("-") # split time into two objects (%H,%M)
@@ -101,7 +101,7 @@ def do(event):
 
 def killall(event): # killall button fuction
     #command = sys.exit("Error message") # actually kill python sesh
-    client.send_message("/startEnd", '0')
+    client.send_message("/startEnd", '0') # send to SC stop synth: gate 0
     global break_cycle #added global
     break_cycle = True # Change break_cicle to False
     print ("Stopped")

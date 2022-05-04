@@ -21,13 +21,13 @@ Pbind(
 ).play
 //:	
 // 1st oct
-~lydScale[0],~lydScale[7]
+[~lydScale[0],~lydScale[7]]
 // 2nd oct
-~lydScale[7],~lydScale[14]
+[~lydScale[7],~lydScale[14]]
 // 3rd oct
-~lydScale[14],~lydScale[21]
+[~lydScale[14],~lydScale[21]]
 // 4th oct
-~lydScale[21],~lydScale[28]
+[~lydScale[21],~lydScale[28]]
 // 5th oct
-~lydScale[28],~lydScale[34]
+[~lydScale[28],~lydScale[34]]
 

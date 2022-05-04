@@ -5,8 +5,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-import warnings
+# import seaborn as sns
+# import warnings
+import random
 
 filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 # Load the .csv file
@@ -28,7 +29,7 @@ timestamp = df['timestamp']
 # print("Highest allowed",df['pm_25'].mean() + 3*df['pm_25'].std())
 
 # set figure size
-fig = plt.figure(figsize =(7, 4))
+fig = plt.figure(figsize=(7, 4))
 
 # create data frame and set its columns
 df = pd.DataFrame(df, columns=['temperature', 'humidity', 'pm_25', 'pm_10'])
@@ -47,8 +48,8 @@ pm10_q1 = stats['pm_10'][4] # store q1 val for pm_10
 pm10_q3 = stats['pm_10'][6] # store q3 val for pm_10
 
 # calculate IQRange for pm_25 from q1 and q3
-iqr_pm25 = pm25_q3-pm25_q1;
-iqr_pm10 = pm10_q3-pm10_q1;
+iqr_pm25 = pm25_q3-pm25_q1
+iqr_pm10 = pm10_q3-pm10_q1
 
 # calculate thresholds from IQR -- acc. skewed distribution
 # max_thresh: Q3+1.5IQR
@@ -70,14 +71,13 @@ print(thresholds)
 # show
 #plt.show()
 
-
 def replaceOutliers_Median(col,minimum_thres,maximum_thres):
     for i in [col]: # replace outliers with nan value
         min = minimum_thres
         max = maximum_thres
-        df.loc[df[i] < min,i] = np.nan # if value is < min_thresh_pm25: nan it
-        df.loc[df[i] > max,i] = np.nan # if value is > max_thresh_pm25: nan it
-        df.loc[df[i] == 0,i] = 0.1 # if zero: replace it with 0.1 (smallest val)
+        df.loc[df[i] < min, i] = np.nan  # if value is < min_thresh_pm25: nan it
+        df.loc[df[i] > max, i] = np.nan  # if value is > max_thresh_pm25: nan it
+        df.loc[df[i] == 0, i] = 0.1  # if zero: replace it with 0.1 (smallest val)
 
         print( # print how many null values are in the specified column
             'sum of null replaced values',
@@ -85,10 +85,17 @@ def replaceOutliers_Median(col,minimum_thres,maximum_thres):
         global des_col
         des_col = [col] # specify column
 
+        # old to replace nan values with median
         # replace null values with median for the specified column
-        for i in des_col:
-            df.loc[ # locate value and replace
-                df.loc[:,i].isnull(),i]=df.loc[:,i].median()
+        #for i in des_col:
+            # random factor for use in replacing values
+            #rand_factor = random.uniform(minRand, maxRand)
+            #df.loc[ # locate value and replace
+                #df.loc[:,i].isnull(),i]=df.loc[:,i].median()#+rand_factor
+
+# replace nan values with sample values from the same column for the full data-set
+df = df.apply(
+    lambda x: np.where(x.isnull(), x.dropna().sample(len(x), replace=True), x))
 
 #def median_windows(col,n): # n is the number that the window will contain
 #    n = 200000  #chunk row size
@@ -103,8 +110,6 @@ replaceOutliers_Median('pm_25',min_thresh_pm_25,45)#max_thresh_pm_25)
 # replace outliers pm_10
 replaceOutliers_Median('pm_10',min_thresh_pm_10,65)#max_thresh_pm_10)
 
-
-
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)
 
@@ -112,4 +117,4 @@ df.insert(0, "timestamp", timestamp, True)
 df.to_csv('./df_out/particles_processed.csv', index = False)
 
 # data were processed
-print('data processing done -- replaced outliers with median')
+print('data processing done -- replaced outliers with median + random factor')

@@ -20,11 +20,14 @@ Post << ~lydScale; // post everything
 	var corrFreqValue, tempList;
 	tempList = (~lydScale - incomingVal).abs;
 	corrFreqValue = ~lydScale[tempList.minIndex()];
-	corrFreqValue.postln;
+	// corrFreqValue.postln; // dont post it
 };
 
-// ~mapToScale.value(500); // test
 // test
+// smallest value // ~mapToScale.value(0.0) 
+// greater value // ~mapToScale.value(1000000000.0) 
+
+// more complex test
 /*
 fork{
 	var frequency;
@@ -37,5 +40,4 @@ fork{
 */
 
 
-// smallest value // ~mapToScale.value(0.0) 
-// greater value // ~mapToScale.value(1000000000.0)
+

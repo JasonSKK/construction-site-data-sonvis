@@ -1,7 +1,15 @@
 // Svoronos Kanavas Iason -- Particle Sonification patch
 // LiU Apr. 2022 -- construction site sonification
 
+// load lydian scale functions and configuration
+("/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath).load;
+
 d=(); // create dictionary for min max values
+
+p=(); // synth parameters
+// initialise synth parameters
+p.relTime=0.1; // synth env release
+p.prevFreq=0; // prev freq val played
 
 // configure network address for visualisation
 // ~n = NetAddr("10.253.228.207", 57120);
@@ -54,10 +62,10 @@ d=(); // create dictionary for min max values
 		temperatureMax = rawList_minmax[0][1][1]; // temp max
 		humidityMin = rawList_minmax[1][1][0];  // hum min
 		humidityMax = rawList_minmax[1][1][1]; // hum max
-		pm_10min = rawList_minmax[2][1][0]; // pm_10 min
-		pm_10max = rawList_minmax[2][1][1]; // pm_10 max
-		pm_25min = rawList_minmax[3][1][0]; // pm_25 min
-		pm_25max = rawList_minmax[3][1][1]; // pm_10 max
+		pm_10min = rawList_minmax[3][1][0]; // pm_10 min
+		pm_10max = rawList_minmax[3][1][1]; // pm_10 max
+		pm_25min = rawList_minmax[2][1][0]; // pm_25 min
+		pm_25max = rawList_minmax[2][1][1]; // pm_10 max
 
 		// post individually for identification purposes
 		// temperatureMin.postln;
@@ -86,74 +94,77 @@ d=(); // create dictionary for min max values
 };
 
 ~store_minmax.value();
-d;
-"/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath.load;
+// d; // print min max values
+
 // incoming osc msg
 OSCdef(\incoming,
 	{
 		| msg, freq  | 
 		var temperature, humidity, pm_10, pm_25, // unmapped values
-		temperatureMap, humidityMap, pm_10Map, pm_25Map; // mapped values
+		temperatureMap, humidityMap, pm_10Map, pm_25Map, // mapped values
+		pm_10MapFreq, pm_25MapFreq, // freq mapping
+		pm_10MapAmp, pm_25MapAmp; // amp mapping
 		
 		// post 
-		msg.postln;
+		//msg.postln;
 		
 		// write incoming values to variables
 		temperature = msg[2];
 		humidity = msg[3];
 		pm_25 = msg[4];
 		pm_10 = msg[5];
+		pm_25.postln;
 		
-
 		// --- START --- linear mapping
 		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,0.0,1.0);
 		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,0.0,1.0);
-		pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0);
-		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0);
-		// pm_25Map = pm_25.linexp(d.pm_25min,d.pm_25max,1e-2,1.0); 
+		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0); // big particles
+		pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0); // small particles
 		// ---- END ---- linear mapping 
-		//(50+(pm_25Map*400)).postln;
-		//Synth("test",[\freq,pm_25Map.linlin(0.0,60.2,1.0,10.0)*500]);
-		// x.set(\freq,pm_25Map*1000*50); // SinOscFB 
-		// single sinewave
-		pm_10Map =pm_10Map.linexp(0.0,1.0,130.8127826503,1975.5332050195);
-		pm_10Map.postln;
-		pm_10Map = ~mapToScale.value(pm_10Map);
-		if(pm_10Map >= 312,{~rel=4},{~rel=0.15}); // if exceeds normal level
-		if (pm_10Map!=~prevVal){ // play only if the mapped value is a different note
-			~prevVal=pm_10Map;
 
-			//if(~rel==0.15,{
-			x.set(\freq,pm_10Map);
-			~prevFreq=pm_10Map;
-		};
-		if(pm_10Map>312){play{Gendy4.ar(minfreq:pm_10Map,maxfreq:pm_10Map,mul:0.15) * Env.perc(0.04,~rel).kr(doneAction:2)!2};};
-				
-			//play{|pm_10Map=565,incNext=422|
-			//var env;
-			//env = Env([~prevFreq,pm_10Map],[0.1]).kr;
-			//SinOsc.ar(pm_10Map,mul:0.5) * Env.perc(0.04,~rel).kr(doneAction:2);
-			//};
+		// --- START --- map to lydian scale
+		// map within range
+		pm_10Map = pm_10Map.linexp(
+			0.0,1.0,130.8127826503,261.6255653006);//261.6255653006,523.2511306012); // 3rd octave Lydian
+		pm_25Map = pm_25Map.linexp(
+			0.0,1.0,261.6255653006,523.2511306012);//1046.5022612024,1975.5332050195); // 5th octave Lydian
+
+		
+		// map to exact lydian note
+		pm_10MapFreq = ~mapToScale.value(pm_10Map);
+		pm_25MapFreq = ~mapToScale.value(pm_25Map); 
+		
+		//[\pm10Lydian,pm_10MapFreq,\pm25Lydian,pm_25MapFreq].postln; // post it for confirming
+		// --- END --- map to lydian scale
+
+		// parameter setting: if particles exceed healthy limit
+		//if(pm_10 >= 45,{p.relTime=4},{p.relTime=0.15});  // consider maping 
+		//if(pm_25 >= 12,{"AAA".postln;},{"OOO"}); 
+
+		//if(pm_10MapFreq != p.prevFreq){ // play only if the mapped value is a different note
+		//	p.prevFreq = pm_10MapFreq; // played value, update previous freq 
+			//x.set(\freq,pm_10MapFreq);
+		//	p.prevFreq = pm_10MapFreq;
 			
-				
-				//Saw.ar([env,env*0.98,env*1.02])!2*Env.perc(0.05,~rel,curve:-4).kr(gate:Dust.kr(pm_10Map.linlin(260,2000,1,50)),doneAction:2)*0.1
-	//SinOsc.ar(pm_10Map)!2*
-				
-			//play{
-			//Gendy4.ar(minfreq:pm_10Map, maxfreq:pm_10Map)!2*
-			//			SinOsc.ar(pm_10Map)!2*
-			//Env.perc(0.05,~rel,curve:-4).kr(doneAction:2)*0.1};
-		
-		/*play{
-		SinOsc.ar(
-			(pm_25Map*1000)*50)* Env.perc(0.0,0.1,curve:-8).kr(doneAction:2)};*/
-		
+		//};
+		x.left.set(\freq, pm_10MapFreq);
+		x.right.set(\freq, pm_25MapFreq);
+		//if(pm_10>312){ // if exceeds a level pm10 big particles
+		//play{Gendy4.ar(minfreq:pm_10Map,maxfreq:pm_10Map,mul:0.15) * Env.perc(0.04,p.relTime).kr(doneAction:2)!2};};
+			
+					
 	}, '/pysc' // osc address 
 );
-~rel=0.4;
-~prevVal=261;
-~prevFreq=222;
-x=play{|freq|Mix.fill(10, {SinOsc.ar(Rand(0.8,1.2)*freq.lag(0.2))}!10)!2*0.01}
+//:
+x=play{|freq, detU=0.0|Mix.fill(10, {SinOsc.ar(Rand(0.999,1.001+LFNoise1.kr(3).range(0.0,9.0+detU))*freq.lag(0.2))}!10)!2*0.01};
+x.set(\freq,422,\detU,0.0)
+
+
+// NOISE LEVELS
+play{Mix.fill(10,{SinOsc.ar(60,phase:LFNoise1.ar(MouseX.kr(1.0,10000).lag(0.1).poll).range(0.0,pi))!10})!2*0.01};
+//
+
+
 //x=play{|freq=200|BPF.ar(LFNoise0.ar(500)*Env.adsr().kr(gate:1,doneAction:2),freq)!2};
 //Synth("test",[\freq,0.linlin(0.0,60.0,1.0,5.0)*500]);
 /*SynthDef(\test, {

@@ -163,6 +163,7 @@ Signal.chebyFill(1000, [0.3, -0.8, 1.1]).plot;
 	[0.5,0.6,0.1,0.4,1.0,0.0,0.5,0.3]
 ).asSignal(512);
 ~wt0Buf = Buffer.loadCollection(s, ~wt0.asWavetable);
+//:
 
 x = play{|freq|OscN.ar(~wt0Buf, 200*OscN.ar(~wt0Buf,0.1), mul:0.1*Env.perc(0.0,0.1).kr)!2} 
 
