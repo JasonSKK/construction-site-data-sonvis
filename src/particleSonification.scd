@@ -102,8 +102,10 @@ OSCdef(\incoming,
 		| msg, freq  | 
 		var temperature, humidity, pm_10, pm_25, // unmapped values
 		temperatureMap, humidityMap, pm_10Map, pm_25Map, // mapped values
+		pm_10Map01, pm_25Map01, // linear mapping product: 0 to 1
 		pm_10MapFreq, pm_25MapFreq, // freq mapping
-		pm_10MapAmp, pm_25MapAmp; // amp mapping
+		pm_10MapAmp, pm_25MapAmp, // amp mapping
+		minScaleLow, maxScaleLow, minScaleHi, maxScaleHi; // scale mapping min max playing octave for synths
 		
 		// post 
 		//msg.postln;
@@ -113,21 +115,26 @@ OSCdef(\incoming,
 		humidity = msg[3];
 		pm_25 = msg[4];
 		pm_10 = msg[5];
-		pm_25.postln;
 		
 		// --- START --- linear mapping
 		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,0.0,1.0);
 		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,0.0,1.0);
-		pm_10Map = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0); // big particles
-		pm_25Map = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0); // small particles
+		pm_10Map01 = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0); // big particles
+		pm_25Map01 = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0); // small particles
 		// ---- END ---- linear mapping 
 
 		// --- START --- map to lydian scale
+		minScaleLow = 130.8127826503; // low synth panned left
+		maxScaleLow = 261.6255653006; 
+		minScaleHi = 261.6255653006; // hi synth panned right
+		maxScaleHi = 523.2511306012;
+
+		
 		// map within range
-		pm_10Map = pm_10Map.linexp(
-			0.0,1.0,130.8127826503,261.6255653006);//261.6255653006,523.2511306012); // 3rd octave Lydian
-		pm_25Map = pm_25Map.linexp(
-			0.0,1.0,261.6255653006,523.2511306012);//1046.5022612024,1975.5332050195); // 5th octave Lydian
+		pm_10Map = pm_10Map01.linexp(
+			0.0,1.0,minScaleLow,maxScaleLow);//261.6255653006,523.2511306012); // 3rd octave Lydian
+		pm_25Map = pm_25Map01.linexp(
+			0.0,1.0,minScaleHi,maxScaleHi);//1046.5022612024,1975.5332050195); // 5th octave Lydian
 
 		
 		// map to exact lydian note
@@ -147,14 +154,56 @@ OSCdef(\incoming,
 		//	p.prevFreq = pm_10MapFreq;
 			
 		//};
-		x.left.set(\freq, pm_10MapFreq);
-		x.right.set(\freq, pm_25MapFreq);
-		//if(pm_10>312){ // if exceeds a level pm10 big particles
-		//play{Gendy4.ar(minfreq:pm_10Map,maxfreq:pm_10Map,mul:0.15) * Env.perc(0.04,p.relTime).kr(doneAction:2)!2};};
-			
+
+		
+		// detuning  -- fix it
+		if((pm_10-8).isPositive == true,{ pm_10MapFreq = pm_10MapFreq+[
+			pm_10.linlin(d.pm_10min,d.pm_10max,10, 20),
+			pm_10.linlin(d.pm_10min,d.pm_10max,10, 20)].choose});
+
+		// pm10 to gendy -- panned left 
+		x.pm10synth.set(
+			\freq, pm_10MapFreq, // mapped to scale frequency
+			\minScale, minScaleLow, // for mapping within synth
+			\maxScale, maxScaleLow, 
+			\relSmoothing, pm_10Map01.lag(0.2), // smooth relese to highlight trends
+			\pan, -0.9,
+		); 
+		// pm25 to gendy -- panned right
+		x.pm25synth.set(
+			\freq, pm_25MapFreq,
+			\minScale, minScaleHi,
+			\maxScale, maxScaleHi,
+			\relSmoothing, pm_25Map01.lag(0.2),
+			\pan, 0.9,
+		);
+		
+		if(pm_10 > 12){ // if exceeds a level pm10 big particles
+			var warning_values10_freq, amp_wv10, rel_wv10, pan_wv10,
+			mixingValue, mixingValueOposite; // factor for mixing gendys 
+			warning_values10_freq = ~mapToScale.value(pm_10MapFreq*4); // warning frequency values
+			amp_wv10 = pm_10Map01.linlin(0.0,1.0,0.1,0.4); // amplitude mapping
+			rel_wv10 = pm_10Map01.linlin(0.0,1.0,1,5.0); // env release mapping
+			mixingValue = pm_10Map01; // determines amount: mix gendy4 and gendy2 (G4:close to 12, G2:)
+			pan_wv10 = LinLin.kr(pm_10Map01,0.0,1.0,-1.0,-0.5); // pan 4 pm10 warning
+			mixingValueOposite = LinLin.kr(pm_10Map01, 0.0, 1.0, 1.0, 0.0);
+			Synth(\warning, [ // warning values synth
+				\freq, warning_values10_freq,
+				\amp, amp_wv10, // amplitude, louder for higher/dangerous values
+				\rel, rel_wv10, // envelope release
+				\pan, pan_wv10, // panned left (this is pm_10Map01 but inverted and ranged)
+				\pm10_upwards, mixingValue,
+				\pm10_downwards, mixingValueOposite,
+			]);
+			pm_10.postln; // post exceeding value
+		};
 					
 	}, '/pysc' // osc address 
 );
+
+(~path++"/gendy_simple_ex.scd").standardizePath.load;
+//:
+//s.meter
 //:
 x=play{|freq, detU=0.0|Mix.fill(10, {SinOsc.ar(Rand(0.999,1.001+LFNoise1.kr(3).range(0.0,9.0+detU))*freq.lag(0.2))}!10)!2*0.01};
 x.set(\freq,422,\detU,0.0)
