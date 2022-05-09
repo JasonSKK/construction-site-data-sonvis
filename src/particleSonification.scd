@@ -177,8 +177,10 @@ OSCdef(\incoming,
 			\relSmoothing, pm_25Map01.lag(0.2),
 			\pan, 0.9,
 		);
-		
-		if(pm_10 > 12){ // if exceeds a level pm10 big particles
+
+
+		// --- WARNINGS ---
+		if(pm_10 > 40){ // if exceeds a level pm10 big particles
 			var warning_values10_freq, amp_wv10, rel_wv10, pan_wv10,
 			mixingValue, mixingValueOposite; // factor for mixing gendys 
 			warning_values10_freq = ~mapToScale.value(pm_10MapFreq*4); // warning frequency values
@@ -187,7 +189,7 @@ OSCdef(\incoming,
 			mixingValue = pm_10Map01; // determines amount: mix gendy4 and gendy2 (G4:close to 12, G2:)
 			pan_wv10 = LinLin.kr(pm_10Map01,0.0,1.0,-1.0,-0.5); // pan 4 pm10 warning
 			mixingValueOposite = LinLin.kr(pm_10Map01, 0.0, 1.0, 1.0, 0.0);
-			Synth(\warning, [ // warning values synth
+			Synth(\warning_pm10, [ // warning values synth
 				\freq, warning_values10_freq,
 				\amp, amp_wv10, // amplitude, louder for higher/dangerous values
 				\rel, rel_wv10, // envelope release
@@ -196,6 +198,26 @@ OSCdef(\incoming,
 				\pm10_downwards, mixingValueOposite,
 			]);
 			pm_10.postln; // post exceeding value
+		};
+
+		if(pm_25 > 12){ // if exceeds a level pm25 small particles
+			var warning_values25_freq, amp_wv25, rel_wv25, pan_wv25,
+			mixingValue, mixingValueOposite; // factor for mixing gendys 
+			warning_values25_freq = ~mapToScale.value(pm_25MapFreq*4); // warning frequency values
+			amp_wv25 = pm_25Map01.linlin(0.0,1.0,0.1,0.4); // amplitude mapping
+			rel_wv25 = pm_25Map01.linlin(0.0,1.0,1,5.0); // env release mapping
+			mixingValue = pm_25Map01; // determines amount: mix gendy4 and gendy2 (G4:close to 12, G2:)
+			pan_wv25 = LinLin.kr(pm_25Map01,0.0,1.0,1.0,0.5); // pan 4 pm25 warning
+			mixingValueOposite = LinLin.kr(pm_25Map01, 0.0, 1.0, 1.0, 0.0);
+			Synth(\warning_pm25, [ // warning values synth
+				\freq, warning_values25_freq,
+				\amp, amp_wv25, // amplitude, louder for higher/dangerous values
+				\rel, rel_wv25, // envelope release
+				\pan, pan_wv25, // panned left (this is pm_25Map01 but inverted and ranged)
+				\pm25_upwards, mixingValue,
+				\pm25_downwards, mixingValueOposite,
+			]);
+			pm_25.postln; // post exceeding value
 		};
 					
 	}, '/pysc' // osc address 
