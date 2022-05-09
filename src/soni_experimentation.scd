@@ -10,7 +10,7 @@ Synth(\warning_pm25, [ // warning values synth
 				\rel, 5, // envelope release
 				\pan, 0.0, // panned left (this is pm_25Map01 but inverted and ranged)
 				\pm25_upwards, 0.5,
-				\pm25_downwards, 0.0,
+				\pm25_downwards, 0.5,
 ]);
 //:
 
@@ -20,7 +20,7 @@ Synth(\warning_pm10, [ // warning values synth
 				\amp, 0.1, // amplitude, louder for higher/dangerous values
 				\rel, 5, // envelope release
 				\pan, 0.0, // panned left (this is pm_25Map01 but inverted and ranged)
-				\pm10_upwards, 0.0,
+				\pm10_upwards, 0.5,
 				\pm10_downwards, 0.5,
 			]);
 

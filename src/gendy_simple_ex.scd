@@ -8,19 +8,14 @@ x=();
 x.pm10synth;
 x.pm25synth;
 
-~bus1=Bus.audio(s,1);
+~bus1=Bus.audio(s,2);
 ~bus2=Bus.audio(s,2);
 
 SynthDef(\busOut,{
-	var sig = In.ar(~bus1);
-	var sig2 = In.ar(~bus2);
-	var out = Out.ar(0,Balance2.ar(sig,sig2,1));
-	//out = K2A.ar(out);
-	//Out.ar(0,out);
-	out;
+	var sig = In.ar(~bus1,2);
+	var sig2 = In.ar(~bus2,2);
+	var out = Out.ar(0,Balance2.ar(sig,sig2,0.0));
 }).add;
-
-Synth(\busOut, addAction:\addToTail);
 
 // pm 10
 x.pm10synth = play{|freq=130,minScale=130,maxScale=261,relSmoothing=0.01,pan=(-0.9)|
@@ -44,6 +39,7 @@ x.pm10synth = play{|freq=130,minScale=130,maxScale=261,relSmoothing=0.01,pan=(-0
 		freq: LFNoise1.ar(0.5).range(2000,12000)+(freq.lag(0.21)*10), // slow cF modulation
 		rq: amp.lag(0.1));
 	sig = Pan2.ar(sig, pos:pan);
+	Out.ar(~bus1, sig);
 };
 
 // pm 25
@@ -69,6 +65,7 @@ x.pm25synth = play{|freq=261,minScale=261,maxScale=523,relSmoothing=0.01,pan=0.9
 		rq: amp.lag(0.1));
 	sig = tanh(sig);
 	sig = Pan2.ar(sig, pos:pan);
+	Out.ar(~bus2, sig);
 };
 
 // pm 10 -- Warnings
@@ -91,7 +88,8 @@ SynthDef(\warning_pm10, {
 
 // pm 25 -- Warnings
 b.wv_noise = Buffer.alloc(s, 512, 1, { |buf| var a = Array.fill(10, {625.rand}); buf.sine2Msg(a,[1,0,1,0,1,1])}); // noisy wavetable
-b.wv_clean = Buffer.alloc(s, 512, 1, { |buf| var a = [1,0,0.25,1]; buf.sine1Msg(a)}); // clean wavetable
+b.wv_clean = Buffer.alloc(s, 512, 1, { |buf| var a = (1..30); buf.sine2Msg(a,a)}); // clean wavetable
+
 SynthDef(\warning_pm25, {
     | freq = 440, amp = 0.5, mix = 0.3, room = 100, detuneMin = 1.00, detuneMax = 1.00, pm25_downwards, pm25_upwards, pan, rel |
     var sig, env, out, sum, sig1, sig2;
@@ -107,6 +105,37 @@ SynthDef(\warning_pm25, {
 	//out = FreeVerb2.ar(out, out, mix, room);
     Out.ar(0, out * env); 
 }).add;
+
+// noise levels 
+SynthDef(\perc, {
+	| freq = 444, amp = 0.5, modf = 4, atk = 0.01, dec = 0.4, sus = 0.8, rel = 4, room = 100, revtime = 3, damping = 0.1, earlyreflevel = 1.2, spread = 100, gate, depth = 0.8, depth2 = 0.8 |
+	var sig, env, out;
+	sig = SinOsc.ar( // freq modulation
+		freq:
+		freq * SinOsc.ar( 
+			freq: freq,// FM mod freq
+			phase: Pulse.ar(freq/1.7619)) * Pulse.ar(modf).range(depth,depth2.neg)); // RM | PWM
+	sig = GVerb.ar( // reverberation
+		in: sig,
+		roomsize: room,
+		revtime: revtime,
+		damping: damping,
+		spread:spread,
+		earlyreflevel:earlyreflevel) * 0.1;
+	env = EnvGen.kr( // envelope
+		Env.adsr( // adsr
+			atk,
+			dec,
+			sus,
+			rel), gate, doneAction:2);
+	out = sig * env * amp; 
+	Out.ar(0, out);
+}).add;
+
+
+
+// play last -- it is the bus
+Synth(\busOut, addAction:\addToTail);
 
 /*
 for the noise
@@ -143,23 +172,9 @@ Pbind(
     \amp, Pwhite(0.5, 0.888, inf)* 0.2,
     \tempo, 100/60,
 ).play
-//:
 
-SynthDef("perc_con", {
-	| freq = 444, amp = 0.5, modf = 4, atk = 2, dec = 0.4, sus = 0.8, rel = 4, gate |
-	var sig, env, out;
-	sig = SinOsc.ar(
-		freq * SinOsc.ar(
-			freq, Pulse.ar(freq/1.7619)) * Pulse.ar(modf));
-	sig = GVerb.ar(sig, 100, 1, 0.1, spread:100, earlyreflevel:1.2) * 0.1;
-	env = EnvGen.kr(Env.adsr(atk, dec, sus, rel), gate, doneAction:2);
-	out = sig * env * amp;
-	Out.ar(0, out);
-}).add;
-x = Synth("perc_con", [\gate, 1, \modf, 4, \freq, 444]);
-	//x.set(\gate, 0)
 */
-
+/*
 //:
 
 SynthDef("perc", {
@@ -195,3 +210,4 @@ x.set(\modf,0)
 x.set(\depth,1)
 x.set(\depth2,0.0)
 x.set(\freq,188)
+*/
