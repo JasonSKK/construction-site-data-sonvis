@@ -13,7 +13,7 @@ import sys  # stop evaluation: killall function
 import threading  # stop iteration cycle when kill button pressed
 #from pythonosc import udp_client
 
-exec(open("particlesDataProcessing.py").read()) # load functional script
+exec(open("particlesDataProcessing.py").read()) # load functional script PM
 
 # Python osc
 #getip() # run getip function

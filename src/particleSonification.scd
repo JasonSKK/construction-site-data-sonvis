@@ -35,7 +35,8 @@ p.prevFreq=0; // prev freq val played
 	temperatureMin, temperatureMax,
 	humidityMin, humidityMax, 
 	pm_10min, pm_10max,
-	pm_25min, pm_25max;
+	pm_25min, pm_25max,
+	dbmin, dbmax;
 	
 	fork{ // run script get output write min max to variables
 		rawList_minmax = [
@@ -55,7 +56,11 @@ p.prevFreq=0; // prev freq val played
 				~minmax.value("df_out/particles_processed.csv",
 					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
 					"pm_10")
-			];
+			],
+			[\db,
+				~minmax.value("df_out/particles_processed.csv",
+					//"sommargagata_dev_11_temp_pm_30s.csv"
+					"db")];
 		];
 		1.wait;
 		temperatureMin = rawList_minmax[0][1][0]; // temp min 
@@ -65,7 +70,9 @@ p.prevFreq=0; // prev freq val played
 		pm_10min = rawList_minmax[3][1][0]; // pm_10 min
 		pm_10max = rawList_minmax[3][1][1]; // pm_10 max
 		pm_25min = rawList_minmax[2][1][0]; // pm_25 min
-		pm_25max = rawList_minmax[2][1][1]; // pm_10 max
+		pm_25max = rawList_minmax[2][1][1]; // pm_25 max
+		dbmin = rawList_minmax[4][1][0]; // db min
+		dbmax = rawList_minmax[4][1][1]; // db max
 
 		// post individually for identification purposes
 		// temperatureMin.postln;
@@ -90,6 +97,8 @@ p.prevFreq=0; // prev freq val played
 		d.pm_10max=pm_10max;
 		d.pm_25min=pm_25min;
 		d.pm_25max=pm_25max;
+		d.dbmin=dbmin;
+		d.dbmax=dbmax;
 	};
 };
 
@@ -105,22 +114,25 @@ OSCdef(\incoming,
 		pm_10Map01, pm_25Map01, // linear mapping product: 0 to 1
 		pm_10MapFreq, pm_25MapFreq, // freq mapping
 		pm_10MapAmp, pm_25MapAmp, // amp mapping
-		minScaleLow, maxScaleLow, minScaleHi, maxScaleHi; // scale mapping min max playing octave for synths
+		minScaleLow, maxScaleLow, minScaleHi, maxScaleHi, // scale mapping min max playing octave for synths
+		db, dbMap01, dbRound, dbRoundMap; // db unmapped and mapped 0-1
 		
 		// post 
-		//msg.postln;
+		// msg.postln;
 		
 		// write incoming values to variables
 		temperature = msg[2];
 		humidity = msg[3];
 		pm_25 = msg[4];
 		pm_10 = msg[5];
+		db = msg[6];
 		
 		// --- START --- linear mapping
 		temperatureMap = temperature.linlin(d.temperatureMin,d.temperatureMax,0.0,1.0);
 		humidityMap = humidity.linlin(d.humidityMin,d.humidityMax,0.0,1.0);
 		pm_10Map01 = pm_10.linlin(d.pm_10min,d.pm_10max,0.0,1.0); // big particles
 		pm_25Map01 = pm_25.linlin(d.pm_25min,d.pm_25max,0.0,1.0); // small particles
+		dbMap01 = db.linlin(d.dbmin,d.dbmax,0.0,1.0);
 		// ---- END ---- linear mapping 
 
 		// --- START --- map to lydian scale
@@ -158,8 +170,8 @@ OSCdef(\incoming,
 		
 		// detuning  -- fix it
 		if((pm_10-8).isPositive == true,{ pm_10MapFreq = pm_10MapFreq+[
-			pm_10.linlin(d.pm_10min,d.pm_10max,10, 20),
-			pm_10.linlin(d.pm_10min,d.pm_10max,10, 20)].choose});
+			pm_10.linlin(d.pm_10min,d.pm_10max,5, 10),
+			pm_10.linlin(d.pm_10min,d.pm_10max,5, 10)].choose});
 
 		// pm10 to gendy -- panned left 
 		x.pm10synth.set(
@@ -219,11 +231,31 @@ OSCdef(\incoming,
 			]);
 			pm_25.postln; // post exceeding value
 		};
+
+		// --- Noise Levels --- db
+
+		// smooth below 68 and drilling above
+		//dbRound = db.round(68); // 68 is the acceptable city noise
+		//case{ db > 68} {
+		//dbRoundMap = (dbRound - db).abs;
+		//dbRoundMap = dbRoundMap.linlin(0.0,d.dbmax-68,10.0,20)}
+		//{ db < 68 } { dbRoundMap = 0}; // add to 68 to reach new val
+		//[db,dbRoundMap].postln;
+
+		x.noiseSynthDB.set(\modf,20*dbMap01);//,dbRoundMap);
+		x.noiseSynthDB.set(\depth,0.0);
+		x.noiseSynthDB.set(\depth2,1.0);
+		x.noiseSynthDB.set(\amp,dbMap01.linlin(0.0,1.0,0.05,0.3));
+		x.noiseSynthDB.set(\lpfCutoff,dbMap01.linlin(0.0,1.0,3000,18000));
+		//x.noiseSynthDB.set(\depth,0.5+dbMap01*2);
+		//x.noiseSynthDB.set(\depth2,0.0+dbMap01); // depth2 = depth.neg
+		x.noiseSynthDB.set(\freq,120+((500)*dbMap01));
+
 					
 	}, '/pysc' // osc address 
 );
 
-(~path++"/gendy_simple_ex.scd").standardizePath.load;
+(~path++"/synthDefs.scd").standardizePath.load;
 //:
 //s.meter
 //:

@@ -113,6 +113,12 @@ replaceOutliers_Median('pm_10',min_thresh_pm_10,65)#max_thresh_pm_10)
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)
 
+# adds db column
+exec(open("soundDataProcessing.py").read()) # load functional script SOUND
+replaceOutliers_Median('db',20,100) # exclude the min value which is 5.444976
+df = df.apply( # replace NaN values from random samples same column
+    lambda x: np.where(x.isnull(), x.dropna().sample(len(x), replace=True), x))
+
 # write new df to file -- replaced outliers
 df.to_csv('./df_out/particles_processed.csv', index = False)
 
