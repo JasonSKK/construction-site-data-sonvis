@@ -1,4 +1,4 @@
-# Svoronos Kanavas Iason -- Particle HTML interface patch
+# Svoronos Kanavas Iason -- interface patch & loader
 # LiU Apr. 2022 -- construction site sonification
 
 from __future__ import print_function
@@ -56,10 +56,32 @@ date_range_slider = FormatDateRangeSlider(
 
 
 # create start button
-start_button = pn.widgets.Button(name='Start', button_type='primary',width=200)
+start_button = pn.widgets.Button(
+    name='Start',
+    button_type='primary',
+    width=200,
+    disabled=True)
 text = pn.widgets.TextInput(value='00:00:00-00:02:00',width=200)
-kill_button = pn.widgets.Button(name='killall', button_type='primary',width=200)
-
+kill_button = pn.widgets.Button(
+    name='killall',
+    button_type='primary',
+    width=200,
+    disabled=True)
+pm_10_button = pn.widgets.Button(
+    name='PM10',
+    button_type='primary',
+    width=200,
+    disabled=True)
+pm_25_button = pn.widgets.Button(
+    name='PM25',
+    button_type='primary',
+    width=200,
+    disabled=True)
+temp_button = pn.widgets.Button(
+    name='TEMP',
+    button_type='primary',
+    width=200,
+    disabled=True)
 
 # on start button event
 def do(event):
@@ -106,28 +128,49 @@ def killall(event): # killall button fuction
     break_cycle = True # Change break_cicle to False
     print ("Stopped")
 
+def pm_10_synth(event): # pm 10 synth
+    client.send_message("/synths", 'pm10_synth') # send to SC
+    print ("PM 10 synth")
+
+def pm_25_synth(event): # pm 25 synth
+    client.send_message("/synths", 'pm25_synth') # send to SC
+    print ("PM 25 synth")
+
+def temp_synth(event): # temp synth
+    client.send_message("/synths", 'temp_synth') # send to SC
+    print ("temp synth")
+
 
 start_button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
+pm_10_button.on_click(pm_10_synth)
+pm_25_button.on_click(pm_25_synth)
+temp_button.on_click(temp_synth)
 
 # run sonification patch
-#sclang = subprocess.Popen(
-#    'sclang particleSonification.scd', shell=True,
-#    stdout=subprocess.PIPE,
-#    stderr=subprocess.STDOUT)
+sclang = subprocess.Popen(
+    'sclang particleSonification.scd', shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT)
 
+# --outdated version--
 # run > python slider.py
 #pn.serve(pn.Row(button, text, date_range_slider)) # render everything
+# --------------------
 
 # create grid
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
 
-gspec[0:3, 2] = pn.Column(
+gspec[0:3, 2] = pn.Column(  # render column
     start_button,
     kill_button,
     text,
     date_range_slider,
+    pn.Row(pm_10_button,  # insert Row with synth items
+    pm_25_button,
+    temp_button)
 )
 
-pn.serve(gspec)  # render created grid
-#pn.serve()) # render everything
+exec(open("oscServerPython.py").read())
+pn.serve(gspec)  #  render created grid
+#pn.serve() # render everything | outdated old version

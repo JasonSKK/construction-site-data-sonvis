@@ -1,6 +1,8 @@
 // Svoronos Kanavas Iason -- Particle Sonification patch
 // LiU Apr. 2022 -- construction site sonification
 
+s.waitForBoot{ // run as routine otherwise the patch is not loaded by multithreading 
+
 // load lydian scale functions and configuration
 ("/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath).load;
 
@@ -10,12 +12,18 @@ p=(); // synth parameters
 // initialise synth parameters
 p.relTime=0.1; // synth env release
 p.prevFreq=0; // prev freq val played
+p.gatePM10=1; // gate for pm10 synth
+p.gatePM25=1; // gate for pm25 synth
+p.gateTemp=1; // gate for temp synth
 
 // configure network address for visualisation
 // ~n = NetAddr("10.253.228.207", 57120);
 
 // configure current path
 ~path = thisProcess.nowExecutingPath.dirname;
+
+(~path++"/synthDefs.scd").standardizePath.load; // load synths 
+(~path++"/parameterReceiver.scd").standardizePath.load; // load OSC paramter receiver
 
 // min max values function for columns in file | utilising minmax.py script
 ~minmax = { // 1st arg: filename | 2nd arg: column name as string
@@ -242,68 +250,27 @@ OSCdef(\incoming,
 		//{ db < 68 } { dbRoundMap = 0}; // add to 68 to reach new val
 		//[db,dbRoundMap].postln;
 
-		x.noiseSynthDB.set(\modf,20*dbMap01);//,dbRoundMap);
-		x.noiseSynthDB.set(\depth,0.0);
-		x.noiseSynthDB.set(\depth2,1.0);
-		x.noiseSynthDB.set(\amp,dbMap01.linlin(0.0,1.0,0.05,0.3));
-		x.noiseSynthDB.set(\lpfCutoff,dbMap01.linlin(0.0,1.0,3000,18000));
-		//x.noiseSynthDB.set(\depth,0.5+dbMap01*2);
-		//x.noiseSynthDB.set(\depth2,0.0+dbMap01); // depth2 = depth.neg
-		x.noiseSynthDB.set(\freq,120+((500)*dbMap01));
-
+		if (db>0){ // if not nil
+			x.noiseSynthDB.set(\modf,20*dbMap01);//,dbRoundMap);
+			x.noiseSynthDB.set(\depth,0.0);
+			x.noiseSynthDB.set(\depth2,linexp(dbMap01,0.0,1.0,1,10)); // depth2 = harshness
+			x.noiseSynthDB.set(\amp, 0.05);
+			//x.noiseSynthDB.set(\amp,dbMap01.linlin(0.0,1.0,0.05,0.1)); // too extreme
+			x.noiseSynthDB.set(\lpfCutoff,dbMap01.linexp(0.0,1.0,3000,18000));
+			//x.noiseSynthDB.set(\depth,0.5+dbMap01*2);
+			//x.noiseSynthDB.set(\depth2,0.0+dbMap01); // depth2 = depth.neg
+			x.noiseSynthDB.set(\freq,120+((500)*dbMap01));
+		};
+		
 					
 	}, '/pysc' // osc address 
 );
 
-(~path++"/synthDefs.scd").standardizePath.load;
-//:
-//s.meter
-//:
-x=play{|freq, detU=0.0|Mix.fill(10, {SinOsc.ar(Rand(0.999,1.001+LFNoise1.kr(3).range(0.0,9.0+detU))*freq.lag(0.2))}!10)!2*0.01};
-x.set(\freq,422,\detU,0.0)
+s.sync; // sync it before sending osc to python
+~ip = ("ipconfig getifaddr en0").unixCmdGetStdOutLines[0]; // get ip
+n = NetAddr(~ip, 1234); // set netaddress
+n.sendMsg('/startup/',1); // send to python that everything is loaded to enable buttons
 
+"All SC patches loaded".postln;
 
-// NOISE LEVELS
-play{Mix.fill(10,{SinOsc.ar(60,phase:LFNoise1.ar(MouseX.kr(1.0,10000).lag(0.1).poll).range(0.0,pi))!10})!2*0.01};
-//
-
-
-//x=play{|freq=200|BPF.ar(LFNoise0.ar(500)*Env.adsr().kr(gate:1,doneAction:2),freq)!2};
-//Synth("test",[\freq,0.linlin(0.0,60.0,1.0,5.0)*500]);
-/*SynthDef(\test, {
-	| freq = 500 |
-	var sig, env;
-	env = Env.perc(0.001,1.5).kr(doneAction:2);//gate:Impulse.kr(freq));
-	sig = Gendy2.ar(minfreq:freq, maxfreq:freq);
-	sig = sig + OscN.ar(sig);
-	sig = BPF.ar(sig,freq,freq.linlin(500,1800,0.001,1.0));
-	sig = sig* env;
-
-	Out.ar(0, sig*0.04!2)
-}).play;
-*/
-/*
-OSCdef(\start_end_receiver,{
-	| msg |
-	var id;
-	msg[1].postln;
-	id = msg[1].asInteger;
-	switch (id,
-		0, { 
-			x.set(\gate, 0);
-		},
-		1, {
-			x.set(\gate, 1);
-		};
-	);
-},'/startEnd');
-
-fork{
-	2.wait;
-x = play{|freq=500,gate|
-	SinOscFB.ar(
-		freq*SinOscFB.ar((freq/2)+(freq/freq).log10, freq*0.001),freq*0.001
-	)*0.1*EnvGen.kr(Env.adsr(0.0,0.3,1.0),gate:gate)!2
 };
-}
-*/
