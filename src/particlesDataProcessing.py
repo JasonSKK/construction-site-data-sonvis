@@ -14,6 +14,7 @@ import subprocess
 
 break_cycle = False  # break cycle on kill button
 
+
 # get IP address
 def getip():
     global ip
@@ -37,6 +38,7 @@ exec(open("outliers_exp.py").read()) # load functional script
 #filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 # Load the .csv file
 #df = pd.read_csv(filename)
+
 
 # func to print matrix with date data
 def print_Matrix(matx):
@@ -76,7 +78,6 @@ def t_period(start_date,end_date):
 
 
 def run(start_date=None,end_date=None,period=None):
-    global currentDT
     if (start_date is None) and (end_date is None) and (period is None):
         print("ERROR: run() missing 3 required positional arguments: 'start_date', 'end_date', 'period' DT in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
     else:
@@ -86,8 +87,10 @@ def run(start_date=None,end_date=None,period=None):
                 break;
             else:
                 client.send_message("/pysc", datetime_selection.iloc[i])
-                dt_selection_pos = datetime_selection.iloc[i]
+                dt_selection_pos = datetime_selection.iloc[i]  # get current date-time
+                #  split current date time to time and date
                 currentDT = dt_selection_pos[0].split(" ")[1]+"   "+dt_selection_pos[0].split(" ")[0]  # display current time and date
+                #  update text input widget to current date time
                 text.value = currentDT
                 print(datetime_selection.iloc[i])
             # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
@@ -95,8 +98,10 @@ def run(start_date=None,end_date=None,period=None):
             # row = datetime_selection.iloc[i]
             # print(row)
             time.sleep(period)
-        temp_start_time = start_date.split(" ")[1]
-        temp_end_time = end_date.split(" ")[1]
+        #  when iteration ends set => text input the initially inputted value
+        temp_start_time = start_date.split(" ")[1]  # get start time
+        temp_end_time = end_date.split(" ")[1]  # get end time
+        #  set to text input widget
         text.value = temp_start_time+"-"+temp_end_time
 
 # e.g.
