@@ -4,6 +4,12 @@
 from __future__ import print_function
 from datetime import timedelta
 from bokeh.models import CustomJS, DateRangeSlider
+
+from bokeh.models import CustomJS
+from bokeh.layouts import row, column
+from bokeh.models.widgets import Div, Button
+from bokeh.events import ButtonClick
+
 from ipywidgets.embed import embed_minimal_html
 import datetime as dt
 import panel as pn
@@ -54,34 +60,40 @@ date_range_slider = FormatDateRangeSlider(
 # dataset starts: 2021-08-01
 # dataset ends: 2021-08-31 23:59:30
 
-
 # create start button
 start_button = pn.widgets.Button(
     name='Start',
-    button_type='primary',
+    button_type='warning',
     width=200,
     disabled=True)
+    #callback=CustomJS(args={'o1':display_text},code=ChangeTextScript))
 text = pn.widgets.TextInput(value='00:00:00-00:02:00',width=200)
 kill_button = pn.widgets.Button(
-    name='killall',
-    button_type='primary',
+    name='KillAll',
+    button_type='danger',
     width=200,
     disabled=True)
 pm_10_button = pn.widgets.Button(
     name='PM10',
     button_type='primary',
-    width=200,
+    width=150,
     disabled=True)
 pm_25_button = pn.widgets.Button(
     name='PM25',
     button_type='primary',
-    width=200,
+    width=150,
     disabled=True)
 temp_button = pn.widgets.Button(
-    name='TEMP',
+    name='Temperature',
     button_type='primary',
-    width=200,
+    width=150,
     disabled=True)
+humid_button = pn.widgets.Button(
+    name='Humidity',
+    button_type='primary',
+    width=150,
+    disabled=True,
+)
 
 # on start button event
 def do(event):
@@ -104,6 +116,7 @@ def do(event):
         str(startdt)+' '+str(sttime),
         str(enddt)+' '+str(endtime),
     ]
+    #changeText(timedate_formating)
     print(timedate_formating) # print everything as datetime formating
     # format: run(
         #'2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 ) # original command syntax
@@ -119,6 +132,7 @@ def do(event):
         timedate_formating[1], # end datetime
         0.07 # iteration frequency
     )).start()
+    #threading.Thread(target=update, args=(currentDT[0])).start()
 
 
 def killall(event): # killall button fuction
@@ -128,13 +142,16 @@ def killall(event): # killall button fuction
     break_cycle = True # Change break_cicle to False
     print ("Stopped")
 
+
 def pm_10_synth(event): # pm 10 synth
     client.send_message("/synths", 'pm10_synth') # send to SC
     print ("PM 10 synth")
 
+
 def pm_25_synth(event): # pm 25 synth
     client.send_message("/synths", 'pm25_synth') # send to SC
     print ("PM 25 synth")
+
 
 def temp_synth(event): # temp synth
     client.send_message("/synths", 'temp_synth') # send to SC
@@ -146,6 +163,8 @@ kill_button.on_click(killall)
 pm_10_button.on_click(pm_10_synth)
 pm_25_button.on_click(pm_25_synth)
 temp_button.on_click(temp_synth)
+#humid_button.on_click(update("adsfdgf"))
+#humid_button.on_click()
 
 # run sonification patch
 sclang = subprocess.Popen(
@@ -164,13 +183,14 @@ gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
 gspec[0:3, 2] = pn.Column(  # render column
     start_button,
     kill_button,
-    text,
+    pn.Row(text),
     date_range_slider,
     pn.Row(pm_10_button,  # insert Row with synth items
-    pm_25_button,
-    temp_button)
+           pm_25_button,
+           temp_button,
+           humid_button)
 )
 
-exec(open("oscServerPython.py").read())
+exec(open("oscServerPython.py").read())  # OSC server setup
 pn.serve(gspec)  #  render created grid
 #pn.serve() # render everything | outdated old version

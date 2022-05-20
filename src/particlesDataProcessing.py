@@ -76,22 +76,29 @@ def t_period(start_date,end_date):
 
 
 def run(start_date=None,end_date=None,period=None):
+    global currentDT
     if (start_date is None) and (end_date is None) and (period is None):
-        print("ERROR: run() missing 2 required positional arguments: 'start_date' and 'end_date' in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
+        print("ERROR: run() missing 3 required positional arguments: 'start_date', 'end_date', 'period' DT in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
     else:
         t_period(start_date,end_date)
-
         for i in range(len(datetime_selection)): # iteration loop
             if break_cycle is True:
                 break;
             else:
                 client.send_message("/pysc", datetime_selection.iloc[i])
+                dt_selection_pos = datetime_selection.iloc[i]
+                currentDT = dt_selection_pos[0].split(" ")[1]+"   "+dt_selection_pos[0].split(" ")[0]  # display current time and date
+                text.value = currentDT
                 print(datetime_selection.iloc[i])
             # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
             # t_period(d_start,d_end,i)
             # row = datetime_selection.iloc[i]
             # print(row)
             time.sleep(period)
+        temp_start_time = start_date.split(" ")[1]
+        temp_end_time = end_date.split(" ")[1]
+        text.value = temp_start_time+"-"+temp_end_time
+
 # e.g.
 # run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
 
