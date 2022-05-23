@@ -19,6 +19,10 @@ OSCdef(\parameterReceiver,{
 			if(p.gateNoise == 1, {p.gateNoise = 0},{p.gateNoise = 1});
 			x.busOut.set(\gateNoise, p.gateNoise);
 		},
+		\humid_synth, { 
+			if(p.revGate == 1, {p.revGate = 0},{p.revGate = 1});
+			x.busOut.set(\revGate, p.revGate);
+		},
 	);
 },'/synths');
 

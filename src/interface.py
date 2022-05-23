@@ -53,7 +53,7 @@ date_range_slider = FormatDateRangeSlider(
 period_slider = Slider(
     start=1,
     end=2000,
-    value=10,
+    value=1000,
     step=1,
     width=666,
     title="Values/sec"
@@ -96,6 +96,7 @@ humid_button = pn.widgets.Button(
     width=150,
     disabled=True,
 )
+
 
 # on start button event
 def do(event):
@@ -158,6 +159,7 @@ def pm_25_synth(event): # pm 25 synth
 def noise_synth(event): # noise synth
     client.send_message("/synths", 'noise_synth')  # send to SC
     print("noise synth")
+
 
 def humid_synth(event): # humid synth
     client.send_message("/synths", 'humid_synth')  # send to SC

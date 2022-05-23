@@ -15,6 +15,8 @@ p.prevFreq=0; // prev freq val played
 p.gatePM10=1; // gate for pm10 synth
 p.gatePM25=1; // gate for pm25 synth
 p.gateNoise=1; // gate for noise synth
+p.revGate=1; // reverb on.off (for interface button)
+p.t60=1; // humidity controls this reverb parameter
 
 // configure network address for visualisation
 // ~n = NetAddr("10.253.228.207", 57120);
@@ -123,7 +125,8 @@ OSCdef(\incoming,
 		pm_10MapFreq, pm_25MapFreq, // freq mapping
 		pm_10MapAmp, pm_25MapAmp, // amp mapping
 		minScaleLow, maxScaleLow, minScaleHi, maxScaleHi, // scale mapping min max playing octave for synths
-		db, dbMap01, dbRound, dbRoundMap; // db unmapped and mapped 0-1
+		db, dbMap01, dbRound, dbRoundMap, // db unmapped and mapped 0-1
+		t60, wet; // reverb humidity variables
 		
 		// post 
 		// msg.postln;
@@ -143,6 +146,7 @@ OSCdef(\incoming,
 		dbMap01 = db.linlin(d.dbmin,d.dbmax,0.0,1.0);
 		// ---- END ---- linear mapping 
 
+		// --------------------------------- Particles ---------------------------------
 		// --- START --- map to lydian scale
 		minScaleLow = 130.8127826503; // low synth panned left
 		maxScaleLow = 261.6255653006; 
@@ -199,7 +203,7 @@ OSCdef(\incoming,
 		);
 
 
-		// --- WARNINGS ---
+		// --------------------------------- WARNINGS ---------------------------------
 		if(pm_10 > 40){ // if exceeds a level pm10 big particles
 			var warning_values10_freq, amp_wv10, rel_wv10, pan_wv10,
 			mixingValue, mixingValueOposite; // factor for mixing gendys 
@@ -240,8 +244,7 @@ OSCdef(\incoming,
 			pm_25.postln; // post exceeding value
 		};
 
-		// --- Noise Levels --- db
-
+		// --------------------------------- Noise Levels --------------------------------- 
 		// smooth below 68 and drilling above
 		//dbRound = db.round(68); // 68 is the acceptable city noise
 		//case{ db > 68} {
@@ -261,7 +264,11 @@ OSCdef(\incoming,
 			//x.noiseSynthDB.set(\depth2,0.0+dbMap01); // depth2 = depth.neg
 			x.noiseSynthDB.set(\freq,120+((500)*dbMap01));
 		};
-		
+
+		// --------------------------------- Humidity ---------------------------------
+		t60 = humidityMap.linlin(0.0,1.0,0.3,5); // map to t60 values
+		wet = humidityMap.linlin(0.0,1.0,0.1,2.0); // map to wet amount values, multiplier
+		x.busOut.set(\t60,t60,\wet,wet); // set parameters to synth
 					
 	}, '/pysc' // osc address 
 );
