@@ -85,7 +85,7 @@ pm_25_button = pn.widgets.Button(
     button_type='primary',
     width=150,
     disabled=True)
-temp_button = pn.widgets.Button(
+noise_button = pn.widgets.Button(
     name='Noise Levels',
     button_type='primary',
     width=150,
@@ -155,9 +155,9 @@ def pm_25_synth(event): # pm 25 synth
     print("PM 25 synth")
 
 
-def temp_synth(event): # temp synth
-    client.send_message("/synths", 'temp_synth')  # send to SC
-    print("temp synth")
+def noise_synth(event): # noise synth
+    client.send_message("/synths", 'noise_synth')  # send to SC
+    print("noise synth")
 
 def humid_synth(event): # humid synth
     client.send_message("/synths", 'humid_synth')  # send to SC
@@ -168,7 +168,7 @@ start_button.on_click(do) # on click post selected data & evaluate rxun function
 kill_button.on_click(killall)
 pm_10_button.on_click(pm_10_synth)
 pm_25_button.on_click(pm_25_synth)
-temp_button.on_click(temp_synth)
+noise_button.on_click(noise_synth)
 humid_button.on_click(humid_synth)
 
 # run sonification patch
@@ -193,7 +193,7 @@ gspec[0:3, 2] = pn.Column(  # render column
     period_slider,
     pn.Row(pm_10_button,  # insert Row with synth items
            pm_25_button,
-           temp_button,
+           noise_button,
            humid_button)
 )
 

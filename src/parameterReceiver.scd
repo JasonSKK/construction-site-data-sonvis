@@ -15,9 +15,9 @@ OSCdef(\parameterReceiver,{
 			if(p.gatePM25 == 1, {p.gatePM25 = 0},{p.gatePM25 = 1});
 			x.busOut.set(\gatePM25, p.gatePM25);
 		},
-		\temp_synth, { 
-			if(p.gateTemp == 1, {p.gateTemp = 0},{p.gateTemp = 1});
-			x.busOut.set(\gateTemp, p.gateTemp);
+		\noise_synth, { 
+			if(p.gateNoise == 1, {p.gateNoise = 0},{p.gateNoise = 1});
+			x.busOut.set(\gateNoise, p.gateNoise);
 		},
 	);
 },'/synths');

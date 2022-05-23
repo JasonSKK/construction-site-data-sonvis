@@ -14,7 +14,7 @@ p.relTime=0.1; // synth env release
 p.prevFreq=0; // prev freq val played
 p.gatePM10=1; // gate for pm10 synth
 p.gatePM25=1; // gate for pm25 synth
-p.gateTemp=1; // gate for temp synth
+p.gateNoise=1; // gate for noise synth
 
 // configure network address for visualisation
 // ~n = NetAddr("10.253.228.207", 57120);

@@ -17,18 +17,18 @@ x.busOut;
 ~busPM10Warnings=Bus.audio(s,2); // warning synths
 ~busPM25=Bus.audio(s,2); // particle 25 synth
 ~busPM25Warnings=Bus.audio(s,2); // warning synths
-~busTemp=Bus.audio(s,2); // bus for temperature
+~busNoise=Bus.audio(s,2); // bus for Noise
 ~busHumid=Bus.audio(s,2); // bus for humidity
 
-SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateTemp=1,gateHumid=1,masterGate=0|
+SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0|
 	var sigPM10 = In.ar(~busPM10,2) * gatePM10;
 	var sigPM10Warnings = In.ar(~busPM10Warnings,2);
 	var sigPM25 = In.ar(~busPM25,2) * gatePM25;
 	var sigPM25Warnings = In.ar(~busPM25Warnings,2);
-	var sigTemp = In.ar(~busTemp,2) * gateTemp;
+	var sigNoise = In.ar(~busNoise,2) * gateNoise;
 	var sigHumid = In.ar(~busHumid,2) * gateHumid;
 	var particlesSum = Balance2.ar(sigPM10,sigPM25,0.0) + sigPM10Warnings + sigPM25Warnings;
-	var mix = (particlesSum+sigTemp)  * masterGate;
+	var mix = (particlesSum+sigNoise)  * masterGate;
 	var out = Out.ar(0,mix);	
 }).add;
 
@@ -123,7 +123,7 @@ SynthDef(\warning_pm25, {
 
 fork{ // needs some time to load synth before playing, otherwise it is not audiable
 	// noise levels 
-	SynthDef(\tempSynth, {
+	SynthDef(\noiseSynth, {
 		| freq = 444, amp = 0.5, modf = 4, atk = 0.02, dec = 0.1, sus = 0.8, rel = 4, room = 100, revtime = 3, damping = 0.1, earlyreflevel = 1.2, spread = 100, gate, depth = 0.8, depth2 = 0.8, lpfCutoff = 6000, pwmWidth = 0.5 |
 		var sig, env, out;
 		sig = SinOsc.ar( // freq modulation
@@ -146,13 +146,13 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 				rel), gate, doneAction:2);
 		out = sig * env * amp.lag(0.1) * 1.25;
 		out = LPF.ar(out,lpfCutoff.lag(0.1));
-		Out.ar(~busTemp, out);
+		Out.ar(~busNoise, out);
 	}).add;
 	
 	s.sync; // sync it so that server manages to load the synthdef before playing it
 
-	// play temp synth -- noise levels db
-	x.noiseSynthDB = Synth(\tempSynth, [\amp, 0.02, \depth, 2.5, \depth2, 1, \modf, 0.01, \lpfCutoff, 6000, \gate, 1]); // 60 Hz LPF so that it is not audiable in the begining
+	// play noise synth -- noise levels db
+	x.noiseSynthDB = Synth(\noiseSynth, [\amp, 0.02, \depth, 2.5, \depth2, 1, \modf, 0.01, \lpfCutoff, 6000, \gate, 1]); // 60 Hz LPF so that it is not audiable in the begining
 
 	s.sync; // sync so that server manages to play the synth before opening its output bus
 	// play last -- it is the bus

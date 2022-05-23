@@ -11,7 +11,7 @@ def filter_handler(address, *args):  # enables buttons on the interface
     date_range_slider.disabled = False
     pm_10_button.disabled = False
     pm_25_button.disabled = False
-    temp_button.disabled = False
+    noise_button.disabled = False
     humid_button.disabled = False
     print(f"{address}:"+" sclang responded, interface enabled")
 
@@ -39,7 +39,7 @@ server.serve()
 #     date_range_slider.disabled = True
 #     pm_10_button.disabled = True
 #     pm_25_button.disabled = True
-#     temp_button.disabled = True
+#     noise_button.disabled = True
 #     print(f"{address}: {args}")
 #
 #
@@ -49,7 +49,7 @@ server.serve()
 #     date_range_slider.disabled = True
 #     pm_10_button.disabled = True
 #     pm_25_button.disabled = True
-#     temp_button.disabled = True
+#     noise_button.disabled = True
 #     print(f"DEFAULT {address}: {args}")
 #
 #
