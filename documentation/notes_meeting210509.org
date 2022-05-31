@@ -1,0 +1,52 @@
+* Presentation text
+
+-----------------------------------------------------------
+1.
+the work is exploratoty in many ways, in design tools -appraches .. smth like that
+maybe this could fit in the first paragraph that needs change.
+-----------------------------------------------------------
+2. advantagous => change to smth "opened up a palletted of options" or smth not that pompous
+as well as for crucial * instead of crucial -- "woah think about this"
+-----------------------------------------------------------
+
+
+15m presentation
+1 min per slide / so 15 slides
+
++no toc+
+
++maybe spend some time more on the aims+
+
++The reason i did this --- aims+
+
++oceanographic data dificult to understand+
+
++vis usual+
++I used sonification+
+
++30 sec demo+
+
++remove MEthods & tools+
++remove implementation+
+
++sonification+
++visualisation+
+
++Audio vis display is the most important thing for the WAVA+
+
++What did we learn+
++(i did not do an evaluation)+
+
++last slide+
++no thanks for ur attention+
+
++highlighted+
+
+
+* COMMENT Wolf-gang
+
+Thur. MIT Seminar speak to Elias | beer with wolfgang
+
+Friday evening: Dinner with Wolfgang
+
+Monday afternoon: Walk and beer

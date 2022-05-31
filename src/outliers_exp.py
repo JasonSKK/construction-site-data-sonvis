@@ -116,11 +116,19 @@ df.insert(0, "timestamp", timestamp, True)
 # adds db column
 exec(open("soundDataProcessing.py").read()) # load functional script SOUND
 replaceOutliers_Median('db',20,100) # exclude the min value which is 5.444976
+
+trucks_df = pd.read_csv(  # read truck data file
+    "/Users/jsk/Coding/LiU/constructionSightSonification/src/fake_passage_time.csv",
+    delimiter=';')
+# add column to main df with trucks, many are nil, will be replaced by next action
+df['count'] = trucks_df['count']
+
 df = df.apply( # replace NaN values from random samples same column
     lambda x: np.where(x.isnull(), x.dropna().sample(len(x), replace=True), x))
 
 # write new df to file -- replaced outliers
 df.to_csv('./df_out/particles_processed.csv', index = False)
+processed_df = pd.read_csv('./df_out/particles_processed.csv')
 
 # data were processed
 print('data processing done -- replaced outliers with median + random factor')

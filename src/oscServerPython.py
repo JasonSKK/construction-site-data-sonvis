@@ -13,6 +13,8 @@ def filter_handler(address, *args):  # enables buttons on the interface
     pm_25_button.disabled = False
     noise_button.disabled = False
     humid_button.disabled = False
+    temperature_button.disabled = False
+    trucks_button.disabled = False
     print(f"{address}:"+" sclang responded, interface enabled")
 
 dispatcher = Dispatcher()

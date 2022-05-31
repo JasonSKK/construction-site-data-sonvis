@@ -23,6 +23,8 @@ Post << ~lydScale; // post everything
 	// corrFreqValue.postln; // dont post it
 };
 
+("musical scale configuration loaded").postln;
+
 // test
 // smallest value // ~mapToScale.value(0.0) 
 // greater value // ~mapToScale.value(1000000000.0) 

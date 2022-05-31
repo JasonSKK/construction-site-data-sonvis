@@ -23,6 +23,14 @@ OSCdef(\parameterReceiver,{
 			if(p.revGate == 1, {p.revGate = 0},{p.revGate = 1});
 			x.busOut.set(\revGate, p.revGate);
 		},
+		\temperature_synth, { 
+			//if(p.revGate == 1, {p.revGate = 0},{p.revGate = 1});
+			//x.busOut.set(\revGate, p.revGate);
+		},
+		\truck_synth, { 
+			if(p.truckGate == 1, {p.truckGate = 0},{p.truckGate = 1});
+			x.busOut.set(\truckGate, p.truckGate);
+		},
 	);
 },'/synths');
 
@@ -33,6 +41,8 @@ OSCdef(\start_end_receiver,{
 	switch (id,
 		0, { 
 			x.busOut.set(\masterGate, 0);
+			~count=1; // initialise
+			~countTruck=2;
 			"Master gate OFF".postln;
 		},
 		1, {
@@ -41,3 +51,6 @@ OSCdef(\start_end_receiver,{
 		};
 	);
 },'/startEnd');
+
+
+("parameter receivers loaded").postln;

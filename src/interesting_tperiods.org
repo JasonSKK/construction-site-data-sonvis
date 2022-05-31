@@ -1,10 +1,56 @@
 #+TITLE: Note interesting time periods
 
+Particles-Noise most important data
+
+Particles =
+-- melody, pitch
+-- higher particle values - higher notes
+-- steady state -- discrete for above recommended levels
+
+Noise =
+Higher noise levels,
+amplitude,
+faster beat, more "aggressive" in some sense (depth mod).
+
+Trucks = mapped to pitch in another synth
+
+Humidity = controls the reverb, actually the size of the space of the soundscape
+
+
++ *steady state for both particles*
+  + 3/8/21 - 3/08/21 - 13:00:00-15:30:00
+
++ *low PM value* -- high pm2.5 value but still low - more high more noisy
+  + 00:00:00-04:02:00 | 03/08/2021
+
 + *max peak for pm_25* (small particles)
   + 02/08/2021 .. 02/08/2021 | 15:00:00-15:30:00
+
 + *max peak for pm10* (big particles)
   +
 + *max peak for sound levels db*
-  + 05:28:30-06:34:30 | 25/08/2021
+  + 05:28:30-09:34:30 | 25/08/2021
 + *morning noise*
   + 05:00:00-09:00:00 | 12/08/2021 or
++ *low temp values* -- generally low temp, with high moments
+  + 2021-08-03 05:59:30-07:59:30 => temp = 14.5
+
+
+Explain:
+PM: particles, which I guess along with noise is the most interesting parameter
++ I thought that it might be useful to map this to melody, pitch.  Since pitch is a highly recognisable, everyone can effectively detect pitch changes.  I experimented w an ancient greek musical scale.
+
++ warnings when exceed the suggested lvls  -- generally this in the data was very good an there are only 5 - 6 times exceeded
+|------------------------+-----------------------|
+| pm10: big particles    | healthy lvls: 45mg/m3 |
+|------------------------+-----------------------|
+| pm2.5: small particles | healthy lvls: 12mg/m3 |
+|------------------------+-----------------------|
+
+Noise: I thought about suggestion regarding beat.  That in a construction site we have some kind of beat.  N since noise is important parameter in the data I thought that it might be useful to map it to the beat.
+
+Thoughts:
+Sonification has temporal advantages, and that means that I can playback an extensive period of time very fast by also maintaining special characteristics or trends or patterns that can be hidden in vis.
+Right now, theoretically the algorithm can play 2000 values per second -- however this is not true because I experience CPU problems.
+
+Temp = distortion -- wanna find more effective way to do it so it is switched off right now.

@@ -19,28 +19,32 @@ x.busOut;
 ~busPM25Warnings=Bus.audio(s,2); // warning synths
 ~busNoise=Bus.audio(s,2); // bus for Noise
 ~busHumid=Bus.audio(s,2); // bus for humidity
+~busTrucks=Bus.audio(s,2); // bus for trucks
 
-SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0,wet=1.0,t60=1.0,revGate=1|
-	var sigPM10 = In.ar(~busPM10,2) * gatePM10;
+SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0,wet=1.0,t60=1.0,revGate=1,truckGate=1|
+	var sigPM10 = In.ar(~busPM10,2) * gatePM10 * 2;
 	var sigPM10Warnings = In.ar(~busPM10Warnings,2);
-	var sigPM25 = In.ar(~busPM25,2) * gatePM25;
+	var sigPM25 = In.ar(~busPM25,2) * gatePM25 * 2;
 	var sigPM25Warnings = In.ar(~busPM25Warnings,2);
 	var sigNoise = In.ar(~busNoise,2) * gateNoise;
 	var sigHumid = In.ar(~busHumid,2) * gateHumid;
-	var particlesSum = Balance2.ar(sigPM10,sigPM25,0.0) + sigPM10Warnings + sigPM25Warnings;
-	var mix = ((particlesSum*2)+sigNoise)  * masterGate;
+	var sigTrucks = In.ar(~busTrucks,2) * truckGate;
+	var particlesSum = Balance2.ar(sigPM10*1.5,sigPM25,0.0) + sigPM10Warnings + sigPM25Warnings;
+	var mix = ((particlesSum*2)+sigNoise+sigTrucks) * masterGate;
 	var rev = mix +
 	(JPverb.ar(mix,
 			t60: t60,  // should be in sec values from 0.1 to 5 (60 theoretically)
 			damp: 0.0,
-			size: 10,
+			size: 10*t60,
 			earlyDiff: 0.707,
 			modDepth: 0.1,
 			modFreq: 10,
 			low: 1.0, mid: 1.0, high: 1.0,
-		lowcut: 500.0, highcut: 1000));// * wet /*amount*/ * revGate /*binary*/);
-	//var effect= AllpassN.ar(rev,0.02,SinOsc.kr(MouseX.kr(1,),0,0.01,0.01)); //max delay of 20msec
-	var out = Out.ar(0,rev);	
+		lowcut: 500.0, highcut: 1000) * Amplitude.kr(wet,0.4,1.2) /*amount*/ * revGate /*binary*/);
+	//var effect= AllpassN.ar(rev,0.02,SinOsc.kr(MouseX.kr(1,),0,0.01,0.01)); //max delay of 20msec 
+	var out = Out.ar(0,rev
+		//(rev*2+sigNoise) + Resonator.ar(input: particlesSum+sigTrucks, freq: 400, position: 1, resolution: 24, structure: 0.5, brightness: 0.5, damping: 0.4) * 0.1	
+	);	
 }).add;
 
 // pm 10
@@ -132,6 +136,27 @@ SynthDef(\warning_pm25, {
     Out.ar(~busPM25Warnings, out * env); 
 }).add;
 
+// synth for temperature
+SynthDef(\tempSynth, {
+	|freq=12,gate=1|
+	var sig, trig;
+	sig = Resonator.ar(
+		input: LPF.ar(SinOsc.ar(freq*20),4000),
+		freq:50,
+		position: 0.001,
+		resolution: 24,
+		structure: 1.0,
+		brightness: 0.4,
+		damping:1) * EnvGen.kr(
+			Env.adsr(0.0,0.3,0.5,2),
+			gate:Line.kr(1,0,0.1),doneAction:2);
+	sig = Splay.ar(sig,1)*0.1;
+	sig = LPF.ar(sig,4000);
+	Out.ar(0,sig.clip2(0.8));
+}).add;
+
+// Synth(\tempSynth, [\freq,2]);
+
 fork{ // needs some time to load synth before playing, otherwise it is not audiable
 	// noise levels 
 	SynthDef(\noiseSynth, {
@@ -168,6 +193,7 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 		out = sig * env * amp.lag(0.1) * 1.25;
 		out = LPF.ar(out,lpfCutoff.lag(0.1));
 		out = Splay.ar(out!2);
+		out = GVerb.ar(out)*0.5;
 		Out.ar(~busNoise, out);
 	}).add;
 	
@@ -181,6 +207,12 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 	x.busOut = Synth(\busOut, addAction:\addToTail); // open master :) 
 };
 
+
 // tests
-//x.noiseSynthDB.set(\modf,1,\depth2,-2);
-//x.busOut.set(\masterGate,1,\wet,2,\t60,10)
+//
+//x.noiseSynthDB.set(\modf,2,\depth2,-5,\depth,-10);
+//x.busOut.set(\masterGate,1,\wet,0,\t60,0.0);
+//x.pm25synth.free;
+
+
+("synthdefs loaded").postln;

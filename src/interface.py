@@ -8,7 +8,7 @@ import param  # for FormatDateRangeSlider
 import subprocess  # to run SC
 import threading  # stop iteration cycle when kill button pressed
 #from pythonosc import udp_client
-from bokeh.models import Slider
+from bokeh.models import Slider, CheckboxGroup, CustomJS
 
 
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
@@ -51,6 +51,7 @@ date_range_slider = FormatDateRangeSlider(
 
 # create iteration period slider
 period_slider = Slider(
+
     start=1,
     end=2000,
     value=1000,
@@ -96,6 +97,88 @@ humid_button = pn.widgets.Button(
     width=150,
     disabled=True,
 )
+temperature_button = pn.widgets.Button(
+    name='Temperature',
+    button_type='default',
+    width=150,
+    disabled=True,
+)
+trucks_button = pn.widgets.Button(
+    name='Truck count',
+    button_type='primary',
+    width=150,
+    disabled=True,
+)
+
+
+
+global current_checkbox_ticks
+current_checkbox_ticks = [0]
+
+# Your callback function
+def resample_func(attr):
+    # Go get the new selection
+    new_ticks = resample_box.active
+    if len(new_ticks) > 1:
+        # If more than 2, set it to the previous selection
+        global current_checkbox_ticks
+        resample_box.active = current_checkbox_ticks
+    else:
+        # If up to 2 now, update the stored variable
+        current_checkbox_ticks = resample_box.active
+    print(current_checkbox_ticks)
+    if len(current_checkbox_ticks) > 0:
+        if max(current_checkbox_ticks) == 0:
+            client.send_message("/resample", '30S')
+            #df.to_csv('./df_out/particles_processed.csv', index = False)
+            #resample(df,'30S')
+            print("resample 30S")
+        if max(current_checkbox_ticks) == 1:
+            client.send_message("/resample", 'T')
+            resample(processed_df,'T')
+            print("resample T")
+        if max(current_checkbox_ticks) == 2:
+            client.send_message("/resample", '30M')
+            resample(processed_df,'30M')
+            print("resample 30M")
+        if max(current_checkbox_ticks) == 3:
+            client.send_message("/resample", 'H')
+            resample(processed_df,'H')
+            print("resample H")
+        if max(current_checkbox_ticks) == 4:
+            client.send_message("/resample", 'D')
+            resample(processed_df,'D')
+            print("resample D")
+        if max(current_checkbox_ticks) == 5:
+            client.send_message("/resample", 'W')
+            resample(processed_df,'W')
+            print("resample W")
+        if max(current_checkbox_ticks) == 6:
+            client.send_message("/resample", 'M')
+            resample(processed_df,'M')
+            print("resample Month")
+    else:
+        client.send_message("/resample", '30S')
+        #df.to_csv('./df_out/particles_processed.csv', index = False)
+        print("nothing selected, use non-resampled df (30s)")
+        #resample(df,'30s')
+    #if H D W WHATEVA
+    # keep df => initial and resample it to write new ones
+    #NOTDF.to_csv('./df_out/particles_processed.csv', index = False)
+    # maybe Ill have to run minmax to update dictionary in SC
+
+
+
+
+
+
+LABELS = ["30s", "T", "30M", "H", "D", "W", "M"]
+resample_box = CheckboxGroup(labels=LABELS, active=[0],inline = True)
+#resample_box.js_on_click(CustomJS(code="""
+#   console.log('checkbox_group: active=' + this.active, this.toString())
+#"""))
+resample_box.on_click(resample_func)
+#resample_box.on_click(checkbox_ticks())
 
 
 # on start button event
@@ -166,18 +249,41 @@ def humid_synth(event): # humid synth
     print("humid synth")
 
 
-start_button.on_click(do) # on click post selected data & evaluate rxun function
+def temperature_synth(event): # temperature synth
+    client.send_message("/synths", 'temperature_synth')  # send to SC
+    print("temperature synth")
+
+
+def truck_synth(event): # truck synth
+    client.send_message("/synths", 'truck_synth')  # send to SC
+    print("truck synth")
+
+
+start_button.on_click(do) # on click post selected data & evaluate run function
 kill_button.on_click(killall)
 pm_10_button.on_click(pm_10_synth)
 pm_25_button.on_click(pm_25_synth)
 noise_button.on_click(noise_synth)
 humid_button.on_click(humid_synth)
+temperature_button.on_click(temperature_synth)
+trucks_button.on_click(truck_synth)
+
+
+# re-sample
+def resample(dataframe,freq):
+    # concert to datetime
+    dataframe['timestamp'] = pd.to_datetime(dataframe['timestamp'])
+    # resample it and write the max values
+    resampled_df = dataframe.resample(freq, on='timestamp').max()
+    # write to disk
+    resampled_df.to_csv('./df_out/particles_processed'+freq+'.csv', index = False)
+
 
 # run sonification patch
-sclang = subprocess.Popen(
-    'sclang particleSonification.scd', shell=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT)
+# sclang = subprocess.Popen(
+#     'sclang particleSonification.scd', shell=True,
+#     stdout=subprocess.PIPE,
+#     stderr=subprocess.STDOUT)
 
 # --outdated version--
 # run > python slider.py
@@ -192,11 +298,14 @@ gspec[0:3, 2] = pn.Column(  # render column
     kill_button,
     pn.Row(text),
     date_range_slider,
+    resample_box,
     period_slider,
     pn.Row(pm_10_button,  # insert Row with synth items
            pm_25_button,
-           noise_button,
-           humid_button)
+           noise_button),
+    pn.Row(trucks_button,
+           humid_button,
+           temperature_button)
 )
 
 exec(open("oscServerPython.py").read())  # OSC server setup

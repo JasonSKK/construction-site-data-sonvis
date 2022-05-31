@@ -17,6 +17,7 @@ p.gatePM25=1; // gate for pm25 synth
 p.gateNoise=1; // gate for noise synth
 p.revGate=1; // reverb on.off (for interface button)
 p.t60=1; // humidity controls this reverb parameter
+p.truckGate=1; // gate for the truck synth (on.off)
 
 // configure network address for visualisation
 // ~n = NetAddr("10.253.228.207", 57120);
@@ -26,6 +27,11 @@ p.t60=1; // humidity controls this reverb parameter
 
 (~path++"/synthDefs.scd").standardizePath.load; // load synths 
 (~path++"/parameterReceiver.scd").standardizePath.load; // load OSC paramter receiver
+
+// OLD METHOD FOR TRUCKS --- OUTDATED (cranky A.F.) ----------------------------
+// ~count=1; // general iteration
+// ~countTruck=2; // this compares trucks date with incoming current date
+// -----------------------------------------------------------------------------
 
 // min max values function for columns in file | utilising minmax.py script
 ~minmax = { // 1st arg: filename | 2nd arg: column name as string
@@ -40,7 +46,7 @@ p.t60=1; // humidity controls this reverb parameter
 };
 
 // run function and store output
-~store_minmax = {
+~store_minmax = { | path |  
 	var rawList_minmax, // raw list with min max values
 	temperatureMin, temperatureMax,
 	humidityMin, humidityMax, 
@@ -51,24 +57,24 @@ p.t60=1; // humidity controls this reverb parameter
 	fork{ // run script get output write min max to variables
 		rawList_minmax = [
 			[\temp,
-				~minmax.value("df_out/particles_processed.csv",
+				~minmax.value(path,
 					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
 					"temperature")],
 			[\humidity,
-				~minmax.value("df_out/particles_processed.csv",
+				~minmax.value(path,
 					//"sommargagata_dev_11_temp_pm_30s.csv"
 					"humidity")],
 			[\pm_25,
-				~minmax.value("df_out/particles_processed.csv",
+				~minmax.value(path,
 					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
 					"pm_25")],
 			[\pm_10,
-				~minmax.value("df_out/particles_processed.csv",
+				~minmax.value(path,
 					//"sommargagata_dev_11_temp_pm_30s.csv" // original dataset
 					"pm_10")
 			],
 			[\db,
-				~minmax.value("df_out/particles_processed.csv",
+				~minmax.value(path,
 					//"sommargagata_dev_11_temp_pm_30s.csv"
 					"db")];
 		];
@@ -110,11 +116,16 @@ p.t60=1; // humidity controls this reverb parameter
 		d.dbmin=dbmin;
 		d.dbmax=dbmax;
 	};
+	("min max values extracted from data & dictionary created").postln;
 };
 
-~store_minmax.value();
+// stores min max values from 30S period -- non resampled
+~store_minmax.value("df_out/particles_processed.csv");
 // d; // print min max values
 
+(~path++"/trucks.scd").standardizePath.load; // load truck play function
+
+~lastTemp = 0.0; // store last temp value
 // incoming osc msg
 OSCdef(\incoming,
 	{
@@ -126,10 +137,11 @@ OSCdef(\incoming,
 		pm_10MapAmp, pm_25MapAmp, // amp mapping
 		minScaleLow, maxScaleLow, minScaleHi, maxScaleHi, // scale mapping min max playing octave for synths
 		db, dbMap01, dbRound, dbRoundMap, // db unmapped and mapped 0-1
-		t60, wet; // reverb humidity variables
+		t60, wet, // reverb humidity variables
+		numTrucks; // number of trucks
 		
 		// post 
-		// msg.postln;
+		//msg.postln;
 		
 		// write incoming values to variables
 		temperature = msg[2];
@@ -255,8 +267,10 @@ OSCdef(\incoming,
 
 		if (db>0){ // if not nil
 			x.noiseSynthDB.set(\modf,20*dbMap01);//,dbRoundMap);
+			//x.noiseSynthDB.set(\depth,0.0);
+			//x.noiseSynthDB.set(\depth2,linexp(dbMap01,0.0,1.0,1,10)); // depth2 = harshness
 			x.noiseSynthDB.set(\depth,0.0);
-			x.noiseSynthDB.set(\depth2,linexp(dbMap01,0.0,1.0,1,10)); // depth2 = harshness
+			x.noiseSynthDB.set(\depth2,dbMap01.linlin(0.0,1.0,0.0,5.0));//,linexp(dbMap01,0.0,1.0,5,-5)); // depth2 = harshness
 			x.noiseSynthDB.set(\amp, 0.05);
 			//x.noiseSynthDB.set(\amp,dbMap01.linlin(0.0,1.0,0.05,0.1)); // too extreme
 			x.noiseSynthDB.set(\lpfCutoff,dbMap01.linexp(0.0,1.0,3000,18000));
@@ -268,7 +282,29 @@ OSCdef(\incoming,
 		// --------------------------------- Humidity ---------------------------------
 		t60 = humidityMap.linlin(0.0,1.0,0.3,5); // map to t60 values
 		wet = humidityMap.linlin(0.0,1.0,0.1,2.0); // map to wet amount values, multiplier
-		x.busOut.set(\t60,t60,\wet,wet); // set parameters to synth
+		if (humidity > 60.839717741935765, { // if greater than mean
+			x.busOut.set(\t60,2,\wet,1); // set parameters to synth
+		},{x.busOut.set(\t60,1,\wet,0.1) });
+
+		// --------------------------------- Temperature ---------------------------------
+		if ((temperatureMap - ~lastTemp).abs > 0.25){
+			/*Synth(\tempSynth,[\freq,temperatureMap*10]);*/ "temp".postln;};
+		~lastTemp = temperatureMap;
+
+		// --------------------------------- Trucks count  ---------------------------------
+		numTrucks=msg[7]; //numTrucks.postln;
+		~playTrucks.value(numTrucks.asInteger); // pass num trucks to the play func
+		//[\trucks,numTrucks.asInteger].postln;
+		// OLD METHOD FOR TRUCKS  ---------------------------- OUTDATED CRANKY A.F. --------
+		//~truckCountFunc.value(~countTruck);  // compares current date with the one in the truck data
+		// msg[1].postln; // print curr date 
+		//if(msg[1].asString == ~tracksTempDateTime,{ // if current date is equal with truck date
+		//	~playTrucks.value(~tracksAmount.asInteger); // pass num trucks to the play func
+		//	[\trucks,~tracksAmount].postln;
+		//}); 
+		//if(~count == 30){~countTruck=~countTruck+2;~count=0};
+		//~count=~count+1;
+		// ---------------------------------------------------------------------------------
 					
 	}, '/pysc' // osc address 
 );
@@ -277,7 +313,7 @@ s.sync; // sync it before sending osc to python
 ~ip = ("ipconfig getifaddr en0").unixCmdGetStdOutLines[0]; // get ip
 n = NetAddr(~ip, 1234); // set netaddress
 n.sendMsg('/startup/',1); // send to python that everything is loaded to enable buttons
+("python communication established").postln;
 
 "All SC patches loaded".postln;
-
 };
