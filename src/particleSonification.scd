@@ -3,6 +3,8 @@
 
 s.waitForBoot{ // run as routine otherwise the patch is not loaded by multithreading 
 
+// s.meter;
+	
 // load lydian scale functions and configuration
 ("/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath).load;
 
@@ -273,15 +275,17 @@ OSCdef(\incoming,
 			x.noiseSynthDB.set(\depth2,dbMap01.linlin(0.0,1.0,0.0,5.0));//,linexp(dbMap01,0.0,1.0,5,-5)); // depth2 = harshness
 			x.noiseSynthDB.set(\amp, 0.05);
 			//x.noiseSynthDB.set(\amp,dbMap01.linlin(0.0,1.0,0.05,0.1)); // too extreme
-			x.noiseSynthDB.set(\lpfCutoff,dbMap01.linexp(0.0,1.0,3000,18000));
+			x.noiseSynthDB.set(\lpfCutoff,dbMap01.linexp(0.0,1.0,6000,18000));
 			//x.noiseSynthDB.set(\depth,0.5+dbMap01*2);
 			//x.noiseSynthDB.set(\depth2,0.0+dbMap01); // depth2 = depth.neg
-			x.noiseSynthDB.set(\freq,120+((500)*dbMap01));
+			x.noiseSynthDB.set(\freq,120+((400)*dbMap01));
+			// varsaw pulse mapping
+			x.noiseSynthDB.set(\pulvar,dbMap01);//.linexp(0.0,1.0,0.0,1.0));
 		};
 
 		// --------------------------------- Humidity ---------------------------------
-		t60 = humidityMap.linlin(0.0,1.0,0.3,5); // map to t60 values
-		wet = humidityMap.linlin(0.0,1.0,0.1,2.0); // map to wet amount values, multiplier
+		t60 = humidityMap.linlin(0.0,1.0,1.5,4); // map to t60 values
+		wet = humidityMap.linlin(0.0,1.0,1,2.0); // map to wet amount values, multiplier
 		if (humidity > 60.839717741935765, { // if greater than mean
 			x.busOut.set(\t60,2,\wet,1); // set parameters to synth
 		},{x.busOut.set(\t60,1,\wet,0.1) });
