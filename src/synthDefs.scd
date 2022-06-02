@@ -22,14 +22,14 @@ x.busOut;
 ~busTrucks=Bus.audio(s,2); // bus for trucks
 
 SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0,wet=1.0,t60=1.0,revGate=1,truckGate=1|
-	var sigPM10 = In.ar(~busPM10,2) * gatePM10 * 2;
+	var sigPM10 = In.ar(~busPM10,2) * gatePM10;
 	var sigPM10Warnings = In.ar(~busPM10Warnings,2);
-	var sigPM25 = In.ar(~busPM25,2) * gatePM25 * 2;
+	var sigPM25 = In.ar(~busPM25,2) * gatePM25;
 	var sigPM25Warnings = In.ar(~busPM25Warnings,2);
 	var sigNoise = In.ar(~busNoise,2) * gateNoise;
 	var sigHumid = In.ar(~busHumid,2) * gateHumid;
 	var sigTrucks = In.ar(~busTrucks,2) * truckGate;
-	var particlesSum = Balance2.ar(sigPM10*1.5,sigPM25,0.0) + sigPM10Warnings + sigPM25Warnings;
+	var particlesSum = sigPM10 + (sigPM25*1.25) + sigPM10Warnings + sigPM25Warnings;
 	var mix = ((particlesSum*2)+sigNoise+sigTrucks) * masterGate;
 	var rev = mix +
 	(JPverb.ar(mix,

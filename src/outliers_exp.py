@@ -71,7 +71,7 @@ print(thresholds)
 # show
 #plt.show()
 
-def replaceOutliers_Median(col,minimum_thres,maximum_thres):
+def replaceOutliers(col,minimum_thres,maximum_thres):
     for i in [col]: # replace outliers with nan value
         min = minimum_thres
         max = maximum_thres
@@ -106,19 +106,19 @@ df = df.apply(
 
 # replace outliers pm_25 -- max thresh: changed with observed box plot value
 # max and min thresh from IQR was deleting too many values both pm_25 & pm_10
-replaceOutliers_Median('pm_25',min_thresh_pm_25,45)#max_thresh_pm_25)
+replaceOutliers('pm_25',min_thresh_pm_25,45)#max_thresh_pm_25)
 # replace outliers pm_10
-replaceOutliers_Median('pm_10',min_thresh_pm_10,65)#max_thresh_pm_10)
+replaceOutliers('pm_10',min_thresh_pm_10,65)#max_thresh_pm_10)
 
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)
 
 # adds db column
 exec(open("soundDataProcessing.py").read()) # load functional script SOUND
-replaceOutliers_Median('db',20,100) # exclude the min value which is 5.444976
+replaceOutliers('db',20,100) # exclude the min value which is 5.444976
 
 trucks_df = pd.read_csv(  # read truck data file
-    "/Users/jsk/Coding/LiU/constructionSightSonification/src/fake_passage_time.csv",
+    "./fake_passage_time.csv",
     delimiter=';')
 # add column to main df with trucks, many are nil, will be replaced by next action
 df['count'] = trucks_df['count']
@@ -129,6 +129,10 @@ df = df.apply( # replace NaN values from random samples same column
 # write new df to file -- replaced outliers
 df.to_csv('./df_out/particles_processed.csv', index = False)
 processed_df = pd.read_csv('./df_out/particles_processed.csv')
+
+# defined here but used in particleDataProcessing.py
+global selected_dataframe
+selected_dataframe = processed_df  #  initialisation with 30S
 
 # data were processed
 print('data processing done -- replaced outliers with median + random factor')

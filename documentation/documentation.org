@@ -1,17 +1,69 @@
 #+TITLE: Construction sites SonVis Algorithm documentation
 #+Author: Svoronos - Kanavas Iason
 
-Niklas meeting
-Tue at 11 o'clock
-
-Collaboration w: Communications and Transport Systems (KTS)
+# Niklas meeting
+# Tue at 11 o'clock
 
 * Algorithm architecture
+The overall algorithm is structured as:
+1. Interface
+2. Sub-processes
+3. data processing algorithm
+   1. outlier identification,
+   2. replacement,
+   3. data-frame creation and manipulation,
+   4. min-max extraction script
+   5. datetime re-sample function
+4. on-run functions (includes matrix printing functions)
+5. IPC inter-process communication (& connection setup functions)
+6. Sonification algorithm
+   1. processing functions
+   2. data receiver -- handler
+   3. synth and data parameter dictionary
+   4. event receiver - actions
+   5. IPC connection configuration
+   6. synthesisers
+   7. map to scale frequency mapping patch
 
 * Interface
-The interface consists of four visual elements.  The range slider and text input are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.  The 'start' button is used so that the datetime period is extracted and then sent to be sonified and visualised, while the killall button can stop every running procedure in relation to the sonification and visualisation process anytime.
+The interface consists of certain visual elements.
+The datetime range slider and text input (for the time) are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.
 
-** Sub-processes
+[[./datetime_selection.png]]
+
+The *start* button is used so that the datetime period is extracted and then sent to be sonified and visualised, while the *killall* button can interrupt/stop every running procedure in relation to the sonification and visualisation process anytime.
+
+[[./start_kill_buttons.png]]
+
+Below, there is a checkbox where the user can select the period of the values in the data to re-sample.
+
+[[./resample_checkbox.png]]
+
+The original collection is every 30 seconds.  The re-sample options are, per minute (T), per 30 minutes (30M), per hour (H), per week (W), per month (M).  In the re-sample function (see below), the data values are derived in every period with selecting the max value when doing the frequency conversion to highlight peaks in the data.  For example, if we want to re-sample with 1 minute re-sample frequency (T). We have initially:
+|----------------------+------|
+| timestamp,           | data |
+| 2021-08-01 00:00:00, |    2 |
+| 2021-08-01 00:00:30, |    0 |
+| 2021-08-01 00:01:00, |    4 |
+|----------------------+------|
+
+Re-sample result: The extracted value for the first minute will be "4" because is the max value observed for this minute.
+
+Then, there is a another slider that controls the data iteration frequency and it has a range from 1 to 1000 values per second.
+
+[[./values_sec.png]]
+
+Finally, there are six buttons where the user can use to turn on/off, the desired data parameters to sonify - visualise
+
+[[./synth_onoff.png]]
+
+\vspace{0.5em}
+
+Overall, the button python bokeh elements, trigger osc messages that are sent from python to supercollider in order to control different synths.
+The ones that utilise this functionality is the *start* *killall* and the synth on/off buttons (pm10, pm25, temp, humidity, noise levels, truck count).
+This will be elaborated in the IPC section
+
+* Sub-processes
 On launch, sclang is initialised and runs as a sub-process within the python session.  More specifically, the SuperCollider  patch for sonification is evaluated using the following command in Python.
 #+BEGIN_SRC
 # run sonification patch
@@ -48,13 +100,71 @@ WIN hint:
 ipconfig | grep IPv4 Address.
 #+END_SRC
 
-
 * data processing
-In this section the initial data processing takes place.
-**
+In this section the data processing will be described.  The algorithm is developed in Python.  The idea is based on combining and re-constructing the data-sets after the processing results that come out from the derived stats (IQR).  SC has also access to the derived data-set (it is written to disk) so that it has access to the min max values for the correct mapping (see [[min-max extraction script]]).  In this way, it is also possible to re-use the algorithm with different data since the mapping is not hard-coded.
 
+Outlier identification and replacement was deemed necessary since it was observed by using box-plot stats the PM (both 25 and 10) showed extreme values (far from accurate measurements (140~ PM10) ) that we would like to exclude.
 
-moving average low pass filter  -- for data cleaning
+[[./boxplot.png]]
 
-Meeting construction site sonification:
-* Sonification
+Code process:
+
+The very first step is that the original data are loaded from the CSV file while the timestamp column is stored in a variable.  Then the timestamp column is removed from the data-set to do the processing and then added again in the very end of the procedure.
+
+** outlier identification
+Descriptive statistics are applied in the data-set using the 'describe()' method from pandas.  That is to calculate percentiles, max, min and mean of every column in the data-set.  Then the Q1 and Q3 of PM10 and PM25 are stored in variables.  The IQR of both is calculated as well as the max and min threshold.  The threshold will be used to identify the outliers.  Values that exceed the min and max threshold are the outliers.
+
+#+BEGIN_SRC
+# calculate IQRange for pm_25 from q1 and q3
+iqr_pm25 = pm25_q3-pm25_q1
+iqr_pm10 = pm10_q3-pm10_q1
+
+# calculate thresholds from IQR -- acc. skewed distribution
+# max_thresh: Q3+1.5IQR
+# min_thresh: Q1-1.5IQR
+max_thresh_pm_25 = pm25_q3+(1.5*iqr_pm25)
+min_thresh_pm_25 = pm25_q1-(1.5*iqr_pm25)
+max_thresh_pm_10 = pm10_q3+(1.5*iqr_pm10)
+min_thresh_pm_10 = pm10_q1-(1.5*iqr_pm10)
+thresholds = {'min thresh_pm_25': min_thresh_pm_25,
+         'max thresh_pm_25': max_thresh_pm_25,
+         'min thresh_pm_10': min_thresh_pm_10,
+         'max thresh_pm_10': max_thresh_pm_10}
+#+END_SRC
+
+** replacement
+   Values for PM10 and PM25 that exceeded min and max threshold derived from the IQR calculation will be NaN-ed and then replaced with randomly selected samples from the same column in the data-set.  This outlier replacement process takes place for PM10, PM25 and noise levels.  The replacement function also prints how many values were replaced.
+
+#+BEGIN_SRC
+def replaceOutliers(col,minimum_thres,maximum_thres):
+    for i in [col]: # replace outliers with nan value
+        min = minimum_thres
+        max = maximum_thres
+        df.loc[df[i] < min, i] = np.nan  # if value is < min_thresh_pm25: nan it
+        df.loc[df[i] > max, i] = np.nan  # if value is > max_thresh_pm25: nan it
+        df.loc[df[i] == 0, i] = 0.1  # if zero: replace it with 0.1 (smallest val)
+        print( # print how many null values are in the specified column
+            'sum of null replaced values',
+            df[col].isnull().sum())
+        global des_col
+        des_col = [col] # specify column
+#+END_SRC
+
+#+BEGIN_SRC
+df = df.apply( # replace NaN values from random samples same column
+    lambda x: np.where(x.isnull(), x.dropna().sample(len(x), replace=True), x))
+#+END_SRC
+
+** data-frame creation and manipulation
+** min-max extraction script
+** datetime re-sample function
+* on-run functions
+* IPC inter-process communication (includes connection setup functions)
+* Sonification algorithm
+** processing functions
+** data receiver -- handler
+** synth and data parameter dictionary
+** event receiver - actions
+** IPC connection configuration
+** synthesisers
+** map to scale frequency mapping patch

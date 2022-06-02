@@ -48,10 +48,10 @@ def print_Matrix(matx):
 
 
 # locate row with GIVEN-X date and extract time period
-def t_period(start_date,end_date):
+def t_period(start_date,end_date,dataframe):
     global datetime_selection # for access within run function
-    datetime_selection = df[  # create new dataframe from given time period
-        df.timestamp.between(
+    datetime_selection = dataframe[  # create new dataframe from given time period
+        dataframe.timestamp.between(
             start_date,end_date,inclusive=True)] # include given dates
 
 # consider using this??
@@ -76,12 +76,11 @@ def t_period(start_date,end_date):
 #     print(str(pm_10pos)+' pm_10pos ') # print pm 10 values AS STRING
 #     print_Matrix(matrix) # print time data in matrix form
 
-
 def run(start_date=None,end_date=None,period=None):
     if (start_date is None) and (end_date is None) and (period is None):
         print("ERROR: run() missing 3 required positional arguments: 'start_date', 'end_date', 'period' DT in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
     else:
-        t_period(start_date,end_date)
+        t_period(start_date,end_date,selected_dataframe)
         for i in range(len(datetime_selection)): # iteration loop
             if break_cycle is True:
                 break;

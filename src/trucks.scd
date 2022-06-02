@@ -58,7 +58,7 @@ SynthDef("truck", {
 
 //
 //
- ~playTrucks.value(9); // test numer of trucks 
+~playTrucks.value(9); // test numer of trucks 
 
 ("truck functions & synth loaded").postln;
 

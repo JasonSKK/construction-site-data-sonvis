@@ -53,7 +53,7 @@ date_range_slider = FormatDateRangeSlider(
 period_slider = Slider(
 
     start=1,
-    end=2000,
+    end=1000,
     value=1000,
     step=1,
     width=666,
@@ -129,6 +129,7 @@ def resample_func(attr):
     print(current_checkbox_ticks)
     if len(current_checkbox_ticks) > 0:
         if max(current_checkbox_ticks) == 0:
+            resample(processed_df,'30S')
             client.send_message("/resample", '30S')
             #df.to_csv('./df_out/particles_processed.csv', index = False)
             #resample(df,'30S')
@@ -159,6 +160,7 @@ def resample_func(attr):
             print("resample Month")
     else:
         client.send_message("/resample", '30S')
+        resample(processed_df,'30S')
         #df.to_csv('./df_out/particles_processed.csv', index = False)
         print("nothing selected, use non-resampled df (30s)")
         #resample(df,'30s')
@@ -277,13 +279,16 @@ def resample(dataframe,freq):
     resampled_df = dataframe.resample(freq, on='timestamp').max()
     # write to disk
     resampled_df.to_csv('./df_out/particles_processed'+freq+'.csv', index = False)
+    global selected_dataframe  # write re-sampled df to global var
+    selected_dataframe = resampled_df
+
 
 
 # run sonification patch
-# sclang = subprocess.Popen(
-#     'sclang particleSonification.scd', shell=True,
-#     stdout=subprocess.PIPE,
-#     stderr=subprocess.STDOUT)
+#sclang = subprocess.Popen(
+#'sclang particleSonification.scd', shell=True,
+#    stdout=subprocess.PIPE,
+#    stderr=subprocess.STDOUT)
 
 # --outdated version--
 # run > python slider.py
