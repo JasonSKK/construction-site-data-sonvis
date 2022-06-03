@@ -23,6 +23,21 @@ Post << ~lydScale; // post everything
 	// corrFreqValue.postln; // dont post it
 };
 
+
+// for noise levels 
+~beatList = [0,2,4,6,8,10,12,14,16,18,20];
+
+// it maps the freq mod values Noise lvls to the list above
+~mapToBeat = {
+	| incomingVal | 
+	var corrFreqValue, tempList;
+	tempList = (~beatList - incomingVal).abs;
+	corrFreqValue = ~beatList[tempList.minIndex()];
+	corrFreqValue.postln; // dont post it
+};
+
+
+
 ("musical scale configuration loaded").postln;
 
 // test
@@ -40,6 +55,3 @@ fork{
 	0.04.wait;	
 	}}.value()
 */
-
-
-

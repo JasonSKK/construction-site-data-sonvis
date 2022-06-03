@@ -162,8 +162,8 @@ OSCdef(\incoming,
 
 		// --------------------------------- Particles ---------------------------------
 		// --- START --- map to lydian scale
-		minScaleLow = 130.8127826503; // low synth panned left
-		maxScaleLow = 261.6255653006; 
+		minScaleLow = 261.6255653006;//130.8127826503; // low synth panned left
+		maxScaleLow = 523.2511306012;//261.6255653006; 
 		minScaleHi = 261.6255653006; // hi synth panned right
 		maxScaleHi = 523.2511306012;
 
@@ -266,9 +266,10 @@ OSCdef(\incoming,
 		//dbRoundMap = dbRoundMap.linlin(0.0,d.dbmax-68,10.0,20)}
 		//{ db < 68 } { dbRoundMap = 0}; // add to 68 to reach new val
 		//[db,dbRoundMap].postln;
-
+		
 		if (db>0){ // if not nil
-			x.noiseSynthDB.set(\modf,20*dbMap01);//,dbRoundMap);
+			var modf = ~mapToBeat.value(20*dbMap01); // map to beat ./scale_exp.scd
+			x.noiseSynthDB.set(\modf,modf);//,dbRoundMap);
 			//x.noiseSynthDB.set(\depth,0.0);
 			//x.noiseSynthDB.set(\depth2,linexp(dbMap01,0.0,1.0,1,10)); // depth2 = harshness
 			x.noiseSynthDB.set(\depth,0.0);
