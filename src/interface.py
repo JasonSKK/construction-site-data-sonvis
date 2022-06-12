@@ -285,24 +285,26 @@ def resample(dataframe,freq):
 
 
 # run sonification patch
-#sclang = subprocess.Popen(
-#'sclang particleSonification.scd', shell=True,
-#    stdout=subprocess.PIPE,
-#    stderr=subprocess.STDOUT)
+sclang = subprocess.Popen(
+'sclang particleSonification.scd', shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT)
 
 # --outdated version--
 # run > python slider.py
 #pn.serve(pn.Row(button, text, date_range_slider)) # render everything
 # --------------------
 
+exec(open("line_graph.py").read()) # prepare line plots
+
 # create grid
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
 
-gspec[0:3, 2] = pn.Column(  # render column
+gspec[0:3, 2] = pn.Row(pn.Column(  # render column
     start_button,
     kill_button,
     pn.Row(text),
-    date_range_slider,
+    pn.Row(date_range_slider),
     resample_box,
     period_slider,
     pn.Row(pm_10_button,  # insert Row with synth items
@@ -310,8 +312,11 @@ gspec[0:3, 2] = pn.Column(  # render column
            noise_button),
     pn.Row(trucks_button,
            humid_button,
-           temperature_button)
-)
+           temperature_button),
+    pn.Row(plotpm10), # defined in line_graph.py
+    pn.Column(plotpm25),
+),
+pn.Column(plotnoise ,plothumid,plotcount))
 
 exec(open("oscServerPython.py").read())  # OSC server setup
 

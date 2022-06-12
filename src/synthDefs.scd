@@ -210,7 +210,7 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 	}).add;
 	
 	// another noise lvls synth
-	SynthDef(\noiseSynth, { | freq = 444, amp = 0.5, modf = 4, atk = 0.02, dec = 0.1, sus = 0.8, rel = 4,
+	/*SynthDef(\noiseSynth, { | freq = 444, amp = 0.5, modf = 4, atk = 0.02, dec = 0.1, sus = 0.8, rel = 4,
 		room = 100, revtime = 3, damping = 0.1, earlyreflevel = 1.2, spread = 100, gate, depth = 0.1, depth2 = 0.1,
 		lpfCutoff = 6000, pwmWidth = 0.5, t60 = 1.0, wet = 1.0 |
 		var l, sig, out, res;
@@ -221,7 +221,7 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 		sig = LPF.ar(sig,lpfCutoff).clip2(0.9); // 10000
 		sig = sig!2;//Splay.ar(sig!2);
 		Out.ar(~busNoise, sig*MouseX.kr(0.0,1.0));
-		}).add;
+	}).add;*/
 	
 	s.sync; // sync it so that server manages to load the synthdef before playing it
 

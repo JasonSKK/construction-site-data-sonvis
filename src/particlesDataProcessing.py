@@ -50,9 +50,11 @@ def print_Matrix(matx):
 # locate row with GIVEN-X date and extract time period
 def t_period(start_date,end_date,dataframe):
     global datetime_selection # for access within run function
-    datetime_selection = dataframe[  # create new dataframe from given time period
-        dataframe.timestamp.between(
-            start_date,end_date,inclusive=True)] # include given dates
+    if current_checkbox_ticks == [0]: # if 30S freq
+        datetime_selection = dataframe[  # create new dataframe from given time period
+            dataframe.timestamp.between(
+                start_date,end_date,inclusive=True)] # include given dates
+    #else:
 
 # consider using this??
 # def iter(i): # iteration function -- value update | i=count_argument
@@ -92,10 +94,10 @@ def run(start_date=None,end_date=None,period=None):
                 #  update text input widget to current date time
                 text.value = currentDT
                 print(datetime_selection.iloc[i])
-            # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
-            # t_period(d_start,d_end,i)
-            # row = datetime_selection.iloc[i]
-            # print(row)
+                # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
+                # t_period(d_start,d_end,i)
+                # row = datetime_selection.iloc[i]
+                # print(row)
             time.sleep(period)
         #  when iteration ends set => text input the initially inputted value
         temp_start_time = start_date.split(" ")[1]  # get start time

@@ -39,7 +39,7 @@ Below, there is a checkbox where the user can select the period of the values in
 
 [[./resample_checkbox.png]]
 
-The original collection is every 30 seconds.  The re-sample options are, per minute (T), per 30 minutes (30M), per hour (H), per week (W), per month (M).  In the re-sample function (see below), the data values are derived in every period with selecting the max value when doing the frequency conversion to highlight peaks in the data.  For example, if we want to re-sample with 1 minute re-sample frequency (T). We have initially:
+The original collection period is (every) 30 seconds.  The re-sample options are, per minute (T), per 30 minutes (30M), per hour (H), per week (W), per month (M).  In the re-sample function (see below), the data values are derived in every period with selecting the max value when doing the frequency conversion to highlight peaks in the data.  For example, if we want to re-sample with 1 minute re-sample frequency (T). We have initially:
 |----------------------+------|
 | timestamp,           | data |
 | 2021-08-01 00:00:00, |    2 |
@@ -156,14 +156,146 @@ df = df.apply( # replace NaN values from random samples same column
 #+END_SRC
 
 ** data-frame creation and manipulation
+As mentioned the df is first loaded from the CSV file, while the timestamp column is removed and stored in a variable.  This was done to easily process the data-set without interfering with the datetime object (timestamp column).  After that the [[outlier identification]] takes place.  That results to a new data-frame and then the timestamp column is added (insert method).
+#+BEGIN_SRC
+# insert timestamp column
+df.insert(0, "timestamp", timestamp, True)
+#+END_SRC
+
+Afterwards, the noise level data are loaded and stored in a variable.  The last (cat_24) column was used.  This column is added to the data-frame that contains everything.  While in the next step the replaceOutliers function is applied to the noise levels column as well ('db').  The threshold that was used aimed to exclude one outlier (5.444976) that was identified by rendering a boxplot from the column data.
+
+Then the truck_count data are inserted to the main data-frame after the appropriate data processing that is related to the ';' delimiter character splitting. This was done using the pandas data-frame loading process.
+
+#+BEGIN_SRC
+trucks_df = pd.read_csv(  # read truck data file
+    "./fake_passage_time.csv",
+    delimiter=';')
+#+END_SRC
+
+After that the main data-frame is written to disk within a certain directory path in the current working directory environment.  That would be the [[./df_out]] directory.
+Later the data-frame is registered to a global variable for easier access.
+
 ** min-max extraction script
+   The min-max python script was used for use within SuperCollider.  Its purpose is to run the min and max basic python methods to certain columns.  These values will be used for the paramenter mapping.  It returns the min and max value of the specified column.  These are stored in a dictionary.  More information can be found at  [[Sonification algorithm]].
+
+It takes 2 arguments, these are:
+1. data-file that the min max values will be extracted
+2. column in the data-set
+
+It runs from the terminal with the following command.
+#+BEGIN_SRC
+python minmax.py data-file column
+#+END_SRC
+
+In SuperCollider this command will run using the "unixCmdGetStdOutLines" method.  It will return the values as "string" in the SuperCollider environment.
+
 ** datetime re-sample function
+*Not 100% implemented*
+
+This function was implemented to re-sample the processed data-frame.  In the non-resampled one the collection frequency is 30s. So, every 30 seconds a new value is stored for all parameters.
+
+While this can of course result to precise estimations regarding events in the data it might not be very convenient if someone would like to quickly listen longer time periods.  For example, with an iteration frequency of 1000 values per second it takes 86.4 seconds time to listen to one day.  This was thought as a limitation and that's why this function was implemented to create down-sampled versions of the main data-set.  Speeding up the iteration frequency was not an option because of computing power limitations.
+
+The frequencies in the re-sampling process that was selected are:
+1. 30S (non re-sampled)
+2. T / 1 minute
+3. 30M / 30 minutes
+4. H / 1 Hour
+5. D / 1 Day
+6. W / 1 Week
+7. M / 1 Month
+
+The re-sample function is accessed by the checkbox on the interface [[Interface]].  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
+
+|----------+---|
+| 00:00:00 | 0 |
+| 00:00:30 | 1 |
+| 00:01:00 | 4 |
+|----------+---|
+
+If the re-sampling frequency is T (1 min) the 4 value will be stored in this cycle.
+
+|----------+---|
+| 00:00:00 | 4 |
+|----------+---|
+
+Overall, the re-sample function is base on the resample() method in combination with certain conditional tasks so that the correct checkbox element corresponds to the according resample function parameters.  Technically, it is actually divided into two functions.  The first does the conditional argument setting (feeds the correct arguments to the other function) while the other does the actual re-sampling and writes it to disk (CSV).
+
+In the iteration process ... *TO BE DONE & REPORTED*  (Write only re-sampling function related info, next section is: on-run functions)
+
 * on-run functions
 * IPC inter-process communication (includes connection setup functions)
+The IPC is based on the OSC protocol and its aim is to interconnect Python and SueprCollider.  It is based on sending individual messages from the Python process triggered by the Python interface elements.
+
+In the OSC configuration there are 3 different OSC addresses that allow communication between the two software.  These are:
+1. <<'/pysc'>> | main address for the iteration process.  SC received the data values (OSCdef).  Py → SC
+2. <<'/synths'>> | controls the synths, acts like an ON/OFF switch.  Triggered by the 6 synth ON/OFF buttons. Py → SC
+3. <<'/startEnd'>> | This acts like main ON/OFF switch for the all synths, it is triggered by the START and Killall buttons. Py → SC
+4. <<'/startup/'>> | Initialisation address, activates the interaction elements on the interface when (or if) the SC responds.  This configuration uses the 1234 port instead. SC → Py
+
+The initial configuration is related to obtaining the IP address of the computer automatically to avoid manual configurations.  This was implemented with the following functions in Python and SuperCollider.
+
+*Python*
+
+#+BEGIN_SRC
+# get IP address
+def getip():
+    global ip
+    ip = subprocess.Popen(
+        'ipconfig getifaddr en0', shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT)
+    ip, _ = ip.communicate()
+    ip = ip.decode('utf-8')
+    ip = ip.strip()
+    print(ip)
+
+
+# Python osc
+getip() # run getip function
+client = udp_client.SimpleUDPClient(ip, 57120)
+#+END_SRC
+
+To simplify, this function runs
+#+BEGIN_SRC
+'ipconfig getifaddr en0'
+#+END_SRC
+in the terminal and extracts the current ip address, stores it in a variable and uses it for the OSC UDP client setup.
+
+*SuperCollider*
+
+On the SC side now the configuration is implemented in the following way
+#+BEGIN_SRC
+~ip = ("ipconfig getifaddr en0").unixCmdGetStdOutLines[0]; // get ip
+n = NetAddr(~ip, 1234); // set netaddress
+n.sendMsg('/startup/',1); // send to python that everything is loaded to enable buttons
+("python communication established").postln;
+#+END_SRC
+
+At this point where the above command runs, an OSC message is sent to python using the '/startup/' address.  In the OSC server function (receiver) in Python a task activates the interaction elements on the interface.  This process can be found in the oscServerPython.scd file [[../src/oscServerPython.py]].
+
+The communication using the [['/pysc']] address is the most important one since concerns the iteration process.  The data values in every iteration cycle (row by row) are sent to SuperCollider as shown below.
+
+#+BEGIN_SRC
+client.send_message("/pysc", datetime_selection.iloc[i])
+#+END_SRC
+
+
+
+[['/synths']]
+
+[['startEnd']]
+
+[['/startup']]
 * Sonification algorithm
 ** processing functions
 ** data receiver -- handler
 ** synth and data parameter dictionary
+   Speak about the mapping (max-min values py script).  Mentioned at [[min-max extraction script]]
+#+BEGIN_SRC
+com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+	(~path+/+file).postln;
+#+END_SRC
 ** event receiver - actions
 ** IPC connection configuration
 ** synthesisers
