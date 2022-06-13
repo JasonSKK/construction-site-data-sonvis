@@ -50,10 +50,13 @@ def print_Matrix(matx):
 # locate row with GIVEN-X date and extract time period
 def t_period(start_date,end_date,dataframe):
     global datetime_selection # for access within run function
-    if current_checkbox_ticks == [0]: # if 30S freq
-        datetime_selection = dataframe[  # create new dataframe from given time period
-            dataframe.timestamp.between(
-                start_date,end_date,inclusive=True)] # include given dates
+    global start_closest, end_closest
+    #if current_checkbox_ticks == [0]: # if 30S freq
+    datetime_selection = dataframe[  # create new dataframe from given time period
+        dataframe.timestamp.between(
+            start_date,end_date,inclusive=True)] # include given dates
+    #start_closest = pd.to_datetime(datetime_selection.timestamp).searchsorted(start_date)
+    #end_closest = pd.to_datetime(datetime_selection.timestamp).searchsorted(end_date)
     #else:
 
 # consider using this??
@@ -83,14 +86,16 @@ def run(start_date=None,end_date=None,period=None):
         print("ERROR: run() missing 3 required positional arguments: 'start_date', 'end_date', 'period' DT in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
     else:
         t_period(start_date,end_date,selected_dataframe)
+
         for i in range(len(datetime_selection)): # iteration loop
             if break_cycle is True:
                 break;
             else:
-                client.send_message("/pysc", datetime_selection.iloc[i])
+                msg = datetime_selection.iloc[i]
+                client.send_message("/pysc", msg)
                 dt_selection_pos = datetime_selection.iloc[i]  # get current date-time
                 #  split current date time to time and date
-                currentDT = dt_selection_pos[0].split(" ")[1]+"   "+dt_selection_pos[0].split(" ")[0]  # display current time and date
+                currentDT = str(dt_selection_pos[0]).split(" ")[1]+"   "+str(dt_selection_pos[0]).split(" ")[0]  # display current time and date
                 #  update text input widget to current date time
                 text.value = currentDT
                 print(datetime_selection.iloc[i])

@@ -115,6 +115,9 @@ trucks_button = pn.widgets.Button(
 global current_checkbox_ticks
 current_checkbox_ticks = [0]
 
+global flagResample
+flagResample = False
+
 # Your callback function
 def resample_func(attr):
     # Go get the new selection
@@ -129,36 +132,46 @@ def resample_func(attr):
     print(current_checkbox_ticks)
     if len(current_checkbox_ticks) > 0:
         if max(current_checkbox_ticks) == 0:
+            global flagResample
+            flagResample = False
             resample(processed_df,'30S')
             client.send_message("/resample", '30S')
             #df.to_csv('./df_out/particles_processed.csv', index = False)
             #resample(df,'30S')
             print("resample 30S")
         if max(current_checkbox_ticks) == 1:
+            flagResample = True
             client.send_message("/resample", 'T')
             resample(processed_df,'T')
             print("resample T")
-        if max(current_checkbox_ticks) == 2:
-            client.send_message("/resample", '30M')
-            resample(processed_df,'30M')
-            print("resample 30M")
+        #if max(current_checkbox_ticks) == 2:  # this is out
+            #flagResample = True
+            #client.send_message("/resample", '30M')
+            #resample(processed_df,'30M')
+            #print("resample 30M")
         if max(current_checkbox_ticks) == 3:
+            flagResample = True
             client.send_message("/resample", 'H')
             resample(processed_df,'H')
             print("resample H")
         if max(current_checkbox_ticks) == 4:
+            flagResample = True
             client.send_message("/resample", 'D')
             resample(processed_df,'D')
             print("resample D")
         if max(current_checkbox_ticks) == 5:
+            flagResample = True
             client.send_message("/resample", 'W')
             resample(processed_df,'W')
             print("resample W")
-        if max(current_checkbox_ticks) == 6:
-            client.send_message("/resample", 'M')
-            resample(processed_df,'M')
-            print("resample Month")
+        # this is out because it is month  (data dur 1 month)
+        #if max(current_checkbox_ticks) == 6:
+            #flagResample = True
+            #client.send_message("/resample", 'M')
+            #resample(processed_df,'M')
+            #print("resample Month")
     else:
+        flagResample = False
         client.send_message("/resample", '30S')
         resample(processed_df,'30S')
         #df.to_csv('./df_out/particles_processed.csv', index = False)
@@ -174,7 +187,7 @@ def resample_func(attr):
 
 
 
-LABELS = ["30s", "T", "30M", "H", "D", "W", "M"]
+LABELS = ["30s", "T", "H", "D", "W", "M"]
 resample_box = CheckboxGroup(labels=LABELS, active=[0],inline = True)
 #resample_box.js_on_click(CustomJS(code="""
 #   console.log('checkbox_group: active=' + this.active, this.toString())
@@ -182,9 +195,9 @@ resample_box = CheckboxGroup(labels=LABELS, active=[0],inline = True)
 resample_box.on_click(resample_func)
 #resample_box.on_click(checkbox_ticks())
 
-
 # on start button event
 def do(event):
+    global timedate_formating
     client.send_message("/startEnd", 1) # send to SC start playing synth:gate 1
     startdt = date_range_slider.value[0].date() # get start date from range slider
     enddt = date_range_slider.value[1].date() # get end date
@@ -281,7 +294,7 @@ def resample(dataframe,freq):
     resampled_df.to_csv('./df_out/particles_processed'+freq+'.csv', index = False)
     global selected_dataframe  # write re-sampled df to global var
     selected_dataframe = resampled_df
-
+    selected_dataframe = pd.read_csv('./df_out/particles_processed'+freq+'.csv')
 
 
 # run sonification patch

@@ -30,7 +30,7 @@ SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0,w
 	var sigHumid = In.ar(~busHumid,2) * gateHumid;
 	var sigTrucks = In.ar(~busTrucks,2) * truckGate;
 	var particlesSum = ((sigPM10 + sigPM10Warnings) * gatePM10 ) + ((sigPM25 + sigPM25Warnings) * gatePM25);
-	var mix = ((particlesSum*2)+sigNoise+sigTrucks) * masterGate;
+	var mix = ((particlesSum*2)+sigNoise+sigTrucks);
 	var rev = mix +
 	(JPverb.ar(mix,
 		t60: t60,  // should be in sec values from 0.1 to 5 (60 theoretically)
@@ -42,7 +42,7 @@ SynthDef(\busOut,{ |gatePM10=1,gatePM25=1,gateNoise=1,gateHumid=1,masterGate=0,w
 		low: 1.0, mid: 1.0, high: 1.0,
 		lowcut: 500.0, highcut: 1000) * Amplitude.kr(wet,0.4,1.2) /*amount*/ * revGate /*binary*/);
 	//var effect= AllpassN.ar(rev,0.02,SinOsc.kr(MouseX.kr(1,),0,0.01,0.01)); //max delay of 20msec 
-	var out = Out.ar(0,Limiter.ar(rev));
+	var out = Out.ar(0,Limiter.ar(rev) * masterGate);
 	//(rev*2+sigNoise) + Resonator.ar(input: particlesSum+sigTrucks, freq: 400, position: 1, resolution: 24, structure: 0.5, brightness: 0.5, damping: 0.4) * 0.1	
 }).add;
 
