@@ -1,0 +1,42 @@
+#+TITLE: Documentation
+#+HTML_HEAD: <body style="background-color:#2c2f40;margin-top:0px;margin-left:0px;">
+#+HTML_HEAD: <body text="#ffffff" link="#ff0000" vlink="#ff0000" alink="#ff0000">
+
+
+* Data mapping
+** PM10
+
+#+BEGIN_EXAMPLE
+Mapping: Pitch, pan.
+
+*Linear Mapping:* As long the data values remain lower than *45 μg/m3* they remain panned to the left.  Higher values result in increased pitch according to the Lydian musical scale.
+
+*Discrete - Exponential Mapping:*  When values exceed this level the sound becomes more noisy and more close to the centre (pan).  Higher values result in a more noisy sound texture.
+
+#+END_EXAMPLE
+
+** PM25
+#+BEGIN_EXAMPLE
+Mapping: Pitch, pan.
+
+*Linear Mapping:* As long the data values remain lower than *15 μg/m3* they remain panned to the right.  Higher values result in increased pitch according to the Lydian musical scale.
+
+*Discrete - Exponential Mapping:*  When values exceed this level the sound becomes more noisy and more close to the centre (pan).  Higher values result in a more noisy sound texture.
+#+END_EXAMPLE
+** Noise Levels
+#+BEGIN_EXAMPLE
+ ...
+#+END_EXAMPLE
+** Truck count
+#+BEGIN_EXAMPLE
+ ...
+#+END_EXAMPLE
+** Humidity
+#+BEGIN_EXAMPLE
+ ...
+#+END_EXAMPLE
+** Temperature
+#+BEGIN_EXAMPLE
+...
+Not yet implemented
+#+END_EXAMPLE
