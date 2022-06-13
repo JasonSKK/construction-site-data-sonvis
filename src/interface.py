@@ -9,7 +9,6 @@ import subprocess  # to run SC
 import threading  # stop iteration cycle when kill button pressed
 #from pythonosc import udp_client
 from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
-import webbrowser  # open html
 
 
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
