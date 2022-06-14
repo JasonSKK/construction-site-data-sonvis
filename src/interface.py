@@ -277,7 +277,6 @@ def truck_synth(event): # truck synth
 def inst_open(event): # truck synth
     subprocess.Popen(
         'open ./HTML_documentation/instructions.html', shell=True,
-        /Users/jsk/Coding/LiU/constructionSightSonification/src/instructions.org
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     print("instructions opened")
@@ -310,7 +309,7 @@ def resample(dataframe,freq):
 
 # run sonification patch
 sclang = subprocess.Popen(
-'sclang particleSonification.scd', shell=True,
+'sclang sonification.scd', shell=True,
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT)
 

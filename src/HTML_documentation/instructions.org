@@ -112,7 +112,7 @@ Not yet implemented
 #+END_EXAMPLE
 
 * Re-sampling data-set
-The above check-boxes on the interface can be selected so that the initial data-set with a period of 30 sec / observation can be re-sampled.
+The above check-boxes can be selected on the interface so that the initial data-set with a period of 30 sec / observation can be re-sampled.
 
 [[./resample_checkbox.png]]
 
