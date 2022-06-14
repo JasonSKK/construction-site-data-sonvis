@@ -40,3 +40,6 @@ Mapping: Pitch, pan.
 ...
 Not yet implemented
 #+END_EXAMPLE
+
+* Re-sampling data-set
+...
