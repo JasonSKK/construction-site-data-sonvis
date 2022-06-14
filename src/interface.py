@@ -110,7 +110,7 @@ trucks_button = pn.widgets.Button(
     disabled=True,
 )
 instructions = pn.widgets.Button(
-    name='Instructions',
+    name='Documentation',
     button_type='default',
     width=200,
     disabled=False)
@@ -276,7 +276,8 @@ def truck_synth(event): # truck synth
 #  Text, on interface instructions
 def inst_open(event): # truck synth
     subprocess.Popen(
-        'open instructions.html', shell=True,
+        'open ./HTML_documentation/instructions.html', shell=True,
+        /Users/jsk/Coding/LiU/constructionSightSonification/src/instructions.org
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     print("instructions opened")

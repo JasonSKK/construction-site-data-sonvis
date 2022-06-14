@@ -34,7 +34,7 @@ SynthDef("truck", {
 ~playTrucks = {
 	|num=0| // trucks: max value in column = 9, min value in column = 0
 	var detune,bw,freq;
-	detune=num.linlin(0,9,1,1.9); // min=0,max=9 to 1 and 1.9 detune
+	detune=num.linlin(0,9,1,1.11); // min=0,max=9 to 1 and 1.9 detune
 	bw=num.linexp(0.0,9,10,400);
 	freq=detune*50;
 	freq=LinLin.kr(num,0,9,100,1975.5332050195); // last note from lydian collection

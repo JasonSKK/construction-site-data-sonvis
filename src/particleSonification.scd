@@ -6,7 +6,7 @@ s.waitForBoot{ // run as routine otherwise the patch is not loaded by multithrea
 // s.meter;
 	
 // load lydian scale functions and configuration
-("/Users/jsk/Coding/LiU/constructionSightSonification/src/scale_exp.scd".standardizePath).load;
+(thisProcess.nowExecutingPath.dirname++"/scale_exp.scd".standardizePath).load;
 
 d=(); // create dictionary for min max values
 
@@ -285,10 +285,10 @@ OSCdef(\incoming,
 		};
 
 		// --------------------------------- Humidity ---------------------------------
-		t60 = humidityMap.linlin(0.0,1.0,1.5,4); // map to t60 values
-		wet = humidityMap.linlin(0.0,1.0,1,2.0); // map to wet amount values, multiplier
+		t60 = humidityMap.linlin(0.0,1.0,1.5,3); // map to t60 values
+		wet = humidityMap.linlin(0.0,1.0,0.5,1.5); // map to wet amount values, multiplier
 		if (humidity > 60.839717741935765, { // if greater than mean
-			x.busOut.set(\t60,2,\wet,1); // set parameters to synth
+			x.busOut.set(\t60,t60,\wet,wet); // set parameters to synth
 		},{x.busOut.set(\t60,1,\wet,0.1) });
 
 		// --------------------------------- Temperature ---------------------------------
