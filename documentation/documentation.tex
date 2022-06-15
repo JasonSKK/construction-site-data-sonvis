@@ -1,4 +1,4 @@
-% Created 2022-06-09 Thu 11:08
+% Created 2022-06-15 Wed 13:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Algorithm architecture}
-\label{sec:orgf99a35b}
+\label{sec:org71f9984}
 The overall algorithm is structured as:
 \begin{enumerate}
 \item Interface
@@ -58,8 +58,41 @@ The overall algorithm is structured as:
 \end{enumerate}
 \end{enumerate}
 
+\section{Dependencies}
+\label{sec:org897db6e}
+SuperCollider (sclang has to be in \$PATH)
+
+Python \&
+Python packages:
+
+from \uline{\uline{future}} import print\(_{\text{function}}\)
+import datetime as dt
+import panel as pn
+import param  \# for FormatDateRangeSlider
+import subprocess  \# to run SC
+import threading  \# stop iteration cycle when kill button pressed
+\#from pythonosc import udp\(_{\text{client}}\)
+from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
+import os
+import numpy as np
+import pandas as pd
+import time
+import datetime
+from dateutil import parser
+from pythonosc import udp\(_{\text{client}}\)
+import subprocess
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+import sys
+from bokeh.plotting import figure
+from pythonosc.osc\(_{\text{server}}\) import AsyncIOOSCUDPServer
+from pythonosc.dispatcher import Dispatcher
+import asyncio
+
 \section{Interface}
-\label{sec:org0f781a3}
+\label{sec:orgacf52b9}
 The interface consists of certain visual elements.
 The datetime range slider and text input (for the time) are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.
 
@@ -112,7 +145,7 @@ The ones that utilise this functionality is the \textbf{start} \textbf{killall} 
 This will be elaborated in the IPC section
 
 \section{Sub-processes}
-\label{sec:org548b2f6}
+\label{sec:orgd727bb3}
 On launch, sclang is initialised and runs as a sub-process within the python session.  More specifically, the SuperCollider  patch for sonification is evaluated using the following command in Python.
 \begin{verbatim}
 # run sonification patch
@@ -150,8 +183,8 @@ ipconfig | grep IPv4 Address.
 \end{verbatim}
 
 \section{data processing}
-\label{sec:orgda9ec3e}
-In this section the data processing will be described.  The algorithm is developed in Python.  The idea is based on combining and re-constructing the data-sets after the processing results that come out from the derived stats (IQR).  SC has also access to the derived data-set (it is written to disk) so that it has access to the min max values for the correct mapping (see \ref{sec:org2513f09}).  In this way, it is also possible to re-use the algorithm with different data since the mapping is not hard-coded.
+\label{sec:org0414196}
+In this section the data processing will be described.  The algorithm is developed in Python.  The idea is based on combining and re-constructing the data-sets after the processing results that come out from the derived stats (IQR).  SC has also access to the derived data-set (it is written to disk) so that it has access to the min max values for the correct mapping (see \ref{sec:org206d8c7}).  In this way, it is also possible to re-use the algorithm with different data since the mapping is not hard-coded.
 
 Outlier identification and replacement was deemed necessary since it was observed by using box-plot stats the PM (both 25 and 10) showed extreme values (far from accurate measurements (140\textasciitilde{} PM10) ) that we would like to exclude.
 
@@ -164,7 +197,7 @@ Code process:
 The very first step is that the original data are loaded from the CSV file while the timestamp column is stored in a variable.  Then the timestamp column is removed from the data-set to do the processing and then added again in the very end of the procedure.
 
 \subsection{outlier identification}
-\label{sec:orgcd2f46b}
+\label{sec:orgb74fda1}
 Descriptive statistics are applied in the data-set using the 'describe()' method from pandas.  That is to calculate percentiles, max, min and mean of every column in the data-set.  Then the Q1 and Q3 of PM10 and PM25 are stored in variables.  The IQR of both is calculated as well as the max and min threshold.  The threshold will be used to identify the outliers.  Values that exceed the min and max threshold are the outliers.
 
 \begin{verbatim}
@@ -186,7 +219,7 @@ thresholds = {'min thresh_pm_25': min_thresh_pm_25,
 \end{verbatim}
 
 \subsection{replacement}
-\label{sec:orgbd67c70}
+\label{sec:org0d6c451}
 Values for PM10 and PM25 that exceeded min and max threshold derived from the IQR calculation will be NaN-ed and then replaced with randomly selected samples from the same column in the data-set.  This outlier replacement process takes place for PM10, PM25 and noise levels.  The replacement function also prints how many values were replaced.
 
 \begin{verbatim}
@@ -210,8 +243,8 @@ df = df.apply( # replace NaN values from random samples same column
 \end{verbatim}
 
 \subsection{data-frame creation and manipulation}
-\label{sec:orgcb89335}
-As mentioned the df is first loaded from the CSV file, while the timestamp column is removed and stored in a variable.  This was done to easily process the data-set without interfering with the datetime object (timestamp column).  After that the \ref{sec:orgcd2f46b} takes place.  That results to a new data-frame and then the timestamp column is added (insert method).
+\label{sec:org354e853}
+As mentioned the df is first loaded from the CSV file, while the timestamp column is removed and stored in a variable.  This was done to easily process the data-set without interfering with the datetime object (timestamp column).  After that the \ref{sec:orgb74fda1} takes place.  That results to a new data-frame and then the timestamp column is added (insert method).
 \begin{verbatim}
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)
@@ -231,8 +264,8 @@ After that the main data-frame is written to disk within a certain directory pat
 Later the data-frame is registered to a global variable for easier access.
 
 \subsection{min-max extraction script}
-\label{sec:org2513f09}
-The min-max python script was used for use within SuperCollider.  Its purpose is to run the min and max basic python methods to certain columns.  These values will be used for the paramenter mapping.  It returns the min and max value of the specified column.  These are stored in a dictionary.  More information can be found at  \ref{sec:org838b6e7}.
+\label{sec:org206d8c7}
+The min-max python script was used for use within SuperCollider.  Its purpose is to run the min and max basic python methods to certain columns.  These values will be used for the paramenter mapping.  It returns the min and max value of the specified column.  These are stored in a dictionary.  More information can be found at  \ref{sec:org13f233f}.
 
 It takes 2 arguments, these are:
 \begin{enumerate}
@@ -248,7 +281,7 @@ python minmax.py data-file column
 In SuperCollider this command will run using the "unixCmdGetStdOutLines" method.  It will return the values as "string" in the SuperCollider environment.
 
 \subsection{datetime re-sample function}
-\label{sec:orgabf1edc}
+\label{sec:orgb480f41}
 \textbf{Not 100\% implemented}
 
 This function was implemented to re-sample the processed data-frame.  In the non-resampled one the collection frequency is 30s. So, every 30 seconds a new value is stored for all parameters.
@@ -266,7 +299,7 @@ The frequencies in the re-sampling process that was selected are:
 \item M / 1 Month
 \end{enumerate}
 
-The re-sample function is accessed by the checkbox on the interface \ref{sec:org0f781a3}.  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
+The re-sample function is accessed by the checkbox on the interface \ref{sec:orgacf52b9}.  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
 
 \begin{center}
 \begin{tabular}{rr}
@@ -293,17 +326,17 @@ Overall, the re-sample function is base on the resample() method in combination 
 In the iteration process \ldots{} \textbf{TO BE DONE \& REPORTED}  (Write only re-sampling function related info, next section is: on-run functions)
 
 \section{on-run functions}
-\label{sec:orgf51a496}
+\label{sec:org66ce3ff}
 \section{IPC inter-process communication (includes connection setup functions)}
-\label{sec:org02341a6}
+\label{sec:org5c532d5}
 The IPC is based on the OSC protocol and its aim is to interconnect Python and SueprCollider.  It is based on sending individual messages from the Python process triggered by the Python interface elements.
 
 In the OSC configuration there are 3 different OSC addresses that allow communication between the two software.  These are:
 \begin{enumerate}
-\item '/pysc' | main address for the iteration process.  SC received the data values (OSCdef).  Py → SC
-\item '/synths' | controls the synths, acts like an ON/OFF switch.  Triggered by the 6 synth ON/OFF buttons. Py → SC
-\item '/startEnd' | This acts like main ON/OFF switch for the all synths, it is triggered by the START and Killall buttons. Py → SC
-\item '\emph{startup}' | Initialisation address, activates the interaction elements on the interface when (or if) the SC responds.  This configuration uses the 1234 port instead. SC → Py
+\item \label{org626b5a6} | main address for the iteration process.  SC received the data values (OSCdef).  Py → SC
+\item \label{org92feb10} | controls the synths, acts like an ON/OFF switch.  Triggered by the 6 synth ON/OFF buttons. Py → SC
+\item \label{org2c5d731} | This acts like main ON/OFF switch for the all synths, it is triggered by the START and Killall buttons. Py → SC
+\item \label{org1654376} | Initialisation address, activates the interaction elements on the interface when (or if) the SC responds.  This configuration uses the 1234 port instead. SC → Py
 \end{enumerate}
 
 The initial configuration is related to obtaining the IP address of the computer automatically to avoid manual configurations.  This was implemented with the following functions in Python and SuperCollider.
@@ -347,26 +380,30 @@ n.sendMsg('/startup/',1); // send to python that everything is loaded to enable 
 
 At this point where the above command runs, an OSC message is sent to python using the '\emph{startup}' address.  In the OSC server function (receiver) in Python a task activates the interaction elements on the interface.  This process can be found in the oscServerPython.scd file \url{../src/oscServerPython.py}.
 
+The communication using the \ref{org626b5a6} address is the most important one since concerns the iteration process.  The data values in every iteration cycle (row by row) are sent to SuperCollider as shown below.
 
+\begin{verbatim}
+client.send_message("/pysc", datetime_selection.iloc[i])
+\end{verbatim}
 \section{Sonification algorithm}
-\label{sec:org838b6e7}
+\label{sec:org13f233f}
 \subsection{processing functions}
-\label{sec:org08667cf}
+\label{sec:org4b31ca5}
 \subsection{data receiver -- handler}
-\label{sec:org325d2ce}
+\label{sec:org5ab6084}
 \subsection{synth and data parameter dictionary}
-\label{sec:orgcc3db5c}
-Speak about the mapping (max-min values py script).  Mentioned at \ref{sec:org2513f09}
+\label{sec:org58a921a}
+Speak about the mapping (max-min values py script).  Mentioned at \ref{sec:org206d8c7}
 \begin{verbatim}
 com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
         (~path+/+file).postln;
 \end{verbatim}
 \subsection{event receiver - actions}
-\label{sec:org6b3ac2a}
+\label{sec:orgfa0cea3}
 \subsection{IPC connection configuration}
-\label{sec:org7850937}
+\label{sec:orgcc09955}
 \subsection{synthesisers}
-\label{sec:org1d08186}
+\label{sec:orgb25d361}
 \subsection{map to scale frequency mapping patch}
-\label{sec:org1a0bda9}
+\label{sec:orga1cbe34}
 \end{document}

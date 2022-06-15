@@ -4,6 +4,23 @@
 # Niklas meeting
 # Tue at 11 o'clock
 
+1. IPC, interface elements are activated when communication between python and sc is established
+2. simple line graph visualisation, zoom etc
+3. re-sample function (listen to the data per/day) -- took time for a day with the initial period 30sec, allowed to compare
+4. sonification, I am using VarSaw and Pulse for the beat, when low values VarSaw as long they increase, the waveform gradually changes to pulse.  Worked on the overall soundscape (mainly mixing and "polishing") as well, particles had to be attenuated as Niklas suggested.
+5. instructions
+6. documentation
+7. visualisation ideas? This is static, would it be important to add interaction?
+
+
+Niklas feedback
+zoom every line graph
+timeline moving bar
+
+Takanori: moving annotation line
+
+
+
 * Algorithm architecture
 The overall algorithm is structured as:
 1. Interface
@@ -24,6 +41,38 @@ The overall algorithm is structured as:
    5. IPC connection configuration
    6. synthesisers
    7. map to scale frequency mapping patch
+
+* Dependencies
+SuperCollider (sclang has to be in $PATH)
+
+Python &
+Python packages:
+
+from __future__ import print_function
+import datetime as dt
+import panel as pn
+import param  # for FormatDateRangeSlider
+import subprocess  # to run SC
+import threading  # stop iteration cycle when kill button pressed
+#from pythonosc import udp_client
+from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
+import os
+import numpy as np
+import pandas as pd
+import time
+import datetime
+from dateutil import parser
+from pythonosc import udp_client
+import subprocess
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+import sys
+from bokeh.plotting import figure
+from pythonosc.osc_server import AsyncIOOSCUDPServer
+from pythonosc.dispatcher import Dispatcher
+import asyncio
 
 * Interface
 The interface consists of certain visual elements.
@@ -282,11 +331,11 @@ client.send_message("/pysc", datetime_selection.iloc[i])
 
 
 
-[['/synths']]
+# [['/synths']]
 
-[['startEnd']]
+# [['startEnd']]
 
-[['/startup']]
+# [['/startup']]
 * Sonification algorithm
 ** processing functions
 ** data receiver -- handler
