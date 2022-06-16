@@ -7,8 +7,10 @@ import panel as pn
 import param  # for FormatDateRangeSlider
 import subprocess  # to run SC
 import threading  # stop iteration cycle when kill button pressed
-#from pythonosc import udp_client
 from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
+from dateutil import parser  # convert str() to datetime
+from bokeh.layouts import row, layout  # to update BoxAnnotation
+#from pythonosc import udp_client
 
 
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
@@ -263,14 +265,28 @@ def humid_synth(event): # humid synth
     print("humid synth")
 
 
+
+
+
+
+
 def temperature_synth(event): # temperature synth
     client.send_message("/synths", 'temperature_synth')  # send to SC
     print("temperature synth")
+    dt1 = parser.parse(str(msg.timestamp))
+    plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
 
 
 def truck_synth(event): # truck synth
     client.send_message("/synths", 'truck_synth')  # send to SC
     print("truck synth")
+    #layout.children.pop() # TEEEEEEEEEEST REMOVE LATER
+
+
+
+
+
+
 
 
 #  Text, on interface instructions
@@ -320,6 +336,15 @@ sclang = subprocess.Popen(
 
 exec(open("line_graph.py").read()) # prepare line plots
 
+#datetime_object = datetime.isoformat('2021-08-01 00:01:30')
+#datetime_object2 = datetime.isoformat('2021-08-08 00:01:30')
+
+# Box Annotations
+dt1 = parser.parse(str(df.iloc[0].timestamp))
+plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+
+layout = layout([[row([plotpm10])]])
+
 
 # create grid
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
@@ -338,10 +363,10 @@ gspec[0:3, 2] = pn.Row(pn.Column(  # render column
     pn.Row(trucks_button,
            humid_button,
            temperature_button),
-    pn.Row(plotpm10), # defined in line_graph.py
+    pn.Row(layout,plotpm10), # defined in line_graph.py
     pn.Column(plotpm25),
 ),
-pn.Column(plotnoise ,plothumid,plotcount))
+pn.Column(plotnoise,plothumid,plotcount))
 
 exec(open("oscServerPython.py").read())  # OSC server setup
 

@@ -81,6 +81,11 @@ def t_period(start_date,end_date,dataframe):
 #     print(str(pm_10pos)+' pm_10pos ') # print pm 10 values AS STRING
 #     print_Matrix(matrix) # print time data in matrix form
 
+def updateBox():
+    dt1 = parser.parse(str(msg.timestamp))
+    plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+
+
 def run(start_date=None,end_date=None,period=None):
     if (start_date is None) and (end_date is None) and (period is None):
         print("ERROR: run() missing 3 required positional arguments: 'start_date', 'end_date', 'period' DT in the format of %Y-%m-%d %H:%M:%S i.e. '2021-08-21 00:00:00' ")
@@ -91,6 +96,7 @@ def run(start_date=None,end_date=None,period=None):
             if break_cycle is True:
                 break;
             else:
+                global msg
                 msg = datetime_selection.iloc[i]
                 client.send_message("/pysc", msg)
                 dt_selection_pos = datetime_selection.iloc[i]  # get current date-time
@@ -98,7 +104,9 @@ def run(start_date=None,end_date=None,period=None):
                 currentDT = str(dt_selection_pos[0]).split(" ")[1]+"   "+str(dt_selection_pos[0]).split(" ")[0]  # display current time and date
                 #  update text input widget to current date time
                 text.value = currentDT
-                print(datetime_selection.iloc[i])
+                #  update BoxAnnotation
+                #thr = threading.Thread(target=updateBox, args=(), kwargs={}).start()
+                print(datetime_selection.iloc[i])  # print current position
                 # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
                 # t_period(d_start,d_end,i)
                 # row = datetime_selection.iloc[i]

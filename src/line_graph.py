@@ -1,4 +1,5 @@
 from bokeh.plotting import figure
+from bokeh.models import BoxAnnotation
 
 # store processed df to variable
 dfplot = df
