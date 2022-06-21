@@ -80,10 +80,8 @@ def t_period(start_date,end_date,dataframe):
 #     print(str(pm_25pos)+' pm_25pos ') # print pm 25 values AS STRING
 #     print(str(pm_10pos)+' pm_10pos ') # print pm 10 values AS STRING
 #     print_Matrix(matrix) # print time data in matrix form
-
-def updateBox():
-    dt1 = parser.parse(str(msg.timestamp))
-    plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+def updateBox(dt1):
+    box.document.add_next_tick_callback(lambda: box.update(left=dt1, right=dt1))
 
 
 def run(start_date=None,end_date=None,period=None):
@@ -105,16 +103,10 @@ def run(start_date=None,end_date=None,period=None):
                 #  update text input widget to current date time
                 text.value = currentDT
                 #  update BoxAnnotation
-                dt1 = parser.parse(str(msg.timestamp))
-                box.document.add_next_tick_callback(lambda: box.update(right=dt1, left=dt1))
-                #box.right = dt1
-                #box.left = dt1
-                #thr = threading.Thread(target=updateBox, args=(), kwargs={}).start()
+                dt1 = parser.parse(str(msg.timestamp))  # convert to datetime
+                updateBox(dt1)
+
                 print(datetime_selection.iloc[i])  # print current position
-                # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')
-                # t_period(d_start,d_end,i)
-                # row = datetime_selection.iloc[i]
-                # print(row)
             time.sleep(period)
         #  when iteration ends set => text input the initially inputted value
         temp_start_time = start_date.split(" ")[1]  # get start time

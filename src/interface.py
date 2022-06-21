@@ -343,7 +343,11 @@ exec(open("line_graph.py").read()) # prepare line plots
 # Box Annotations
 dt1 = parser.parse(str(df.iloc[0].timestamp))
 box = BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red')
-plotpm10.add_layout(box)
+plotpm10.add_layout(box)  # add layout to line graphs
+plotpm25.add_layout(box)
+plotnoise.add_layout(box)
+plothumid.add_layout(box)
+plotcount.add_layout(box)
 
 #text.js_on_change()
 
