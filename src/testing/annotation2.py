@@ -10,7 +10,8 @@ p1 = figure(width=150, height=230, active_scroll="wheel_zoom")
 layout = row(p1)
 
 
-p2 = figure(width=150, height=10, active_scroll="wheel_zoom")
+
+p2 = figure(width=150, height=500, active_scroll="wheel_zoom")
 #layout.children[0] = p2
 
 def do(event): # killall button fuction

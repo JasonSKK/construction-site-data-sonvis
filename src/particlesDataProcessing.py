@@ -105,6 +105,10 @@ def run(start_date=None,end_date=None,period=None):
                 #  update text input widget to current date time
                 text.value = currentDT
                 #  update BoxAnnotation
+                dt1 = parser.parse(str(msg.timestamp))
+                box.document.add_next_tick_callback(lambda: box.update(right=dt1, left=dt1))
+                #box.right = dt1
+                #box.left = dt1
                 #thr = threading.Thread(target=updateBox, args=(), kwargs={}).start()
                 print(datetime_selection.iloc[i])  # print current position
                 # t_period('2021-08-21 00:00:00','2021-08-21 00:11:30')

@@ -12,7 +12,6 @@ from dateutil import parser  # convert str() to datetime
 from bokeh.layouts import row, layout  # to update BoxAnnotation
 #from pythonosc import udp_client
 
-
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
 
 # Python osc
@@ -274,14 +273,16 @@ def temperature_synth(event): # temperature synth
     client.send_message("/synths", 'temperature_synth')  # send to SC
     print("temperature synth")
     dt1 = parser.parse(str(msg.timestamp))
-    plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+    box.right = dt1
+    box.left = dt1
+    #plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+
 
 
 def truck_synth(event): # truck synth
     client.send_message("/synths", 'truck_synth')  # send to SC
     print("truck synth")
     #layout.children.pop() # TEEEEEEEEEEST REMOVE LATER
-
 
 
 
@@ -341,10 +342,10 @@ exec(open("line_graph.py").read()) # prepare line plots
 
 # Box Annotations
 dt1 = parser.parse(str(df.iloc[0].timestamp))
-plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+box = BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red')
+plotpm10.add_layout(box)
 
-layout = layout([[row([plotpm10])]])
-
+#text.js_on_change()
 
 # create grid
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
@@ -363,7 +364,7 @@ gspec[0:3, 2] = pn.Row(pn.Column(  # render column
     pn.Row(trucks_button,
            humid_button,
            temperature_button),
-    pn.Row(layout,plotpm10), # defined in line_graph.py
+    pn.Row(plotpm10), # defined in line_graph.py
     pn.Column(plotpm25),
 ),
 pn.Column(plotnoise,plothumid,plotcount))
