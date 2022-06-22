@@ -16,26 +16,12 @@ df = pd.read_csv(filename)
 # save first column
 timestamp = df['timestamp']
 
-#
-# df.sample(5)
-# warnings.filterwarnings('ignore')
-# plt.figure(figsize=(16,5))
-# plt.subplot(1,2,1)
-# sns.distplot(df['temperature'])
-# plt.subplot(1,2,2)
-# sns.distplot(df['pm_25'])
-# plt.show()
-#
-# print("Highest allowed",df['pm_25'].mean() + 3*df['pm_25'].std())
-
 # set figure size
 fig = plt.figure(figsize=(7, 4))
 
 # create data frame and set its columns
 df = pd.DataFrame(df, columns=['temperature', 'humidity', 'pm_25', 'pm_10'])
 pd.DataFrame.boxplot(df)
-
-
 
 # show stats and calculate IQR from Q1 Q3 as a skewed distribution
 stats = df.describe()
@@ -65,10 +51,10 @@ thresholds = {'min thresh_pm_25': min_thresh_pm_25,
 print(thresholds)
 
 
+# boxplot -- for tests
 # create the boxplot
 #plt.boxplot(df)
-
-# show
+# show it
 #plt.show()
 
 def replaceOutliers(col,minimum_thres,maximum_thres):
@@ -96,13 +82,6 @@ def replaceOutliers(col,minimum_thres,maximum_thres):
 # replace nan values with sample values from the same column for the full data-set
 df = df.apply(
     lambda x: np.where(x.isnull(), x.dropna().sample(len(x), replace=True), x))
-
-#def median_windows(col,n): # n is the number that the window will contain
-#    n = 200000  #chunk row size
-#    list_df = [df[i:i+n] for i in range(0,df.shape[0],n)]
-    #for i in [col]:
-    #    tempdf =
-
 
 # replace outliers pm_25 -- max thresh: changed with observed box plot value
 # max and min thresh from IQR was deleting too many values both pm_25 & pm_10

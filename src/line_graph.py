@@ -1,3 +1,6 @@
+# Svoronos Kanavas Iason -- plots initialisation and setup
+# LiU Apr. 2022 -- construction site sonification
+
 from bokeh.plotting import figure
 from bokeh.models import BoxAnnotation
 from bokeh.palettes import Spectral11

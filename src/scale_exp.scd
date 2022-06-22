@@ -1,4 +1,5 @@
-// consider -bc of ancient greek scale kationtes, to apply this in the sonification -- so more particles lower note instead of higher-
+// Svoronos Kanavas Iason -- Map to Lydian scale patch
+// LiU Apr. 2022 -- construction site sonification
 
 ~lydScale= Scale.lydian.ratios * 36.midicps * 1; // first octave of lydian scale | Do/C
 

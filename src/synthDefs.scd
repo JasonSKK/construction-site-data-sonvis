@@ -233,12 +233,10 @@ fork{ // needs some time to load synth before playing, otherwise it is not audia
 	x.busOut = Synth(\busOut, addAction:\addToTail); // open master :) 
 };
 
-//:
+
 // tests
-//
 //x.noiseSynthDB.set(\modf,7,\depth2,0,\depth,0, \pwmWidth, 0.5, \amp,0.01);
 //x.busOut.set(\masterGate,1,\wet,0,\t60,0.0);
 //x.pm25synth.free;
-
 
 ("synthdefs loaded").postln;

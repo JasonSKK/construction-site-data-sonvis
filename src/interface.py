@@ -10,18 +10,12 @@ import threading  # stop iteration cycle when kill button pressed
 from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
 from dateutil import parser  # convert str() to datetime
 from bokeh.layouts import row, layout  # to update BoxAnnotation
-#from pythonosc import udp_client
-from bokeh.models import Range1d,DataRange1d
 
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
 
-# Python osc
-#getip() # run getip function
-#client = udp_client.SimpleUDPClient(ip, 57120)
+pn.extension()  # panel
 
-pn.extension()
-
-
+# new class for DateRangeSlider -- date-time
 class FormatDateRangeSlider(pn.widgets.DateRangeSlider):
     format = param.String(r"%m%Y")
 
@@ -53,7 +47,6 @@ date_range_slider = FormatDateRangeSlider(
 
 # create iteration period slider
 period_slider = Slider(
-
     start=1,
     end=1000,
     value=1000,
@@ -62,11 +55,11 @@ period_slider = Slider(
     title="Values/sec"
 )
 #  formula: 60 / Values Per Second = iteration cycle delay
+# INFO:
+# data-set starts: 2021-08-01
+# data-set ends: 2021-08-31 23:59:30
 
-# dataset starts: 2021-08-01
-# dataset ends: 2021-08-31 23:59:30
-
-# create start button
+# create widgets
 start_button = pn.widgets.Button(
     name='Start',
     button_type='warning',  # Orange-ish
@@ -117,23 +110,22 @@ instructions = pn.widgets.Button(
     width=200,
     disabled=False)
 
-
+#  checkbox ticks initialise -- control
 global current_checkbox_ticks
 current_checkbox_ticks = [0]
 
 global flagResample
 flagResample = False
 
-# Your callback function
+# re-sample function according to ticks
 def resample_func(attr):
-    # Go get the new selection
     new_ticks = resample_box.active
     if len(new_ticks) > 1:
-        # If more than 2, set it to the previous selection
+        # if < 2 set it to previous values
         global current_checkbox_ticks
         resample_box.active = current_checkbox_ticks
     else:
-        # If up to 2 now, update the stored variable
+        # If >= 2 update current_checkbox_ticks variable
         current_checkbox_ticks = resample_box.active
     print(current_checkbox_ticks)
     if len(current_checkbox_ticks) > 0:
@@ -190,11 +182,9 @@ def resample_func(attr):
 
 LABELS = ["30s", "T", "H", "D", "W"]
 resample_box = CheckboxGroup(labels=LABELS, active=[0],inline = True)
-#resample_box.js_on_click(CustomJS(code="""
-#   console.log('checkbox_group: active=' + this.active, this.toString())
-#"""))
+
+#  resample checkbox on click run re-sample function (sub-function: resample() )
 resample_box.on_click(resample_func)
-#resample_box.on_click(checkbox_ticks())
 
 # on start button event
 def do(event):
@@ -219,24 +209,15 @@ def do(event):
         str(enddt)+' '+str(endtime),
     ]
     print(timedate_formating)  # print everything as datetime formating
-    # format: run(
-        #'2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 ) # original command syntax
-    #run( # run function defined in particlesDataProcessing with given datetime from slider
-    #    timedate_formating[0],  # start datetime
-    #    timedate_formating[1],  # end datetime
-    #    0.02 # iteration frequency
-    #)
     global break_cycle
     break_cycle = False
     threading.Thread(target=run, args=(
         timedate_formating[0],  # start datetime
         timedate_formating[1],  # end datetime
-        # 0.07 # fixed iteration frequency
         1/period_slider.value
     )).start()
-    #threading.Thread(target=update, args=(currentDT[0])).start()
 
-
+# widgets functions
 def killall(event): # killall button fuction
     #command = sys.exit("Error message") # actually kill python sesh
     client.send_message("/startEnd", '0')  # send to SC stop synth: gate 0
@@ -280,26 +261,10 @@ def humid_synth(event): # humid synth
     else:
         humid_button.button_type='default'
 
-#def updateit():
-    #plotpm10.x_range.update(start=dt1, end=dt1)
-
 
 def temperature_synth(event): # temperature synth
     client.send_message("/synths", 'temperature_synth')  # send to SC
     print("temperature synth")
-    #updateit()
-    #plotpm10.x_range = Range1d(dt1, dt1)#, y_range=(-5, 25)
-    #r = Range1d
-    # set properties individually:
-    #st = 10#parser.parse(str('2021-08-01 00:01:00'))  # convert to datetime
-    #end =  50#parser.parse(str('2021-08-02 00:01:00'))  # convert to datetime
-    #r.start = st
-    #r.end = end
-    #plotpm10.document.add_next_tick_callback(lambda: plotpm10.update(y_range=DataRange1d(st,end)))
-    #plotpm10.y_range = Range1d(st,end)#, y_range=(-5, 25)
-    # update properties together:
-    #r.update(start=10, end=20)
-
 
 
 def truck_synth(event): # truck synth
@@ -320,7 +285,7 @@ def inst_open(event): # truck synth
     print("instructions opened")
 
 
-
+# widgets on click -- function
 start_button.on_click(do) # on click post selected data & evaluate run function
 kill_button.on_click(killall)
 pm_10_button.on_click(pm_10_synth)
@@ -334,7 +299,7 @@ instructions.on_click(inst_open)
 
 # re-sample
 def resample(dataframe,freq):
-    # concert to datetime
+    # convert to date-time
     dataframe['timestamp'] = pd.to_datetime(dataframe['timestamp'])
     # resample it and write the max values
     resampled_df = dataframe.resample(freq, on='timestamp').max()
@@ -351,30 +316,26 @@ sclang = subprocess.Popen(
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT)
 
-# --outdated version--
-# run > python slider.py
-#pn.serve(pn.Row(button, text, date_range_slider)) # render everything
-# --------------------
-
 exec(open("line_graph.py").read()) # prepare line plots
 
-#datetime_object = datetime.isoformat('2021-08-01 00:01:30')
-#datetime_object2 = datetime.isoformat('2021-08-08 00:01:30')
 
 # Box Annotations
-dt1 = parser.parse(str(df.iloc[0].timestamp))
-box = BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, line_alpha=1.0, fill_color='red', line_color='red', line_width=3)
+dt1 = parser.parse(str(df.iloc[0].timestamp))  # convert to date-time
+box = BoxAnnotation(  # initialise box annotation
+    left=dt1, right=dt1,  # current running date-time
+    fill_alpha=0.0, line_alpha=1.0, fill_color='red', line_color='red',
+    line_width=3)
 plotpm10.add_layout(box)  # add layout to line graphs
-#plotpm25.add_layout(box)
+#plotpm25.add_layout(box)  # embedded into plotpm10
 plotnoise.add_layout(box)
 plothumid.add_layout(box)
 plotcount.add_layout(box)
 
-#text.js_on_change()
 
 # create grid
 gspec = pn.GridSpec(sizing_mode='stretch_both', max_height=800)
 
+#  layout
 gspec[0:3, 2] = pn.Row(pn.Column(  # render column
     instructions,
     start_button,
@@ -390,11 +351,10 @@ gspec[0:3, 2] = pn.Row(pn.Column(  # render column
            humid_button,
            temperature_button),
     pn.Row(plotpm10), # defined in line_graph.py
-   # pn.Column(plotpm25),
+   # pn.Column(plotpm25),  # embedded into plotpm10
 ),
 pn.Column(plotnoise,plothumid,plotcount))
 
 exec(open("oscServerPython.py").read())  # OSC server setup
 
 pn.serve(gspec)  #  render created grid
-#pn.serve() # render everything | outdated old version

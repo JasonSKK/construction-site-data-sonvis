@@ -13,5 +13,6 @@ db = sf['cat_24']
 
 df.insert(6, "db", db, True) # insert last db column
 
+# INFO
 # 84.6403333333333 max
 # 5.444976 min

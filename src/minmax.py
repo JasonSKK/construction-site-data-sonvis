@@ -27,13 +27,3 @@ def minmax():
     return([min,max])
 
 minmax()
-
-# previous version non-script implemented
-# def minmax(ds,col):
-#     #temperature,humidity,pm_25,pm_10
-#     #if  not isinstance(col, str):
-#     #    col = str(col)
-#     #else:
-#     min = ds[col].min()
-#     max = ds[col].max()
-#     print('\n', 'min '+str(min),'\n','max '+str(max))

@@ -32,12 +32,7 @@ def getip():
 getip() # run getip function
 client = udp_client.SimpleUDPClient(ip, 57120)
 
-
 exec(open("outliers_exp.py").read()) # load functional script
-
-#filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
-# Load the .csv file
-#df = pd.read_csv(filename)
 
 
 # func to print matrix with date data
@@ -55,31 +50,8 @@ def t_period(start_date,end_date,dataframe):
     datetime_selection = dataframe[  # create new dataframe from given time period
         dataframe.timestamp.between(
             start_date,end_date,inclusive=True)] # include given dates
-    #start_closest = pd.to_datetime(datetime_selection.timestamp).searchsorted(start_date)
-    #end_closest = pd.to_datetime(datetime_selection.timestamp).searchsorted(end_date)
-    #else:
 
-# consider using this??
-# def iter(i): # iteration function -- value update | i=count_argument
-#     # --- DATA format --- df.iloc[row][column]
-#     # set date format, df.iloc[0][0] is the row and column num
-#     datepos = datetime_selection.iloc[i][0] # position for date
-#     pm_25pos = datetime_selection.iloc[i][3] # position for pm_25 particles
-#     pm_10pos = datetime_selection.iloc[i][4] # position for pm_10 particles
-#     date = datetime.datetime.strptime(datepos, "%Y-%m-%d %H:%M:%S") # configure data format => store
-#     timestamp_array = [ # create array with time data
-#         date.year,
-#         date.month,
-#         date.day,
-#         date.hour,
-#         date.minute,
-#         date.second]
-#     matrix = [
-#         timestamp_array, # actual data in int and float
-#         ['year |month |day |hour |min |sec']] # setup matrix form
-#     print(str(pm_25pos)+' pm_25pos ') # print pm 25 values AS STRING
-#     print(str(pm_10pos)+' pm_10pos ') # print pm 10 values AS STRING
-#     print_Matrix(matrix) # print time data in matrix form
+
 def updateBox(dt1):
     box.document.add_next_tick_callback(lambda: box.update(left=dt1, right=dt1))
 
@@ -97,17 +69,15 @@ def run(start_date=None,end_date=None,period=None):
                 global msg
                 msg = datetime_selection.iloc[i]
                 client.send_message("/pysc", msg)
-
                 #  update BoxAnnotation
-                dt1 = parser.parse(str(msg.timestamp))  # convert to datetime
+                dt1 = parser.parse(str(msg.timestamp))  # convert to date-time
                 updateBox(dt1)
-
                 dt_selection_pos = datetime_selection.iloc[i]  # get current date-time
-                #  split current date time to time and date
-                currentDT = str(dt_selection_pos[0]).split(" ")[1]+"   "+str(dt_selection_pos[0]).split(" ")[0]  # display current time and date
-                #  update text input widget to current date time
+                currentDT = str(  #  split current date time to time and date
+                    dt_selection_pos[0]).split(" ")[1]+"   "+str(
+                        dt_selection_pos[0]).split(" ")[0]  # display current time and date
+                # update text input widget to current date time
                 text.value = currentDT
-
                 print(datetime_selection.iloc[i])  # print current position
             time.sleep(period)
         #  when iteration ends set => text input the initially inputted value
@@ -116,49 +86,4 @@ def run(start_date=None,end_date=None,period=None):
         #  set to text input widget
         text.value = temp_start_time+"-"+temp_end_time
 
-# e.g.
-# run( '2021-08-21 00:00:00' ,  '2021-08-21 00:00:30', 0.9 )
-
-
-# fix this -- asks first question and then stops
-#def ask():
-#    st_date = parser.parse(
-#        input(
-#            "Enter start date | format %YYYY,%m,%d]: "))
-#    print(st_date.year, st_date.month, st_date.day)
-#
-#    st_time = parser.parse(
-#        input(
-#            "Enter start time | format %HH:%MM:%SS]: "))
-#    print(st_date.year, st_date.month, st_date.day, st_time.hour, st_time.minute, st_time.second)
-#
-#    end_date = parser.parse(
-#        input(
-#            "Enter end date | format %YYYY,%m,%d]: "))
-#    print(end_date.year, end_date.month, end_date.day)
-#
-#    end_time = parser.parse(
-#        input(
-#            "Enter end time | format %HH:%MM:%SS]: "))
-#    print(end_date.year, end_date.month, end_date.day, end_time.hour, end_time.minute, end_time.second)
-
 print("on-run functions loaded")
-
-#pyosc
-#client = udp_client.SimpleUDPClient("10.253.233.184", 57120)
-#IP Address might change sometimes - CAREFULL IF ERROR
-
-#for i in range(len(df)):
-#for i in range(70):
-#client.send_message("/send", df[i])
-#    a = df[i]#[df[i,0], df[i,1], df[i,2], df[i,3], df[i,4]]
-#date
-#time
-#temp
-#Significant height (Ht)
-#Zero up-crossing wave period (Tz)
-#Max height (Hmax)
-#    print(str(a))
-#    time.sleep(0.05)#float(df[i,3]) / 16) # Seconds
-
-#print("end")

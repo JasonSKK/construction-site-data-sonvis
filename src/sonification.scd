@@ -30,11 +30,6 @@ p.truckGate=1; // gate for the truck synth (on.off)
 (~path++"/synthDefs.scd").standardizePath.load; // load synths 
 (~path++"/parameterReceiver.scd").standardizePath.load; // load OSC paramter receiver
 
-// OLD METHOD FOR TRUCKS --- OUTDATED (cranky A.F.) ----------------------------
-// ~count=1; // general iteration
-// ~countTruck=2; // this compares trucks date with incoming current date
-// -----------------------------------------------------------------------------
-
 // min max values function for columns in file | utilising minmax.py script
 ~minmax = { // 1st arg: filename | 2nd arg: column name as string
 	| file, col |
@@ -215,6 +210,7 @@ OSCdef(\incoming,
 			\relSmoothing, pm_25Map01.lag(0.2),
 			\pan, 0.9,
 		);
+		// ---------------------------------------------------------------------------------
 
 
 		// --------------------------------- WARNINGS ---------------------------------
@@ -257,9 +253,10 @@ OSCdef(\incoming,
 			]);
 			pm_25.postln; // post exceeding value
 		};
+		// ---------------------------------------------------------------------------------
 
 		// --------------------------------- Noise Levels --------------------------------- 
-		// smooth below 68 and drilling above
+		// smooth below 68 and intense above  -- not used
 		//dbRound = db.round(68); // 68 is the acceptable city noise
 		//case{ db > 68} {
 		//dbRoundMap = (dbRound - db).abs;
@@ -283,6 +280,7 @@ OSCdef(\incoming,
 			// varsaw pulse mapping
 			x.noiseSynthDB.set(\pulvar,dbMap01);//.linexp(0.0,1.0,0.0,1.0));
 		};
+		// ---------------------------------------------------------------------------------
 
 		// --------------------------------- Humidity ---------------------------------
 		t60 = humidityMap.linlin(0.0,1.0,1.5,3); // map to t60 values
@@ -290,25 +288,18 @@ OSCdef(\incoming,
 		if (humidity > 60.839717741935765, { // if greater than mean
 			x.busOut.set(\t60,t60,\wet,wet); // set parameters to synth
 		},{x.busOut.set(\t60,1,\wet,0.1) });
+		// ---------------------------------------------------------------------------------
 
 		// --------------------------------- Temperature ---------------------------------
 		if ((temperatureMap - ~lastTemp).abs > 0.25){
 			/*Synth(\tempSynth,[\freq,temperatureMap*10]);*/ "temp".postln;};
 		~lastTemp = temperatureMap;
+		// ---------------------------------------------------------------------------------
 
 		// --------------------------------- Trucks count  ---------------------------------
 		numTrucks=msg[7]; //numTrucks.postln;
 		~playTrucks.value(numTrucks.asInteger); // pass num trucks to the play func
 		//[\trucks,numTrucks.asInteger].postln;
-		// OLD METHOD FOR TRUCKS  ---------------------------- OUTDATED CRANKY A.F. --------
-		//~truckCountFunc.value(~countTruck);  // compares current date with the one in the truck data
-		// msg[1].postln; // print curr date 
-		//if(msg[1].asString == ~tracksTempDateTime,{ // if current date is equal with truck date
-		//	~playTrucks.value(~tracksAmount.asInteger); // pass num trucks to the play func
-		//	[\trucks,~tracksAmount].postln;
-		//}); 
-		//if(~count == 30){~countTruck=~countTruck+2;~count=0};
-		//~count=~count+1;
 		// ---------------------------------------------------------------------------------
 					
 	}, '/pysc' // osc address 
