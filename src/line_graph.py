@@ -17,9 +17,15 @@ dfplot['timestamp'] = pd.to_datetime(dfplot['timestamp'])
 # plot with a date-time x axis
 plotpm10 = figure(title="PM10:blue, PM25:green", width=700, height=250, x_axis_type="datetime")
 #plotpm25 = figure(title="PM25", width=700, height=250, x_axis_type="datetime")
-plotnoise = figure(title="noise levels db", width=700, height=250, x_axis_type="datetime",x_range=plotpm10.x_range)
-plothumid = figure(title="humidity %", width=700, height=250, x_axis_type="datetime",x_range=plotpm10.x_range)
-plotcount = figure(title="truck count", width=700, height=250, x_axis_type="datetime",x_range=plotpm10.x_range)
+plotnoise = figure(
+    title="noise levels db", width=700, height=250,
+    x_axis_type="datetime",x_range=plotpm10.x_range)
+plothumid = figure(
+    title="humidity %", width=700, height=250,
+    x_axis_type="datetime",x_range=plotpm10.x_range)
+plotcount = figure(
+    title="truck count", width=700, height=250,
+    x_axis_type="datetime",x_range=plotpm10.x_range)
 
 #numlines=len(dfplot)
 #mypalette=Spectral11[0:numlines]
