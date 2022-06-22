@@ -53,7 +53,7 @@ def t_period(start_date,end_date,dataframe):
 
 
 def updateBox(dt1):
-    box.document.add_next_tick_callback(lambda: box.update(left=dt1, right=dt1))
+    box.document.add_next_tick_callback(lambda: box.update(left=parser.parse(str(datetime_selection.iloc[0].timestamp)), right=dt1))
 
 
 def run(start_date=None,end_date=None,period=None):

@@ -41,7 +41,7 @@ date_range_slider = FormatDateRangeSlider(
     name='Date Range Slider',
     width=666,
     start=dt.datetime(2021, 8, 1), end=dt.datetime(2021, 8, 31),
-    value=(dt.datetime(2021, 8, 1), dt.datetime(2021, 8, 1)),
+    value=(dt.datetime(2021, 8, 1), dt.datetime(2021, 8, 5)),
     format="%d/%m/%Y",
 )
 
@@ -323,8 +323,8 @@ exec(open("line_graph.py").read()) # prepare line plots
 dt1 = parser.parse(str(df.iloc[0].timestamp))  # convert to date-time
 box = BoxAnnotation(  # initialise box annotation
     left=dt1, right=dt1,  # current running date-time
-    fill_alpha=0.0, line_alpha=1.0, fill_color='red', line_color='red',
-    line_width=3)
+    fill_alpha=0.5, line_alpha=0.85, fill_color='red', line_color='red',
+    line_width=1)
 plotpm10.add_layout(box)  # add layout to line graphs
 #plotpm25.add_layout(box)  # embedded into plotpm10
 plotnoise.add_layout(box)
