@@ -97,14 +97,16 @@ def run(start_date=None,end_date=None,period=None):
                 global msg
                 msg = datetime_selection.iloc[i]
                 client.send_message("/pysc", msg)
+
+                #  update BoxAnnotation
+                dt1 = parser.parse(str(msg.timestamp))  # convert to datetime
+                updateBox(dt1)
+
                 dt_selection_pos = datetime_selection.iloc[i]  # get current date-time
                 #  split current date time to time and date
                 currentDT = str(dt_selection_pos[0]).split(" ")[1]+"   "+str(dt_selection_pos[0]).split(" ")[0]  # display current time and date
                 #  update text input widget to current date time
                 text.value = currentDT
-                #  update BoxAnnotation
-                dt1 = parser.parse(str(msg.timestamp))  # convert to datetime
-                updateBox(dt1)
 
                 print(datetime_selection.iloc[i])  # print current position
             time.sleep(period)

@@ -11,6 +11,7 @@ from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
 from dateutil import parser  # convert str() to datetime
 from bokeh.layouts import row, layout  # to update BoxAnnotation
 #from pythonosc import udp_client
+from bokeh.models import Range1d,DataRange1d
 
 exec(open("particlesDataProcessing.py").read()) # load functional script PM
 
@@ -247,47 +248,67 @@ def killall(event): # killall button fuction
 def pm_10_synth(event): # pm 10 synth
     client.send_message("/synths", 'pm10_synth')  # send to SC
     print("PM 10 synth")
+    if (pm_10_button.clicks % 2) == 0:  #  if active set colour to primary (blue)
+        pm_10_button.button_type='primary'
+    else:  #  set colour to default (gray)
+        pm_10_button.button_type='default'
 
 
 def pm_25_synth(event): # pm 25 synth
     client.send_message("/synths", 'pm25_synth')  # send to SC
     print("PM 25 synth")
+    if (pm_25_button.clicks % 2) == 0:
+        pm_25_button.button_type='primary'
+    else:
+        pm_25_button.button_type='default'
 
 
 def noise_synth(event): # noise synth
     client.send_message("/synths", 'noise_synth')  # send to SC
     print("noise synth")
+    if (noise_button.clicks % 2) == 0:
+        noise_button.button_type='primary'
+    else:
+        noise_button.button_type='default'
 
 
 def humid_synth(event): # humid synth
     client.send_message("/synths", 'humid_synth')  # send to SC
     print("humid synth")
+    if (humid_button.clicks % 2) == 0:
+        humid_button.button_type='primary'
+    else:
+        humid_button.button_type='default'
 
-
-
-
-
+#def updateit():
+    #plotpm10.x_range.update(start=dt1, end=dt1)
 
 
 def temperature_synth(event): # temperature synth
     client.send_message("/synths", 'temperature_synth')  # send to SC
     print("temperature synth")
-    dt1 = parser.parse(str(msg.timestamp))
-    box.right = dt1
-    box.left = dt1
-    #plotpm10.add_layout(BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red'))
+    #updateit()
+    #plotpm10.x_range = Range1d(dt1, dt1)#, y_range=(-5, 25)
+    #r = Range1d
+    # set properties individually:
+    #st = 10#parser.parse(str('2021-08-01 00:01:00'))  # convert to datetime
+    #end =  50#parser.parse(str('2021-08-02 00:01:00'))  # convert to datetime
+    #r.start = st
+    #r.end = end
+    #plotpm10.document.add_next_tick_callback(lambda: plotpm10.update(y_range=DataRange1d(st,end)))
+    #plotpm10.y_range = Range1d(st,end)#, y_range=(-5, 25)
+    # update properties together:
+    #r.update(start=10, end=20)
 
 
 
 def truck_synth(event): # truck synth
     client.send_message("/synths", 'truck_synth')  # send to SC
     print("truck synth")
-    #layout.children.pop() # TEEEEEEEEEEST REMOVE LATER
-
-
-
-
-
+    if (trucks_button.clicks % 2) == 0:
+        trucks_button.button_type='primary'
+    else:
+        trucks_button.button_type='default'
 
 
 #  Text, on interface instructions
@@ -342,9 +363,9 @@ exec(open("line_graph.py").read()) # prepare line plots
 
 # Box Annotations
 dt1 = parser.parse(str(df.iloc[0].timestamp))
-box = BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, fill_color='red', line_color='red')
+box = BoxAnnotation(left=dt1, right=dt1, fill_alpha=0.0, line_alpha=1.0, fill_color='red', line_color='red', line_width=3)
 plotpm10.add_layout(box)  # add layout to line graphs
-plotpm25.add_layout(box)
+#plotpm25.add_layout(box)
 plotnoise.add_layout(box)
 plothumid.add_layout(box)
 plotcount.add_layout(box)
@@ -369,7 +390,7 @@ gspec[0:3, 2] = pn.Row(pn.Column(  # render column
            humid_button,
            temperature_button),
     pn.Row(plotpm10), # defined in line_graph.py
-    pn.Column(plotpm25),
+   # pn.Column(plotpm25),
 ),
 pn.Column(plotnoise,plothumid,plotcount))
 

@@ -3,7 +3,8 @@
 #+HTML_HEAD: <body text="#ffffff" link="#ff0000" vlink="#ff0000" alink="#ff0000">
 #+HTML_HEAD_EXTRA:<style> *{margin-left: 2em;margin-right: 2em}    ul, ol, li, a {margin: 0;} </style>
 
-
+* Plots
+The line plots show a re-sampled version of the extensive data-set for the sake of speed and efficiency.  The data-set is too cumbersome/bulky for efficient line plot rendering in the browser.  The non-resampled one has approx 90.000 points in comparison to the re-sampled one that has only 9.000 approx.  The re-sampling frequency is 5min and renders the greatest value observed during this 5min period.
 * Data mapping
 ** PM10
 
