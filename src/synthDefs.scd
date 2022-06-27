@@ -136,7 +136,7 @@ SynthDef(\warning_pm25, {
 }).add;
 
 // synth for temperature
-SynthDef(\tempSynth, {
+/*SynthDef(\tempSynth, {
 	|freq=12,gate=1|
 	var sig, trig;
 	sig = Resonator.ar(
@@ -155,6 +155,7 @@ SynthDef(\tempSynth, {
 }).add;
 
 // Synth(\tempSynth, [\freq,2]);
+*/
 
 fork{ // needs some time to load synth before playing, otherwise it is not audiable
 	// noise levels 

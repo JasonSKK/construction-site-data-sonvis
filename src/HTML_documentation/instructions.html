@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-06-22 Wed 13:19 -->
+<!-- 2022-06-27 Mon 14:36 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title><span class="underline">Documentation</span></title>
@@ -236,35 +236,34 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgfc27a71">1. Plots</a></li>
-<li><a href="#orge834407">2. Data mapping</a>
+<li><a href="#orgdfffea9">1. Plots</a></li>
+<li><a href="#org2b5fa61">2. Data mapping</a>
 <ul>
-<li><a href="#org7cbd8bc">2.1. PM10</a></li>
-<li><a href="#orge8eeee5">2.2. PM25</a></li>
-<li><a href="#orgb87ca04">2.3. Noise Levels</a></li>
-<li><a href="#orgf020986">2.4. Truck count</a></li>
-<li><a href="#orgb8f61da">2.5. Humidity</a></li>
-<li><a href="#orga4d44b8">2.6. Temperature</a></li>
+<li><a href="#org2b6740f">2.1. PM10</a></li>
+<li><a href="#org02dd56f">2.2. PM25</a></li>
+<li><a href="#org71f46cc">2.3. Noise Levels</a></li>
+<li><a href="#org5553c1d">2.4. Truck count</a></li>
+<li><a href="#org1582b93">2.5. Humidity</a></li>
 </ul>
 </li>
-<li><a href="#org3bad461">3. Re-sampling data-set</a></li>
+<li><a href="#org23414c3">3. Re-sampling data-set</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgfc27a71" class="outline-2">
-<h2 id="orgfc27a71"><span class="section-number-2">1</span> Plots</h2>
+<div id="outline-container-orgdfffea9" class="outline-2">
+<h2 id="orgdfffea9"><span class="section-number-2">1</span> Plots</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The line plots show a re-sampled version of the extensive data-set for the sake of speed and efficiency.  The data-set is too cumbersome/bulky for efficient line plot rendering in the browser.  The non-resampled one has approx 90.000 points in comparison to the re-sampled one that has only 9.000 approx.  The re-sampling frequency is 5min and renders the greatest value observed during this 5min period.
 </p>
 </div>
 </div>
-<div id="outline-container-orge834407" class="outline-2">
-<h2 id="orge834407"><span class="section-number-2">2</span> Data mapping</h2>
+<div id="outline-container-org2b5fa61" class="outline-2">
+<h2 id="org2b5fa61"><span class="section-number-2">2</span> Data mapping</h2>
 <div class="outline-text-2" id="text-2">
-</div><div id="outline-container-org7cbd8bc" class="outline-3">
-<h3 id="org7cbd8bc"><span class="section-number-3">2.1</span> PM10</h3>
+</div><div id="outline-container-org2b6740f" class="outline-3">
+<h3 id="org2b6740f"><span class="section-number-3">2.1</span> PM10</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 <span class="underline">Mapping: Pitch, pan, releaseTime, amplitude, amplitude level of noisy stochastic generator in the sound (Gendy2.ar).</span>
@@ -292,8 +291,8 @@ Mapping ranges:
 </div>
 </div>
 
-<div id="outline-container-orge8eeee5" class="outline-3">
-<h3 id="orge8eeee5"><span class="section-number-3">2.2</span> PM25</h3>
+<div id="outline-container-org02dd56f" class="outline-3">
+<h3 id="org02dd56f"><span class="section-number-3">2.2</span> PM25</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 <span class="underline">Mapping: Pitch, pan, releaseTime, amplitude, amplitude level of noisy stochastic generator in the sound (Gendy5.ar).</span>
@@ -320,8 +319,8 @@ Mapping ranges:
 </div>
 </div>
 
-<div id="outline-container-orgb87ca04" class="outline-3">
-<h3 id="orgb87ca04"><span class="section-number-3">2.3</span> Noise Levels</h3>
+<div id="outline-container-org71f46cc" class="outline-3">
+<h3 id="org71f46cc"><span class="section-number-3">2.3</span> Noise Levels</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 <span class="underline">Mapping: main oscillator frequency, modulation frequency ("beat"), modulation depth, LPF cut-off, modulation ocillator's mix</span>
@@ -359,8 +358,8 @@ Mapping ranges:
 </div>
 </div>
 
-<div id="outline-container-orgf020986" class="outline-3">
-<h3 id="orgf020986"><span class="section-number-3">2.4</span> Truck count</h3>
+<div id="outline-container-org5553c1d" class="outline-3">
+<h3 id="org5553c1d"><span class="section-number-3">2.4</span> Truck count</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 <span class="underline">Mapping: Frequency, de-tuning factor, amplitude</span>
@@ -383,8 +382,8 @@ De-tuning: 1 - 1.11 frequency multiplier
 </pre>
 </div>
 </div>
-<div id="outline-container-orgb8f61da" class="outline-3">
-<h3 id="orgb8f61da"><span class="section-number-3">2.5</span> Humidity</h3>
+<div id="outline-container-org1582b93" class="outline-3">
+<h3 id="org1582b93"><span class="section-number-3">2.5</span> Humidity</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 <span class="underline">Mapping: Wet (reverb), t60 (reverb)</span>
@@ -411,23 +410,10 @@ t60: 0.5 - 1.5
 </pre>
 </div>
 </div>
-
-<div id="outline-container-orga4d44b8" class="outline-3">
-<h3 id="orga4d44b8"><span class="section-number-3">2.6</span> Temperature</h3>
-<div class="outline-text-3" id="text-2-6">
-<p>
-Not yet implemented
-</p>
-
-<pre class="example">
-...
-</pre>
-</div>
-</div>
 </div>
 
-<div id="outline-container-org3bad461" class="outline-2">
-<h2 id="org3bad461"><span class="section-number-2">3</span> Re-sampling data-set</h2>
+<div id="outline-container-org23414c3" class="outline-2">
+<h2 id="org23414c3"><span class="section-number-2">3</span> Re-sampling data-set</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The above check-boxes can be selected on the interface so that the initial data-set with a period of 30 sec / observation can be re-sampled.
@@ -459,7 +445,7 @@ In the re-sampling function the following periods can be applied to the initial 
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Jason SK</p>
-<p class="date">Created: 2022-06-22 Wed 13:19</p>
+<p class="date">Created: 2022-06-27 Mon 14:36</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

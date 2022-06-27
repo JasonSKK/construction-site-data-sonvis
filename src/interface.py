@@ -349,7 +349,8 @@ gspec[0:3, 2] = pn.Row(pn.Column(  # render column
            noise_button),
     pn.Row(trucks_button,
            humid_button,
-           temperature_button),
+           #temperature_button
+           ),
     pn.Row(plotpm10), # defined in line_graph.py
    # pn.Column(plotpm25),  # embedded into plotpm10
 ),

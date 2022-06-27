@@ -1,7 +1,7 @@
 // Svoronos Kanavas Iason -- trucks function & synth patch
 // LiU Apr. 2022 -- construction site sonification
 
-SynthDef("truck", {
+SynthDef(\truck, {
     |freq = 440, amp = 0.5|
     var sig, env, out, rel;
 	sig = VarSaw.ar(freq);

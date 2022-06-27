@@ -104,7 +104,7 @@ t60: 0.5 - 1.5
 
 #+END_EXAMPLE
 
-** Temperature
+** COMMENT Temperature
 
 Not yet implemented
 

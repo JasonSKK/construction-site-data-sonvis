@@ -4,23 +4,6 @@
 # Niklas meeting
 # Tue at 11 o'clock
 
-1. IPC, interface elements are activated when communication between python and sc is established
-2. simple line graph visualisation, zoom etc
-3. re-sample function (listen to the data per/day) -- took time for a day with the initial period 30sec, allowed to compare
-4. sonification, I am using VarSaw and Pulse for the beat, when low values VarSaw as long they increase, the waveform gradually changes to pulse.  Worked on the overall soundscape (mainly mixing and "polishing") as well, particles had to be attenuated as Niklas suggested.
-5. instructions
-6. documentation
-7. visualisation ideas? This is static, would it be important to add interaction?
-
-
-Niklas feedback
-zoom every line graph
-timeline moving bar
-
-Takanori: moving annotation line
-
-
-
 * Algorithm architecture
 The overall algorithm is structured as:
 1. Interface
@@ -36,11 +19,14 @@ The overall algorithm is structured as:
 6. Sonification algorithm
    1. processing functions
    2. data receiver -- handler
-   3. synth and data parameter dictionary
-   4. event receiver - actions
-   5. IPC connection configuration
+   3. mappings
+   4. map to scale frequency mapping patch
+      1. Map to Lydian scale
+      2. Map to Beat
+   5. event receiver - actions
    6. synthesisers
-   7. map to scale frequency mapping patch
+
+
 
 * Dependencies
 SuperCollider (sclang has to be in $PATH)
@@ -239,7 +225,6 @@ python minmax.py data-file column
 In SuperCollider this command will run using the "unixCmdGetStdOutLines" method.  It will return the values as "string" in the SuperCollider environment.
 
 ** datetime re-sample function
-*Not 100% implemented*
 
 This function was implemented to re-sample the processed data-frame.  In the non-resampled one the collection frequency is 30s. So, every 30 seconds a new value is stored for all parameters.
 
@@ -248,11 +233,9 @@ While this can of course result to precise estimations regarding events in the d
 The frequencies in the re-sampling process that was selected are:
 1. 30S (non re-sampled)
 2. T / 1 minute
-3. 30M / 30 minutes
-4. H / 1 Hour
-5. D / 1 Day
-6. W / 1 Week
-7. M / 1 Month
+3. H / 1 Hour
+4. D / 1 Day
+5. W / 1 Week
 
 The re-sample function is accessed by the checkbox on the interface [[Interface]].  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
 
@@ -265,7 +248,7 @@ The re-sample function is accessed by the checkbox on the interface [[Interface]
 If the re-sampling frequency is T (1 min) the 4 value will be stored in this cycle.
 
 |----------+---|
-| 00:00:00 | 4 |
+| 00:01:00 | 4 |
 |----------+---|
 
 Overall, the re-sample function is base on the resample() method in combination with certain conditional tasks so that the correct checkbox element corresponds to the according resample function parameters.  Technically, it is actually divided into two functions.  The first does the conditional argument setting (feeds the correct arguments to the other function) while the other does the actual re-sampling and writes it to disk (CSV).
@@ -321,7 +304,7 @@ n.sendMsg('/startup/',1); // send to python that everything is loaded to enable 
 ("python communication established").postln;
 #+END_SRC
 
-At this point where the above command runs, an OSC message is sent to python using the '/startup/' address.  In the OSC server function (receiver) in Python a task activates the interaction elements on the interface.  This process can be found in the oscServerPython.scd file [[../src/oscServerPython.py]].
+At this point where the above command runs, an OSC message is sent to python using the '/startup/' address.  In the OSC server function (receiver) in Python a task activates the interaction elements on the interface.  This process can be found in the [[../src/oscServerPython.py]] file.
 
 The communication using the [['/pysc']] address is the most important one since concerns the iteration process.  The data values in every iteration cycle (row by row) are sent to SuperCollider as shown below.
 
@@ -338,14 +321,54 @@ client.send_message("/pysc", datetime_selection.iloc[i])
 # [['/startup']]
 * Sonification algorithm
 ** processing functions
+The sonification processing functions are required for the correct mapping of the values.  The aim here is to create a dictionary that contains the min and max values observed in the data for each column.  The first function (stored in the ~minmax variable) will read and extract the min and max values from the raw data file.  It utilises a python script ([[../src/minmax.py]]) and the unixCmdGetStdOutLines SuperCollider method.  The unixCmdGetStdOutLines will "execute a UNIX command asynchronously using the standard shell (sh)..".  In this case, that would be the evaluation of the minmax.py script along with two arguments, the raw data file path and the desired column.  This takes place in the second function that actually evaluates the previous one and stores the values.  The python script evaluation returns the min and max values while these are being stored in a list for every column (temperature, humidity, noise levels, particles).  Then these values are stored again in a dictionary to be used for the mapping later.  The truck count data min max range were used manually (range: 0 - 9).
 ** data receiver -- handler
-** synth and data parameter dictionary
-   Speak about the mapping (max-min values py script).  Mentioned at [[min-max extraction script]]
-#+BEGIN_SRC
-com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
-	(~path+/+file).postln;
-#+END_SRC
-** event receiver - actions
-** IPC connection configuration
-** synthesisers
+   The data receiver from the SuperCollider side is an OSCdef that uses the "/pysc" address.  The data that are being send are in array type.  The elements of the array are stored in variables (temperature, humidity, pm25, pm10 and numTrucks).  Every time an incoming message is received all data values are being extracted and mapped linearly to a 0.0 - 1.0 scale for further mapping convenience.  Then these values were mapped to the appropriate ones either linearly or exponentially by utilising the min max values from the dictionary (see [[processing functions]]).
+** mappings
+  There is also information on the "documentation" page on the interface.
+
++ The pm10 and pm25 values were mapped exponentially to a range of 261 - 523 Hz and 1044Hz - 2092Hz for the "warning" sounds and then mapped to the Lydian scale (see [[map to scale frequency mapping patch]]).  For the "warning" sounds the values were mapped to pan values (-1) - (-0.5) for the pm10 and 1 - 0.5 for the pm25.  Also, the values were mapped to the ranges 1 - 5 sec, 0.1 - 0.4 (multiplier), 0.0 - 1.0 and for release time, amplitude (warnings) and amplitude of Gendy accordingly.
++ The humidity values were linearly mapped to a range of 1.5 to 3.0 for the "t60" reverb parameter and from 0.5 to 1.5 for the "wet" reverb parameter as well.
++ The noise levels were linearly mapped to the depth of the modulator on a range from 0.0 to 5.0.  The values were also exponentially mapped to a range from 6000 Hz to 18000 Hz of a low pass filter.  They were linearly mapped to frequency values from 120Hz to 520Hz for the main oscillator frequency and as multiplier values for the modulation oscillator mix.  Pulse wave → linear 0.0 - 1.0, Sawtooth-Tri → inverted linear 1.0 - 0.0.
++ The temperature values were not used in the sonification.
+
+The mapping takes place by utilising a dictionary for the synth parameters.  The new values are registered to the dictionary keys and then mapped as synth parameters.
 ** map to scale frequency mapping patch
+*** Map to Lydian scale
+    To use a musical scale for the frequency mapping a function was built (~mapToScale).  The incoming frequency value is subtracted from each element of a list containing the exact frequencies of the Lydian scale while an ABS is applied to the new list.  After that the smallest value is returned.  In this way the frequency of the Lydian scale that was the closest to the incoming one will be selected.
+
+    This function was used for the particle and the truck count data.
+*** Map to Beat
+    The exact same logic was followed for the Beat mapping as well (noise values).  In this case an array (~beatList) containing rhythmic values was used.
+    #+BEGIN_SRC
+    ~beatList = [0,2,4,6,8,10,12,14,16,18,20];
+    #+END_SRC
+** event receiver - actions
+   Certain actions on the interface trigger OSC messages that were being sent to SuperCollider.  This event receiver is based on two OSCdefs (defined in the [[../src/parameterReceiver.scd]] file).  One is for turning ON & OFF the appropriate synths according to the active on/off buttons on the interface.  The second one is responding to OSC messages from the "Start" & "Killall" buttons.  This will start or stop & mute everything that is currently playing when the buttons are pressed.
+** synthesisers
+   All synthesisers are defined in the [[../src/synthDefs.scd]] file, except the one that plays back the truck values [[../src/trucks.scd]]
+
+   The general idea is based on a having a master bus mixing all synths to stereo.  The buses were first declared and then used as the "bus" argument in the Out.ar class.  Whenever a synth button on the interface is activated or deactivated the appropriate "gate" parameter in the master synth is set to 1 and 0 accordingly.  First the particles and particle warnings were mixed together and on the derived signal the noise level and truck count synths were added.
+
+This signal is being sent to the reverb that is controlled by the humidity values.  In the output a Limiter was used to prevent signal clipping.
+
+A detailed list of all synthesisers is the following:
+
+|----------------+-----------------------------------|
+| main output    | \busOut                           |
+| pm10           | x.pm10synth                       |
+| pm25           | x.pm25synth                       |
+| warnings pm 10 | \warning_pm10                     |
+| warnings pm 25 | \warning_pm25                     |
+| noise levels   | \noiseSynth                       |
+| truck count    | \truck (in [[../src/trucks.scd]]      |
+| humidity       | controls busOut reverb parameters |
+|----------------+-----------------------------------|
+* Line graphs
+  The Line graphs were implemented using "line" class from Bokeh.  The line plots show a re-sampled version of the extensive data-set for the sake of speed and efficiency. The data-set is too cumbersome/bulky for efficient line plot rendering in the browser.  The data-set was re-sampled with a period of 5 minutes.  In that period the maximum value observed is plotted as a point in the graph.
+
+The pm10 values and pm25 are in the same graph where pm10 are represented with the blue colour while the pm25 with green.  The "olivedrab" colour was selected for the noise values, "indigo" for the humidity and "olive" for the truck count.
+
+It was essential to create a moving box annotation that shows the current date-time that the user listens but also the area in the line graph that is played already.   Transparency is used for the played back area.
+
+The line graphs share common zoom.  So if the user zooms in or out in any graph the rest will respond to the action.

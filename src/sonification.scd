@@ -99,7 +99,8 @@ p.truckGate=1; // gate for the truck synth (on.off)
 		// rawList_minmax.postln;
 		for( // post min max for each col 
 			0, rawList_minmax.size, {
-				|i| rawList_minmax[i].postln;}); 
+				|i| rawList_minmax[i].postln;
+			}); 
 
 		// write to minmax dictionary 
 		d.temperatureMin=temperatureMin;
