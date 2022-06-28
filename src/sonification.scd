@@ -2,7 +2,7 @@
 // LiU Apr. 2022 -- construction site sonification
 
 s.waitForBoot{ // run as routine otherwise the patch is not loaded by multithreading 
-
+// Server.default.record;
 // s.meter;
 	
 // load lydian scale functions and configuration

@@ -1,4 +1,4 @@
-% Created 2022-06-27 Mon 14:43
+% Created 2022-06-28 Tue 13:15
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Algorithm architecture}
-\label{sec:org7927fff}
+\label{sec:org95a2217}
 The overall algorithm is structured as:
 \begin{enumerate}
 \item Interface
@@ -64,7 +64,7 @@ The overall algorithm is structured as:
 
 
 \section{Dependencies}
-\label{sec:org9f03a90}
+\label{sec:orgbea1d70}
 SuperCollider (sclang has to be in \$PATH)
 
 Python \&
@@ -97,7 +97,7 @@ from pythonosc.dispatcher import Dispatcher
 import asyncio
 
 \section{Interface}
-\label{sec:orgb880898}
+\label{sec:orgaaaf351}
 The interface consists of certain visual elements.
 The datetime range slider and text input (for the time) are used for date and time accordingly. Using these the user can specify a desired datetime period in the data to sonify and visualise.
 
@@ -150,7 +150,7 @@ The ones that utilise this functionality is the \textbf{start} \textbf{killall} 
 This will be elaborated in the IPC section
 
 \section{Sub-processes}
-\label{sec:orgcb97ccf}
+\label{sec:org423a8f9}
 On launch, sclang is initialised and runs as a sub-process within the python session.  More specifically, the SuperCollider  patch for sonification is evaluated using the following command in Python.
 \begin{verbatim}
 # run sonification patch
@@ -188,8 +188,8 @@ ipconfig | grep IPv4 Address.
 \end{verbatim}
 
 \section{data processing}
-\label{sec:orgb9f3ab1}
-In this section the data processing will be described.  The algorithm is developed in Python.  The idea is based on combining and re-constructing the data-sets after the processing results that come out from the derived stats (IQR).  SC has also access to the derived data-set (it is written to disk) so that it has access to the min max values for the correct mapping (see \ref{sec:orgd086aa3}).  In this way, it is also possible to re-use the algorithm with different data since the mapping is not hard-coded.
+\label{sec:orge19232b}
+In this section the data processing will be described.  The algorithm is developed in Python.  The idea is based on combining and re-constructing the data-sets after the processing results that come out from the derived stats (IQR).  SC has also access to the derived data-set (it is written to disk) so that it has access to the min max values for the correct mapping (see \ref{sec:orga1ee8c3}).  In this way, it is also possible to re-use the algorithm with different data since the mapping is not hard-coded.
 
 Outlier identification and replacement was deemed necessary since it was observed by using box-plot stats the PM (both 25 and 10) showed extreme values (far from accurate measurements (140\textasciitilde{} PM10) ) that we would like to exclude.
 
@@ -202,7 +202,7 @@ Code process:
 The very first step is that the original data are loaded from the CSV file while the timestamp column is stored in a variable.  Then the timestamp column is removed from the data-set to do the processing and then added again in the very end of the procedure.
 
 \subsection{outlier identification}
-\label{sec:orgbc7c096}
+\label{sec:org7e56c65}
 Descriptive statistics are applied in the data-set using the 'describe()' method from pandas.  That is to calculate percentiles, max, min and mean of every column in the data-set.  Then the Q1 and Q3 of PM10 and PM25 are stored in variables.  The IQR of both is calculated as well as the max and min threshold.  The threshold will be used to identify the outliers.  Values that exceed the min and max threshold are the outliers.
 
 \begin{verbatim}
@@ -224,7 +224,7 @@ thresholds = {'min thresh_pm_25': min_thresh_pm_25,
 \end{verbatim}
 
 \subsection{replacement}
-\label{sec:orga15dfa1}
+\label{sec:org208965b}
 Values for PM10 and PM25 that exceeded min and max threshold derived from the IQR calculation will be NaN-ed and then replaced with randomly selected samples from the same column in the data-set.  This outlier replacement process takes place for PM10, PM25 and noise levels.  The replacement function also prints how many values were replaced.
 
 \begin{verbatim}
@@ -248,8 +248,8 @@ df = df.apply( # replace NaN values from random samples same column
 \end{verbatim}
 
 \subsection{data-frame creation and manipulation}
-\label{sec:org35cbb08}
-As mentioned the df is first loaded from the CSV file, while the timestamp column is removed and stored in a variable.  This was done to easily process the data-set without interfering with the datetime object (timestamp column).  After that the \ref{sec:orgbc7c096} takes place.  That results to a new data-frame and then the timestamp column is added (insert method).
+\label{sec:org785d4a9}
+As mentioned the df is first loaded from the CSV file, while the timestamp column is removed and stored in a variable.  This was done to easily process the data-set without interfering with the datetime object (timestamp column).  After that the \ref{sec:org7e56c65} takes place.  That results to a new data-frame and then the timestamp column is added (insert method).
 \begin{verbatim}
 # insert timestamp column
 df.insert(0, "timestamp", timestamp, True)
@@ -269,8 +269,8 @@ After that the main data-frame is written to disk within a certain directory pat
 Later the data-frame is registered to a global variable for easier access.
 
 \subsection{min-max extraction script}
-\label{sec:orgd086aa3}
-The min-max python script was used for use within SuperCollider.  Its purpose is to run the min and max basic python methods to certain columns.  These values will be used for the paramenter mapping.  It returns the min and max value of the specified column.  These are stored in a dictionary.  More information can be found at  \ref{sec:org0be3a6b}.
+\label{sec:orga1ee8c3}
+The min-max python script was used for use within SuperCollider.  Its purpose is to run the min and max basic python methods to certain columns.  These values will be used for the paramenter mapping.  It returns the min and max value of the specified column.  These are stored in a dictionary.  More information can be found at  \ref{sec:org1d9399a}.
 
 It takes 2 arguments, these are:
 \begin{enumerate}
@@ -286,7 +286,7 @@ python minmax.py data-file column
 In SuperCollider this command will run using the "unixCmdGetStdOutLines" method.  It will return the values as "string" in the SuperCollider environment.
 
 \subsection{datetime re-sample function}
-\label{sec:orgf02d471}
+\label{sec:orgf28435d}
 
 This function was implemented to re-sample the processed data-frame.  In the non-resampled one the collection frequency is 30s. So, every 30 seconds a new value is stored for all parameters.
 
@@ -301,7 +301,7 @@ The frequencies in the re-sampling process that was selected are:
 \item W / 1 Week
 \end{enumerate}
 
-The re-sample function is accessed by the checkbox on the interface \ref{sec:orgb880898}.  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
+The re-sample function is accessed by the checkbox on the interface \ref{sec:orgaaaf351}.  In every re-sample period the maximum value observed is stored.  For example, the non re-sampled data-set has:
 
 \begin{center}
 \begin{tabular}{rr}
@@ -328,17 +328,17 @@ Overall, the re-sample function is base on the resample() method in combination 
 In the iteration process \ldots{} \textbf{TO BE DONE \& REPORTED}  (Write only re-sampling function related info, next section is: on-run functions)
 
 \section{on-run functions}
-\label{sec:orgb21d0ad}
+\label{sec:orgef1c15f}
 \section{IPC inter-process communication (includes connection setup functions)}
-\label{sec:org9a865b0}
+\label{sec:org0699889}
 The IPC is based on the OSC protocol and its aim is to interconnect Python and SueprCollider.  It is based on sending individual messages from the Python process triggered by the Python interface elements.
 
 In the OSC configuration there are 3 different OSC addresses that allow communication between the two software.  These are:
 \begin{enumerate}
-\item \label{org46708c3} | main address for the iteration process.  SC received the data values (OSCdef).  Py → SC
-\item \label{org710e99d} | controls the synths, acts like an ON/OFF switch.  Triggered by the 6 synth ON/OFF buttons. Py → SC
-\item \label{org7a94402} | This acts like main ON/OFF switch for the all synths, it is triggered by the START and Killall buttons. Py → SC
-\item \label{org7ae4fa8} | Initialisation address, activates the interaction elements on the interface when (or if) the SC responds.  This configuration uses the 1234 port instead. SC → Py
+\item \label{orgcb5235f} | main address for the iteration process.  SC received the data values (OSCdef).  Py → SC
+\item \label{org8569b95} | controls the synths, acts like an ON/OFF switch.  Triggered by the 6 synth ON/OFF buttons. Py → SC
+\item \label{orgd968779} | This acts like main ON/OFF switch for the all synths, it is triggered by the START and Killall buttons. Py → SC
+\item \label{org4f723a1} | Initialisation address, activates the interaction elements on the interface when (or if) the SC responds.  This configuration uses the 1234 port instead. SC → Py
 \end{enumerate}
 
 The initial configuration is related to obtaining the IP address of the computer automatically to avoid manual configurations.  This was implemented with the following functions in Python and SuperCollider.
@@ -382,25 +382,25 @@ n.sendMsg('/startup/',1); // send to python that everything is loaded to enable 
 
 At this point where the above command runs, an OSC message is sent to python using the '\emph{startup}' address.  In the OSC server function (receiver) in Python a task activates the interaction elements on the interface.  This process can be found in the \url{../src/oscServerPython.py} file.
 
-The communication using the \ref{org46708c3} address is the most important one since concerns the iteration process.  The data values in every iteration cycle (row by row) are sent to SuperCollider as shown below.
+The communication using the \ref{orgcb5235f} address is the most important one since concerns the iteration process.  The data values in every iteration cycle (row by row) are sent to SuperCollider as shown below.
 
 \begin{verbatim}
 client.send_message("/pysc", datetime_selection.iloc[i])
 \end{verbatim}
 \section{Sonification algorithm}
-\label{sec:org0be3a6b}
+\label{sec:org1d9399a}
 \subsection{processing functions}
-\label{sec:org33ecfee}
+\label{sec:org56ff019}
 The sonification processing functions are required for the correct mapping of the values.  The aim here is to create a dictionary that contains the min and max values observed in the data for each column.  The first function (stored in the \textasciitilde{}minmax variable) will read and extract the min and max values from the raw data file.  It utilises a python script (\url{../src/minmax.py}) and the unixCmdGetStdOutLines SuperCollider method.  The unixCmdGetStdOutLines will "execute a UNIX command asynchronously using the standard shell (sh)..".  In this case, that would be the evaluation of the minmax.py script along with two arguments, the raw data file path and the desired column.  This takes place in the second function that actually evaluates the previous one and stores the values.  The python script evaluation returns the min and max values while these are being stored in a list for every column (temperature, humidity, noise levels, particles).  Then these values are stored again in a dictionary to be used for the mapping later.  The truck count data min max range were used manually (range: 0 - 9).
 \subsection{data receiver -- handler}
-\label{sec:org70cafe5}
-The data receiver from the SuperCollider side is an OSCdef that uses the "/pysc" address.  The data that are being send are in array type.  The elements of the array are stored in variables (temperature, humidity, pm25, pm10 and numTrucks).  Every time an incoming message is received all data values are being extracted and mapped linearly to a 0.0 - 1.0 scale for further mapping convenience.  Then these values were mapped to the appropriate ones either linearly or exponentially by utilising the min max values from the dictionary (see \ref{sec:org33ecfee}).
+\label{sec:org1790631}
+The data receiver from the SuperCollider side is an OSCdef that uses the "/pysc" address.  The data that are being send are in array type.  The elements of the array are stored in variables (temperature, humidity, pm25, pm10 and numTrucks).  Every time an incoming message is received all data values are being extracted and mapped linearly to a 0.0 - 1.0 scale for further mapping convenience.  Then these values were mapped to the appropriate ones either linearly or exponentially by utilising the min max values from the dictionary (see \ref{sec:org56ff019}).
 \subsection{mappings}
-\label{sec:orgeec4f6e}
+\label{sec:org1ea2d63}
 There is also information on the "documentation" page on the interface.
 
 \begin{itemize}
-\item The pm10 and pm25 values were mapped exponentially to a range of 261 - 523 Hz and 1044Hz - 2092Hz for the "warning" sounds and then mapped to the Lydian scale (see \ref{sec:org9ad514c}).  For the "warning" sounds the values were mapped to pan values (-1) - (-0.5) for the pm10 and 1 - 0.5 for the pm25.  Also, the values were mapped to the ranges 1 - 5 sec, 0.1 - 0.4 (multiplier), 0.0 - 1.0 and for release time, amplitude (warnings) and amplitude of Gendy accordingly.
+\item The pm10 and pm25 values were mapped exponentially to a range of 261 - 523 Hz and 1044Hz - 2092Hz for the "warning" sounds and then mapped to the Lydian scale (see \ref{sec:orge43afeb}).  For the "warning" sounds the values were mapped to pan values (-1) - (-0.5) for the pm10 and 1 - 0.5 for the pm25.  Also, the values were mapped to the ranges 1 - 5 sec, 0.1 - 0.4 (multiplier), 0.0 - 1.0 and for release time, amplitude (warnings) and amplitude of Gendy accordingly.
 \item The humidity values were linearly mapped to a range of 1.5 to 3.0 for the "t60" reverb parameter and from 0.5 to 1.5 for the "wet" reverb parameter as well.
 \item The noise levels were linearly mapped to the depth of the modulator on a range from 0.0 to 5.0.  The values were also exponentially mapped to a range from 6000 Hz to 18000 Hz of a low pass filter.  They were linearly mapped to frequency values from 120Hz to 520Hz for the main oscillator frequency and as multiplier values for the modulation oscillator mix.  Pulse wave → linear 0.0 - 1.0, Sawtooth-Tri → inverted linear 1.0 - 0.0.
 \item The temperature values were not used in the sonification.
@@ -408,23 +408,23 @@ There is also information on the "documentation" page on the interface.
 
 The mapping takes place by utilising a dictionary for the synth parameters.  The new values are registered to the dictionary keys and then mapped as synth parameters.
 \subsection{map to scale frequency mapping patch}
-\label{sec:org9ad514c}
+\label{sec:orge43afeb}
 \subsubsection{Map to Lydian scale}
-\label{sec:orga3ca437}
+\label{sec:org7266e50}
 To use a musical scale for the frequency mapping a function was built (\textasciitilde{}mapToScale).  The incoming frequency value is subtracted from each element of a list containing the exact frequencies of the Lydian scale while an ABS is applied to the new list.  After that the smallest value is returned.  In this way the frequency of the Lydian scale that was the closest to the incoming one will be selected.
 
 This function was used for the particle and the truck count data.
 \subsubsection{Map to Beat}
-\label{sec:orgf572ad8}
+\label{sec:orge4c82b6}
 The exact same logic was followed for the Beat mapping as well (noise values).  In this case an array (\textasciitilde{}beatList) containing rhythmic values was used.
 \begin{verbatim}
 ~beatList = [0,2,4,6,8,10,12,14,16,18,20];
 \end{verbatim}
 \subsection{event receiver - actions}
-\label{sec:org4e1855e}
+\label{sec:orge248e68}
 Certain actions on the interface trigger OSC messages that were being sent to SuperCollider.  This event receiver is based on two OSCdefs (defined in the \url{../src/parameterReceiver.scd} file).  One is for turning ON \& OFF the appropriate synths according to the active on/off buttons on the interface.  The second one is responding to OSC messages from the "Start" \& "Killall" buttons.  This will start or stop \& mute everything that is currently playing when the buttons are pressed.
 \subsection{synthesisers}
-\label{sec:org5ad698d}
+\label{sec:org42c429a}
 All synthesisers are defined in the \url{../src/synthDefs.scd} file, except the one that plays back the truck values \url{../src/trucks.scd}
 
 The general idea is based on a having a master bus mixing all synths to stereo.  The buses were first declared and then used as the "bus" argument in the Out.ar class.  Whenever a synth button on the interface is activated or deactivated the appropriate "gate" parameter in the master synth is set to 1 and 0 accordingly.  First the particles and particle warnings were mixed together and on the derived signal the noise level and truck count synths were added.
@@ -448,7 +448,7 @@ humidity & controls busOut reverb parameters\\
 \end{tabular}
 \end{center}
 \section{Line graphs}
-\label{sec:org023285c}
+\label{sec:org563a491}
 The Line graphs were implemented using "line" class from Bokeh.  The line plots show a re-sampled version of the extensive data-set for the sake of speed and efficiency. The data-set is too cumbersome/bulky for efficient line plot rendering in the browser.  The data-set was re-sampled with a period of 5 minutes.  In that period the maximum value observed is plotted as a point in the graph.
 
 The pm10 values and pm25 are in the same graph where pm10 are represented with the blue colour while the pm25 with green.  The "olivedrab" colour was selected for the noise values, "indigo" for the humidity and "olive" for the truck count.

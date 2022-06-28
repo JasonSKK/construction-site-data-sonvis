@@ -46,6 +46,12 @@ OSCdef(\start_end_receiver,{
 			"Master gate OFF".postln;
 		},
 		1, {
+			// stop everything 
+			x.busOut.set(\masterGate, 0);
+			~count=1; // initialise
+			~countTruck=2;
+			"Master gate OFF".postln;
+			// start it
 			x.busOut.set(\masterGate, 1);
 			"Master gate ON".postln;
 		};

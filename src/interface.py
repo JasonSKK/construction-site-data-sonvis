@@ -189,6 +189,10 @@ resample_box.on_click(resample_func)
 # on start button event
 def do(event):
     global timedate_formating
+    global break_cycle #added global
+    #  killall first
+    client.send_message("/startEnd", '0')  # send to SC stop synth: gate 0
+    break_cycle = True # Change break_cicle to False
     client.send_message("/startEnd", 1) # send to SC start playing synth:gate 1
     startdt = date_range_slider.value[0].date() # get start date from range slider
     enddt = date_range_slider.value[1].date() # get end date
@@ -209,7 +213,6 @@ def do(event):
         str(enddt)+' '+str(endtime),
     ]
     print(timedate_formating)  # print everything as datetime formating
-    global break_cycle
     break_cycle = False
     threading.Thread(target=run, args=(
         timedate_formating[0],  # start datetime
