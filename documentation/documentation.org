@@ -31,10 +31,21 @@ The overall algorithm is structured as:
 * Dependencies
 SuperCollider (sclang has to be in $PATH)
 
-Python &
-Python packages:
+SuperCollider Extensions: JPverb (https://doc.sccode.org/Overviews/DEIND.html)
 
-from __future__ import print_function
+Python 3.8.5
+
+Install:
+pip ( package manager) =$ python get-pip.py=
+bokeh =pip install bokeh=
+panel =pip install panel=
+python-osc =pip install python-osc=
+python-dateutil =pip install python-dateutil=
+
+To run the project: cd to the src directory and do =python interface.py=
+
+All used Python packages:
+# from __future__ import print_function
 import datetime as dt
 import panel as pn
 import param  # for FormatDateRangeSlider

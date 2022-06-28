@@ -1,7 +1,7 @@
 # Svoronos Kanavas Iason -- interface patch & loader
 # LiU Apr. 2022 -- construction site sonification
 
-from __future__ import print_function
+#from __future__ import print_function
 import datetime as dt
 import panel as pn
 import param  # for FormatDateRangeSlider
@@ -219,6 +219,7 @@ def do(event):
         timedate_formating[1],  # end datetime
         1/period_slider.value
     )).start()
+    start_button.disabled = True
 
 # widgets functions
 def killall(event): # killall button fuction
@@ -226,6 +227,7 @@ def killall(event): # killall button fuction
     client.send_message("/startEnd", '0')  # send to SC stop synth: gate 0
     global break_cycle #added global
     break_cycle = True # Change break_cicle to False
+    start_button.disabled = False
     print("Everything Stopped")
 
 

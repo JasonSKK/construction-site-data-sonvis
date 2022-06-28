@@ -1,0 +1,53 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/jsk/Coding/LiU/constructionSightSonification/documentation/documentation.org
+
+
+* Dependencies
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2022-06-28 Tue 15:36
+  :ARCHIVE_FILE: ~/Coding/LiU/constructionSightSonification/documentation/documentation.org
+  :ARCHIVE_CATEGORY: documentation
+  :END:
+SuperCollider (sclang has to be in $PATH)
+
+SuperCollider Extensions: JPverb (https://doc.sccode.org/Overviews/DEIND.html)
+
+Python 3.8.5
+
+Install:
+pip ( package manager) =$ python get-pip.py=
+bokeh =pip install bokeh=
+panel =pip install panel=
+python-osc =pip install python-osc=
+python-dateutil =pip install python-dateutil=
+
+To run the project: cd to the src directory and do =python interface.py=
+
+All used Python packages:
+# from __future__ import print_function
+import datetime as dt
+import panel as pn
+import param  # for FormatDateRangeSlider
+import subprocess  # to run SC
+import threading  # stop iteration cycle when kill button pressed
+#from pythonosc import udp_client
+from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
+import os
+import numpy as np
+import pandas as pd
+import time
+import datetime
+from dateutil import parser
+from pythonosc import udp_client
+import subprocess
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+import sys
+from bokeh.plotting import figure
+from pythonosc.osc_server import AsyncIOOSCUDPServer
+from pythonosc.dispatcher import Dispatcher
+import asyncio
