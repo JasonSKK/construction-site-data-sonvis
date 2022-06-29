@@ -34,7 +34,8 @@ p.truckGate=1; // gate for the truck synth (on.off)
 ~minmax = { // 1st arg: filename | 2nd arg: column name as string
 	| file, col |
 	var com;
-	com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+	com =  ("python"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines; // python3 is alias-ed to python
+	// com =  ("python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
 	(~path+/+file).postln;
 	// command: python ./minmax.py filename.csv "columnname"
 	com = com[3].replace(" ",",").split(","); // replace blank with comma and split it into 2 items as list

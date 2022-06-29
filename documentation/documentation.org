@@ -29,23 +29,40 @@ The overall algorithm is structured as:
 
 
 * Dependencies
-SuperCollider (sclang has to be in $PATH)
+** Install:
++ SuperCollider (sclang has to be in $PATH or to be an alias).  Alternatively you can hard-code the path in the [[../src/interface.py]] line 320 e.g.
+#+BEGIN_SRC
+'/Applications/SuperCollider.app/Contents/MacOS/sclang sonification.scd', shell=True,
+#+END_SRC
++ SuperCollider Extensions:
+  + JPverb (https://doc.sccode.org/Overviews/DEIND.html) -- place files in the extension folder
+  + Gendy5 BhobUGens (sc3-plugins https://github.com/supercollider/sc3-plugins)
++ Python 3.8.5
++ pip ( package manager) =curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py= =python3 get-pip.py=
++ matplotlib =pip install matplotlib=
++ pandas =pip install pandas=
++ bokeh =pip install bokeh=
++ panel =pip install panel=
++ python-osc =pip install python-osc=
++ python-dateutil =pip install python-dateutil=
 
-SuperCollider Extensions: JPverb (https://doc.sccode.org/Overviews/DEIND.html)
+To run the project: cd to the src directory and do =python3 interface.py=
 
-Python 3.8.5
+\noindent
+Note: I have alias-ed python3 to python command.  So if your =python --version= shows python2 then it is needed to change the min-max function from python to python3 in the sonification.scd [[../src/sonification.scd]] file (line 37)
+#+BEGIN_SRC
+com =  ("python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+#+END_SRC
 
-Install:
-pip ( package manager) =$ python get-pip.py=
-bokeh =pip install bokeh=
-panel =pip install panel=
-python-osc =pip install python-osc=
-python-dateutil =pip install python-dateutil=
+\noindent
+Note: Make sure that "which python3".unixCmdGetStdOutLines shows the same path as in shell.  Otherwise, change line 37 in the [[../src/sonification.scd]].  Hard-code the absolute python3 path.  e.g.
+#+BEGIN_SRC
+("/usr/local/anaconda3/bin/python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+#+END_SRC
 
-To run the project: cd to the src directory and do =python interface.py=
-
-All used Python packages:
++ All used Python packages (for troubleshooting in case I forgot a dependency):
 # from __future__ import print_function
+#+BEGIN_SRC
 import datetime as dt
 import panel as pn
 import param  # for FormatDateRangeSlider
@@ -70,6 +87,7 @@ from bokeh.plotting import figure
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 import asyncio
+#+END_SRC
 
 * Interface
 The interface consists of certain visual elements.
@@ -264,9 +282,8 @@ If the re-sampling frequency is T (1 min) the 4 value will be stored in this cyc
 
 Overall, the re-sample function is base on the resample() method in combination with certain conditional tasks so that the correct checkbox element corresponds to the according resample function parameters.  Technically, it is actually divided into two functions.  The first does the conditional argument setting (feeds the correct arguments to the other function) while the other does the actual re-sampling and writes it to disk (CSV).
 
-In the iteration process ... *TO BE DONE & REPORTED*  (Write only re-sampling function related info, next section is: on-run functions)
-
 * on-run functions
+  These functions are evaluated when the "start" button is active.  The data in the selected date-time period according to the selected re-sample period are iterated.  On every iteration cycle the data values are sent to SuperCollider as an OSC message.  The evaluation of this function was essential to be done using multi-threading since the interface was also running on another process.  This works by using a "for" loop that keeps the iteration throughout the selected period.  It stops either when the selected period is finished or it can be either interrupted by the "killall" button (using a False - True flag).  At the same time the text input (for the time selection) is updated according to the current date-time position of the data in the iteration process.  Also, when the iteration process begins the "start" button is deactivated to prevent issues.  When the "killall" button is pressed the "start" button is again activated.
 * IPC inter-process communication (includes connection setup functions)
 The IPC is based on the OSC protocol and its aim is to interconnect Python and SueprCollider.  It is based on sending individual messages from the Python process triggered by the Python interface elements.
 
@@ -380,6 +397,6 @@ A detailed list of all synthesisers is the following:
 
 The pm10 values and pm25 are in the same graph where pm10 are represented with the blue colour while the pm25 with green.  The "olivedrab" colour was selected for the noise values, "indigo" for the humidity and "olive" for the truck count.
 
-It was essential to create a moving box annotation that shows the current date-time that the user listens but also the area in the line graph that is played already.   Transparency is used for the played back area.
+It was essential to create a moving box annotation that shows the current date-time that the user listens but also the area in the line graph that is played already.   Transparency is used for the played back area.  The update of the box annotation takes place within the on-run function [[on-run functions]].
 
 The line graphs share common zoom.  So if the user zooms in or out in any graph the rest will respond to the action.
