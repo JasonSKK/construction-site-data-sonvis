@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-06-27 Mon 14:36 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title><span class="underline">Documentation</span></title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Jason SK" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<body style="background-color:#2c2f40;margin-top:0px;margin-left:0px;">
+<body text="#ffffff" link="#ff0000" vlink="#ff0000" alink="#ff0000">
+<style> *{margin-left: 2em;margin-right: 2em}    ul, ol, li, a {margin: 0;} </style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title"><span class="underline">Documentation</span></h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgdfffea9">1. Plots</a></li>
+<li><a href="#org2b5fa61">2. Data mapping</a>
+<ul>
+<li><a href="#org2b6740f">2.1. PM10</a></li>
+<li><a href="#org02dd56f">2.2. PM25</a></li>
+<li><a href="#org71f46cc">2.3. Noise Levels</a></li>
+<li><a href="#org5553c1d">2.4. Truck count</a></li>
+<li><a href="#org1582b93">2.5. Humidity</a></li>
+</ul>
+</li>
+<li><a href="#org23414c3">3. Re-sampling data-set</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgdfffea9" class="outline-2">
+<h2 id="orgdfffea9"><span class="section-number-2">1</span> Plots</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+The line plots show a re-sampled version of the extensive data-set for the sake of speed and efficiency.  The data-set is too cumbersome/bulky for efficient line plot rendering in the browser.  The non-resampled one has approx 90.000 points in comparison to the re-sampled one that has only 9.000 approx.  The re-sampling frequency is 5min and renders the greatest value observed during this 5min period.
+</p>
+</div>
+</div>
+<div id="outline-container-org2b5fa61" class="outline-2">
+<h2 id="org2b5fa61"><span class="section-number-2">2</span> Data mapping</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-org2b6740f" class="outline-3">
+<h3 id="org2b6740f"><span class="section-number-3">2.1</span> PM10</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+<span class="underline">Mapping: Pitch, pan, releaseTime, amplitude, amplitude level of noisy stochastic generator in the sound (Gendy2.ar).</span>
+</p>
+
+<p>
+<i>Linear Mapping:</i>
+As long the data values remain lower than <b>45 μg/m3</b> they remain panned to the left.  Higher values result in increased pitch according to the Lydian musical scale.
+</p>
+
+<p>
+<i>Discrete - Exponential Mapping | Warnings:</i>
+When values exceed this level the sound becomes more noisy and more close to the centre (pan).  Higher values result in a more noisy sound texture.  Here the values are mapped to a higher musical octave in comparison to the previous linear mapping for lower values.  The values are linearly mapped to releaseTime and amplitude.  Higher values result to longer releaseTime and louder warning sounds.
+</p>
+
+<pre class="example">
+Mapping ranges:
+
+1. Pitch acc → Lydian scale: 261Hz - 523 Hz | warnings: 1044Hz - 2092Hz
+2. Pan (warnings): (-1) - (-0.5)
+3. releaseTime: 0 - 1 sec | warnings: 1 - 5 sec
+4. Amplitude (warnings): 0.1 - 0.4 | acts as a multiplier
+5. Amplitude of Gendy: 0.0 - 1.0
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org02dd56f" class="outline-3">
+<h3 id="org02dd56f"><span class="section-number-3">2.2</span> PM25</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+<span class="underline">Mapping: Pitch, pan, releaseTime, amplitude, amplitude level of noisy stochastic generator in the sound (Gendy5.ar).</span>
+</p>
+
+<p>
+<i>Linear Mapping:</i>
+As long the data values remain lower than <b>15 μg/m3</b> they remain panned to the right.  Higher values result in increased pitch according to the Lydian musical scale.
+</p>
+
+<p>
+<i>Discrete - Exponential Mapping | Warnings:</i>
+When values exceed this level the sound becomes more noisy and more close to the centre (pan).  Higher values result in a more noisy sound texture.  Here the values are mapped to a higher musical octave in comparison to the previous linear mapping for lower values.  The values are linearly mapped to releaseTime and amplitude.  Higher values result to longer releaseTime and louder warning sounds.
+</p>
+<pre class="example">
+Mapping ranges:
+
+1. Pitch acc → Lydian scale: 261Hz - 523 Hz | warnings: 1044Hz - 2092Hz
+2. Pan (warnings): 1 - 0.5
+3. releaseTime: 0 - 1 sec | warnings: 1 - 5 sec
+4. Amplitude (warnings): 0.1 - 0.4 | acts as a multiplier
+5. Amplitude of Gendy: 0.0 - 1.0
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org71f46cc" class="outline-3">
+<h3 id="org71f46cc"><span class="section-number-3">2.3</span> Noise Levels</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+<span class="underline">Mapping: main oscillator frequency, modulation frequency ("beat"), modulation depth, LPF cut-off, modulation ocillator's mix</span>
+</p>
+
+<p>
+The noise level values are first mapped to the oscillator frequency.  It is an FM synth based on two sinusoidal oscillators (carrier - modulator).  The frequency remains the same in both oscillators.
+</p>
+
+<p>
+Then two pulse wave oscillators (RM synthesis) and an added sawtooth-triangle oscillator act as the PM modulator.  With increased noise values the higher amplitude level of the pulse ocillators in the PM.  This results to a more "distinctive" and "harsh" sound texture.  Lower values result to modulation using only the Sawtooth-triangle oscillator.  Also, the values control the depth of the modulator (Pulse and Sawtooth-triangle oscillators).
+</p>
+
+<p>
+The higher the noise levels the higher the LPF cut-off frequency.
+</p>
+
+<p>
+Model of the synth as pseudo-code:
+<img src="./noiseSynth_model.png" alt="noiseSynth_model.png" />
+</p>
+
+<pre class="example">
+Mapping ranges:
+
+1. Main oscillator frequency: 120Hz - 520Hz
+2. Modulation frequency (discrete mapping): 0Hz - 20Hz | [0,2,4,6,8,10,12,14,16,18,20]
+3. Modulation depth: 0.0 - 5.0
+4. LPF cut-off frequency: 6000Hz - 18000Hz
+5. Modulation oscillator mix:
+              Pulse wave → linear 0.0 - 1.0,
+              Sawtooth-Tri → inverted linear 1.0 - 0.0
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org5553c1d" class="outline-3">
+<h3 id="org5553c1d"><span class="section-number-3">2.4</span> Truck count</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+<span class="underline">Mapping: Frequency, de-tuning factor, amplitude</span>
+</p>
+
+<p>
+For the truck count a simple pitch mapping according to the Lydian scale was implemented.  The higher the number of the trucks observed the higher the pitch.  However, the number of trucks controls a frequency de-tuning factor.  Higher values result to a stronger de-tuning effect.  The truck values are mapped to the amplitude as well.  Higher values result to higher amplitude.  The synth is using a Sawtooth-Triangle oscillator.
+</p>
+
+<p>
+All mappings are linear.
+</p>
+
+<pre class="example">
+Mapping ranges:
+
+Frequency: 100Hz - 1095Hz
+De-tuning: 1 - 1.11 frequency multiplier
+
+</pre>
+</div>
+</div>
+<div id="outline-container-org1582b93" class="outline-3">
+<h3 id="org1582b93"><span class="section-number-3">2.5</span> Humidity</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+<span class="underline">Mapping: Wet (reverb), t60 (reverb)</span>
+</p>
+
+<p>
+Generally, the humidity values are mapped the amount of reverberation of all sounds.  Low humidity will result to a "dry" effect (no reverberation) while higher values will result to more reverb.
+</p>
+
+<p>
+As long as the values increase the "size" of the reverb increases along with the amount of the "wet" parameter.
+</p>
+
+<p>
+It is suggested that humidity mapping is activated along with the noise synth as source for a better effect.
+</p>
+
+<pre class="example">
+Mapping ranges:
+
+Wet: 1.5 - 3.0
+t60: 0.5 - 1.5
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org23414c3" class="outline-2">
+<h2 id="org23414c3"><span class="section-number-2">3</span> Re-sampling data-set</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+The above check-boxes can be selected on the interface so that the initial data-set with a period of 30 sec / observation can be re-sampled.
+</p>
+
+
+<div class="figure">
+<p><img src="./resample_checkbox.png" alt="resample_checkbox.png" />
+</p>
+</div>
+
+<p>
+In the re-sampling function the following periods can be applied to the initial data-set.
+</p>
+
+<ol class="org-ol">
+<li>30s → Initial period</li>
+<li>T → Per minute</li>
+<li>H → Per Hour</li>
+<li>D → Per Day</li>
+<li>W → Per Week</li>
+</ol>
+
+<p>
+<i>Note: the active checkbox has to be un-clicked to apply a new one.</i>
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Jason SK</p>
+<p class="date">Created: 2022-06-27 Mon 14:36</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
