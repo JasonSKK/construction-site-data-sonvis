@@ -19,13 +19,11 @@
 
 To run the project: cd to the src directory and do =python3 interface.py=
 
-\noindent
 Note: I have alias-ed python3 to python command.  So if your =python --version= shows python2 then it is needed to change the min-max function from python to python3 in the sonification.scd [[../src/sonification.scd]] file (line 37)
 #+BEGIN_SRC
 com =  ("python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
 #+END_SRC
 
-\noindent
 Note: Make sure that "which python3".unixCmdGetStdOutLines shows the same path as in shell.  Otherwise, change line 37 in the [[../src/sonification.scd]].  Hard-code the absolute python3 path.  e.g.
 #+BEGIN_SRC
 ("/usr/local/anaconda3/bin/python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
