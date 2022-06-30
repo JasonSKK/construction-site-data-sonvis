@@ -1,2 +1,61 @@
 * Construction site SonVis
-SRC
+
+** Dependencies
++ SuperCollider (sclang has to be in $PATH or to be an alias).  Alternatively you can hard-code the path in the [[../src/interface.py]] line 320 e.g.
+#+BEGIN_SRC
+'/Applications/SuperCollider.app/Contents/MacOS/sclang sonification.scd', shell=True,
+#+END_SRC
++ SuperCollider Extensions:
+  + JPverb (https://doc.sccode.org/Overviews/DEIND.html) -- place files in the extension folder
+  + Gendy5 BhobUGens (sc3-plugins https://github.com/supercollider/sc3-plugins)
++ Python 3.8.5
++ pip ( package manager) =curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py= =python3 get-pip.py=
++ matplotlib =pip install matplotlib=
++ pandas =pip install pandas=
++ bokeh =pip install bokeh=
++ panel =pip install panel=
++ python-osc =pip install python-osc=
++ python-dateutil =pip install python-dateutil=
+
+To run the project: cd to the src directory and do =python3 interface.py=
+
+\noindent
+Note: I have alias-ed python3 to python command.  So if your =python --version= shows python2 then it is needed to change the min-max function from python to python3 in the sonification.scd [[../src/sonification.scd]] file (line 37)
+#+BEGIN_SRC
+com =  ("python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+#+END_SRC
+
+\noindent
+Note: Make sure that "which python3".unixCmdGetStdOutLines shows the same path as in shell.  Otherwise, change line 37 in the [[../src/sonification.scd]].  Hard-code the absolute python3 path.  e.g.
+#+BEGIN_SRC
+("/usr/local/anaconda3/bin/python3"+(~path+/+"minmax.py").standardizePath+(~path+/+file)+col).unixCmdGetStdOutLines;
+#+END_SRC
+
++ All used Python packages (for troubleshooting in case I forgot a dependency):
+# from __future__ import print_function
+#+BEGIN_SRC
+import datetime as dt
+import panel as pn
+import param  # for FormatDateRangeSlider
+import subprocess  # to run SC
+import threading  # stop iteration cycle when kill button pressed
+#from pythonosc import udp_client
+from bokeh.models import Slider, CheckboxGroup, CustomJS, Label
+import os
+import numpy as np
+import pandas as pd
+import time
+import datetime
+from dateutil import parser
+from pythonosc import udp_client
+import subprocess
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+import sys
+from bokeh.plotting import figure
+from pythonosc.osc_server import AsyncIOOSCUDPServer
+from pythonosc.dispatcher import Dispatcher
+import asyncio
+#+END_SRC
