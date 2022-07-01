@@ -1,5 +1,5 @@
 // Svoronos Kanavas Iason -- trucks function & synth patch
-// LiU Apr. 2022 -- construction site sonification
+// LiU Apr. 2022 -- construction site data SonVis
 
 SynthDef(\truck, {
     |freq = 440, amp = 0.5|

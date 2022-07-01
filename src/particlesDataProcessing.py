@@ -1,5 +1,5 @@
 # Svoronos Kanavas Iason -- data iteration functions patch
-# LiU Apr. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 import os
 import numpy as np

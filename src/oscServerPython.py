@@ -1,5 +1,5 @@
 # Svoronos Kanavas Iason -- OSC Async Server
-# LiU Apr. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher

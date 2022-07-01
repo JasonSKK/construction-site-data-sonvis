@@ -1,5 +1,5 @@
 // Svoronos Kanavas Iason -- Map to Lydian scale patch
-// LiU Apr. 2022 -- construction site sonification
+// LiU Apr. 2022 -- construction site data SonVis
 
 ~lydScale= Scale.lydian.ratios * 36.midicps * 1; // first octave of lydian scale | Do/C
 

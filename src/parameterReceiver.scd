@@ -1,5 +1,5 @@
 // Svoronos Kanavas Iason -- Parameter Receiver patch
-// LiU Apr. 2022 -- construction site sonification
+// LiU Apr. 2022 -- construction site data SonVis
 
 OSCdef(\parameterReceiver,{
 	| msg |
