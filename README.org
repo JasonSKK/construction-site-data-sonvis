@@ -1,4 +1,4 @@
-* Construction site SonVis
+* Construction site data SonVis
 [[./const_sonvis.png]]
 ** Dependencies
 + SuperCollider (sclang has to be in $PATH or to be an alias).  Alternatively you can hard-code the path in the [[../src/interface.py]] line 320 e.g.
