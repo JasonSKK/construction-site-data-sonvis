@@ -1,3 +1,4 @@
+Sound, particle, temperature, humidity data: “Data from measurements from the research project Testbed Kungsgatan, Linköping University, funded by Norrköping municipality´s fund for Research and Development”
 timestamp,temperature,humidity,pm_25,pm_10
 2021-08-01 00:00:00,NaN,NaN,1.9,2.5
 2021-08-01 00:00:30,NaN,NaN,2.2,3.3

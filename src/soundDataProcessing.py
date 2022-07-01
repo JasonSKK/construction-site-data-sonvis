@@ -6,7 +6,7 @@
 filenameSound = os.getcwd()+"/sommargagata_dev_11_sound_30s.csv"
 
 # Load the .csv file
-sf = pd.read_csv(filenameSound)
+sf = pd.read_csv(filenameSound,skiprows=[0])
 
 # save cat_24 column
 db = sf['cat_24']

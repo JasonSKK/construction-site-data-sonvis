@@ -6,7 +6,7 @@
 filenameTrucks = os.getcwd()+"/fake"
 
 # Load the .csv file
-sf = pd.read_csv(filenameTrucks)
+sf = pd.read_csv(filenameTrucks,skiprows=[0])
 
 # save cat_24 column
 db = sf['cat_24']

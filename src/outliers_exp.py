@@ -11,7 +11,7 @@ import random
 
 filename = os.getcwd()+"/sommargagata_dev_11_temp_pm_30s.csv"
 # Load the .csv file
-df = pd.read_csv(filename)
+df = pd.read_csv(filename,skiprows=[0])
 
 # save first column
 timestamp = df['timestamp']
@@ -98,7 +98,7 @@ replaceOutliers('db',20,100) # exclude the min value which is 5.444976
 
 trucks_df = pd.read_csv(  # read truck data file
     "./fake_passage_time.csv",
-    delimiter=';')
+    delimiter=';',skiprows=[0])
 # add column to main df with trucks, many are nil, will be replaced by next action
 df['count'] = trucks_df['count']
 
