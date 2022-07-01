@@ -1,6 +1,6 @@
 # Svoronos Kanavas Iason -- initial data processing
 #  --- load df and identify and replace outliers pm_25, pm_10 ---
-# LiU Apr. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 import numpy as np
 import pandas as pd

@@ -1,5 +1,5 @@
 # Svoronos Kanavas Iason -- interface patch & loader
-# LiU Apr. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 #from __future__ import print_function
 import datetime as dt

@@ -1,6 +1,6 @@
 # Svoronos Kanavas Iason -- data processing sound
 #  --- load sound df and insert column to the main df ---
-# LiU May. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 # store filename to var
 filenameSound = os.getcwd()+"/sommargagata_dev_11_sound_30s.csv"

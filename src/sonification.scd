@@ -1,5 +1,5 @@
 // Svoronos Kanavas Iason -- Particle Sonification patch
-// LiU Apr. 2022 -- construction site sonification
+// LiU Apr. 2022 -- construction site data SonVis
 
 s.waitForBoot{ // run as routine otherwise the patch is not loaded by multithreading 
 // Server.default.record;

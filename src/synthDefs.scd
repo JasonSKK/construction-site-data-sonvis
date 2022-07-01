@@ -1,5 +1,5 @@
 // Svoronos Kanavas Iason -- Synth patch
-// LiU Apr. 2022 -- construction site sonification
+// LiU Apr. 2022 -- construction site data SonVis
 
 // pm_25 wavetable bufums
 Buffer.freeAll;

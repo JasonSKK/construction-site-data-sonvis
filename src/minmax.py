@@ -1,6 +1,6 @@
 # Svoronos Kanavas Iason -- calculate min max script
 # ---- runs in ./particleSonification.scd ----
-# LiU Apr. 2022 -- construction site sonification
+# LiU Apr. 2022 -- construction site data SonVis
 
 import sys
 import pandas as pd
