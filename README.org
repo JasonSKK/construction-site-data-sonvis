@@ -1,5 +1,10 @@
 * Construction site data SonVis
 [[./const_sonvis.png]]
+
+Vehicle data: “Synthetical data based on measurements from the research project Störningsfri Stad, Linköpings University,  funded by VINNOVA.”
+
+Sound, particle, temperature, humidity data: “Data from measurements from the research project Testbed Kungsgatan, Linköping University, funded by Norrköping municipality´s fund for Research and Development”
+
 ** Dependencies
 + SuperCollider (sclang has to be in $PATH or to be an alias).  Alternatively you can hard-code the path in the [[../src/interface.py]] line 320 e.g.
 #+BEGIN_SRC
