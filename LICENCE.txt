@@ -1,0 +1,3 @@
+Vehicle data: “Synthetical data based on measurements from the research project Störningsfri Stad, Linköpings University,  funded by VINNOVA.”
+
+Sound, particle, temperature, humidity data: “Data from measurements from the research project Testbed Kungsgatan, Linköping University, funded by Norrköping municipality´s fund for Research and Development”

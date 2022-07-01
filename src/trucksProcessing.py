@@ -3,10 +3,9 @@
 # LiU May. 2022 -- construction site sonification
 
 # store filename to var
-filenameTrucks = os.getcwd()+"/fake"
-
+filenameTrucks = os.getcwd()+"/fake_passage_time.csv"
 # Load the .csv file
-sf = pd.read_csv(filenameTrucks)
+sf = pd.read_csv(filenameTrucks, skiprows=[0])
 
 # save cat_24 column
 db = sf['cat_24']
