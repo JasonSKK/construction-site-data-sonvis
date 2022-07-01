@@ -1,4 +1,3 @@
-* construction site SonVis
+* Construction site data SonVis
 
 BigSur configuration
-
